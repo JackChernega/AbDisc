@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/app_content"
+        android:layout_width="fill_parent"
+        android:layout_height="500dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="0dp"></FrameLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/app_content"
+        android:weightSum="2" >
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/imageButton"
+            android:src="@mipmap/icon_distance"
+            android:scaleType="centerInside" />
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/imageButton2"
+            android:src="@mipmap/icon_activity" />
+    </LinearLayout>
+
+</RelativeLayout>
