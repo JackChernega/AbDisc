@@ -6,14 +6,11 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.ImageButton;
 
 /**
  * Created by etsai on 6/1/2015.
  */
 public class MainActivity extends ActionBarActivity {
-    private ImageButton activityTab, distanceTab;
-
     private Fragment activityFrag= null, distanceFrag= null;
 
     @Override
@@ -21,15 +18,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        activityTab= (ImageButton) findViewById(R.id.tab_activity);
-        distanceTab= (ImageButton) findViewById(R.id.tab_distance);
-
         final FragmentManager fragManager= getFragmentManager();
-        activityTab.setOnClickListener(new View.OnClickListener() {
+        final FragmentTransaction fragTransaction= fragManager.beginTransaction();
+        findViewById(R.id.tab_activity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction fragTransaction= fragManager.beginTransaction();
-
                 if (activityFrag == null) {
                     activityFrag= new ActivityFragment();
                 }
@@ -37,11 +30,9 @@ public class MainActivity extends ActionBarActivity {
                 fragTransaction.replace(R.id.app_content, activityFrag).commit();
             }
         });
-        distanceTab.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tab_distance).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction fragTransaction= fragManager.beginTransaction();
-
                 if (distanceFrag == null) {
                     distanceFrag= new DistanceFragment();
                 }
