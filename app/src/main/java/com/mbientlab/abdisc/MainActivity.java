@@ -50,10 +50,10 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         final FragmentManager fragManager= getFragmentManager();
-        final FragmentTransaction fragTransaction= fragManager.beginTransaction();
         findViewById(R.id.tab_activity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FragmentTransaction fragTransaction= fragManager.beginTransaction();
                 if (activityFrag == null) {
                     activityFrag= new ActivityFragment();
                 }
@@ -64,6 +64,7 @@ public class MainActivity extends ActionBarActivity {
         findViewById(R.id.tab_distance).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FragmentTransaction fragTransaction= fragManager.beginTransaction();
                 if (distanceFrag == null) {
                     distanceFrag= new DistanceFragment();
                 }
