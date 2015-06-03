@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">AbDisc</string>
+    <string name="label_filter_config_cancel">Cancel</string>
+    <string name="label_filter_config_program">Program</string>
+    <string name="label_filter_config_entry_setting">Setting</string>
+    <string name="label_filter_config_entry_value">Value</string>
+
+    <string name="description_filter_entry_revert">Reverts configuration setting to default value</string>
+    <string name="description_filter_entry_info">Displays information about the setting</string>
+    <string name="description_filter_entry_edit">Opens a box for editing the value</string>
 </resources>
