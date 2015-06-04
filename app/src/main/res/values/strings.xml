@@ -2,10 +2,13 @@
     <string name="app_name">AbDisc</string>
     <string name="app_name_debug">AbDisc Debug</string>
 
-    <string name="label_filter_config_cancel">Cancel</string>
+    <string name="label_cancel">Cancel</string>
+
+    <string name="title_edit_setting">Edit Setting</string>
     <string name="label_filter_config_program">Program</string>
     <string name="label_filter_config_entry_setting">Setting</string>
     <string name="label_filter_config_entry_value">Value</string>
+    <string name="label_filter_config_commit">Commit</string>
 
     <string name="description_filter_entry_revert">Reverts configuration setting to default value</string>
     <string name="description_filter_entry_info">Displays information about the setting</string>

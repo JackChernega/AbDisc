@@ -32,12 +32,13 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:id="@+id/filter_config_entry_layout">
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageButton"
+        android:id="@+id/filter_config_revert"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:src="@android:drawable/ic_menu_revert"
@@ -46,27 +47,27 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/label_filter_config_entry_setting"
-        android:id="@+id/textView3"
+        android:id="@+id/filter_config_setting"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageButton2"
+        android:id="@+id/filter_config_edit"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/imageButton"
+        android:layout_toStartOf="@+id/filter_config_revert"
         android:src="@android:drawable/ic_menu_edit"
         android:contentDescription="@string/description_filter_entry_edit" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageButton3"
+        android:id="@+id/filter_config_details"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/imageButton2"
+        android:layout_toStartOf="@+id/filter_config_edit"
         android:src="@android:drawable/ic_menu_info_details"
         android:contentDescription="@string/description_filter_entry_info" />
 
@@ -75,7 +76,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/label_filter_config_entry_value"
-        android:id="@+id/textView4"
-        android:layout_below="@+id/textView3"
+        android:id="@+id/filter_config_value"
+        android:layout_below="@+id/filter_config_setting"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

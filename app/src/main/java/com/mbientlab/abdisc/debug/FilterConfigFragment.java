@@ -36,16 +36,43 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.mbientlab.abdisc.R;
+
+import java.util.ArrayList;
 
 /**
  * Created by etsai on 6/3/2015.
  */
 public class FilterConfigFragment extends Fragment {
+    private FilterConfigAdapter configAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        configAdapter= new FilterConfigAdapter(getActivity(), R.id.filter_config_entry_layout);
+        configAdapter.setNotifyOnChange(true);
         return inflater.inflate(R.layout.filter_config, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        ListView configList= (ListView) view.findViewById(R.id.filter_config_list);
+        configList.setAdapter(configAdapter);
+
+        ArrayList<FilterConfig> configSettings= new ArrayList<>();
+        configSettings.add(new FilterConfig("Sensor Data Pin", 0));
+        configSettings.add(new FilterConfig("Sensor Ground Pin", 1));
+        configSettings.add(new FilterConfig("Sedentary Reset Threshold", 2048));
+        configSettings.add(new FilterConfig("Sedentary Min Activity Threshold", 2048));
+        configSettings.add(new FilterConfig("Crunch Session Duration", 120.f));
+        configSettings.add(new FilterConfig("Crunch Threshold Update Delta", 20));
+        configSettings.add(new FilterConfig("L1 Haptic Lower Bound", 0));
+        configSettings.add(new FilterConfig("L1 Haptic Upper Bound", 256));
+        configSettings.add(new FilterConfig("L2 Haptic Lower Bound", 256));
+        configSettings.add(new FilterConfig("L2 Haptic Upper Bound", 640));
+        configSettings.add(new FilterConfig("L3 Haptic Lower Bound", 640));
+        configSettings.add(new FilterConfig("L3 Haptic Upper Bound", 1023));
+        configAdapter.addAll(configSettings);
     }
 }
