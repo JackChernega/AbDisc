@@ -29,58 +29,23 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc;
+package com.mbientlab.abdisc.debug;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.mbientlab.abdisc.debug.DebugMainActivity;
+import com.mbientlab.abdisc.R;
 
 /**
- * Created by etsai on 6/1/2015.
+ * Created by etsai on 6/3/2015.
  */
-public class MainActivity extends Activity {
-    private Fragment activityFrag= null, distanceFrag= null;
+public class FilterConfigFragment extends Fragment {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        final FragmentManager fragManager= getFragmentManager();
-        findViewById(R.id.tab_activity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction fragTransaction= fragManager.beginTransaction();
-                if (activityFrag == null) {
-                    activityFrag= new ActivityFragment();
-                }
-
-                fragTransaction.replace(R.id.app_content, activityFrag).commit();
-            }
-        });
-        findViewById(R.id.tab_distance).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentTransaction fragTransaction= fragManager.beginTransaction();
-                if (distanceFrag == null) {
-                    distanceFrag= new DistanceFragment();
-                }
-
-                fragTransaction.replace(R.id.app_content, distanceFrag).commit();
-            }
-        });
-        findViewById(R.id.start_debug_activity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, DebugMainActivity.class));
-            }
-        });
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.filter_config, container, false);
     }
-
 }
