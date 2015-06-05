@@ -31,24 +31,34 @@
 
 package com.mbientlab.abdisc.debug;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.mbientlab.abdisc.DataConnection;
+import com.mbientlab.abdisc.MainActivity;
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.metawear.api.MetaWearBleService;
+import com.mbientlab.metawear.api.MetaWearController;
 
 /**
  * Created by etsai on 6/3/2015.
  */
-public class DebugMainActivity extends FragmentActivity {
-    FragmentPagerAdapter adapterViewPager;
+public class DebugMainActivity extends FragmentActivity implements ServiceConnection, DataConnection {
+    private FragmentPagerAdapter adapterViewPager;
+    private MetaWearController mwCtrllr;
+    private BluetoothDevice btDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +90,38 @@ public class DebugMainActivity extends FragmentActivity {
                 // Code goes here
             }
         });
+
+        btDevice= getIntent().getParcelableExtra(MainActivity.EXTRA_BT_DEVICE);
+
+        getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
+                this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        final MetaWearBleService mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
+        mwCtrllr= mwService.getMetaWearController(btDevice);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+
+    }
+
+    private FilterState filterState;
+    @Override
+    public MetaWearController getMetaWearController() {
+        return mwCtrllr;
+    }
+
+    @Override
+    public FilterState getFilterState() {
+        return filterState;
+    }
+
+    @Override
+    public void receivedFilterState(FilterState newFilterState) {
+        filterState= newFilterState;
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
@@ -114,12 +156,5 @@ public class DebugMainActivity extends FragmentActivity {
             return "Page " + position;
         }
 
-    }
-
-    public static class DebugFragment extends Fragment {
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_debug_dummy, container, false);
-        }
     }
 }

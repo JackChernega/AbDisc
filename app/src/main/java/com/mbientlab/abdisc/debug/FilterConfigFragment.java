@@ -31,22 +31,41 @@
 
 package com.mbientlab.abdisc.debug;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.mbientlab.abdisc.DataConnection;
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.filter.FilterSetup;
+import com.mbientlab.abdisc.filter.FilterState;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by etsai on 6/3/2015.
  */
 public class FilterConfigFragment extends Fragment {
     private FilterConfigAdapter configAdapter;
+    private DataConnection conn;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (!(activity instanceof DataConnection)) {
+            throw new ClassCastException(String.format(Locale.US, "%s %s", activity.toString(),
+                    activity.getString(R.string.error_data_connection)));
+        }
+
+        conn= (DataConnection) activity;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,5 +93,18 @@ public class FilterConfigFragment extends Fragment {
         configSettings.add(new FilterConfig("L3 Haptic Lower Bound", 640));
         configSettings.add(new FilterConfig("L3 Haptic Upper Bound", 1023));
         configAdapter.addAll(configSettings);
+
+        view.findViewById(R.id.filter_config_program).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FilterSetup.configure(conn.getMetaWearController(), new FilterSetup.SetupListener() {
+                    @Override
+                    public void ready(FilterState state) {
+                        Log.i("AbDisc", state.toString());
+                        conn.receivedFilterState(state);
+                    }
+                }).commit();
+            }
+        });
     }
 }

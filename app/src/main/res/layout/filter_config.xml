@@ -40,23 +40,10 @@
         android:layout_weight="1"
         android:id="@+id/filter_config_list" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:text="@string/label_filter_config_program"
+        android:id="@+id/filter_config_program" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_cancel"
-            android:id="@+id/button"
-            android:layout_weight="1" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_filter_config_program"
-            android:id="@+id/button2"
-            android:layout_weight="1" />
-    </LinearLayout>
 </LinearLayout>
