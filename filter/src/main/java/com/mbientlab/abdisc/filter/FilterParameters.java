@@ -7,7 +7,7 @@ package com.mbientlab.abdisc.filter;
 public interface FilterParameters {
     /**
      * Sets how long the warning period is before starting a crunch session, defaults to 450ms
-     * @param duration Duration of the warning period, in millseconds
+     * @param duration Duration of the warning period, in milliseconds
      * @return Calling object
      */
     public FilterParameters withSessionWarningDuration(short duration);
@@ -109,7 +109,7 @@ public interface FilterParameters {
      * @param level Haptic feedback level to configure
      * @param crunchLower Lower ADC value of haptic range
      * @param crunchUpper Upper ADC value of haptic range
-     * @param motorStrength Vibrartion strength, between [0, 100]
+     * @param motorStrength Vibration strength, between [0, 100]
      * @param duration Vibration duration, in milliseconds
      * @return Calling object
      */
@@ -124,6 +124,9 @@ public interface FilterParameters {
      * @return Calling object
      */
     public FilterParameters withHapticSettings(HapticLevel level, int crunchLower, int crunchUpper);
+
+    public FilterParameters withHapticCrunchLower(HapticLevel level, int crunchLower);
+    public FilterParameters withHapticCrunchUpper(HapticLevel level, int crunchUpper);
 
     /**
      * Write filter chain to the board

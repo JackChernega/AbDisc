@@ -42,6 +42,8 @@ import android.widget.ListView;
 
 import com.mbientlab.abdisc.DataConnection;
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.filter.DefaultParameters;
+import com.mbientlab.abdisc.filter.FilterParameters;
 import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
 
@@ -54,6 +56,7 @@ import java.util.Locale;
 public class FilterConfigFragment extends Fragment {
     private FilterConfigAdapter configAdapter;
     private DataConnection conn;
+    private FilterParameters parameterSetup;
 
     @Override
     public void onAttach(Activity activity) {
@@ -69,6 +72,13 @@ public class FilterConfigFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        parameterSetup= FilterSetup.configure(conn.getMetaWearController(), new FilterSetup.SetupListener() {
+            @Override
+            public void ready(FilterState state) {
+                Log.i("AbDisc", state.toString());
+                conn.receivedFilterState(state);
+            }
+        });
         configAdapter= new FilterConfigAdapter(getActivity(), R.id.filter_config_entry_layout);
         configAdapter.setNotifyOnChange(true);
         return inflater.inflate(R.layout.filter_config, container, false);
@@ -79,31 +89,88 @@ public class FilterConfigFragment extends Fragment {
         ListView configList= (ListView) view.findViewById(R.id.filter_config_list);
         configList.setAdapter(configAdapter);
 
-        ArrayList<FilterConfig> configSettings= new ArrayList<>();
-        configSettings.add(new FilterConfig("Sensor Data Pin", 0));
-        configSettings.add(new FilterConfig("Sensor Ground Pin", 1));
-        configSettings.add(new FilterConfig("Sedentary Reset Threshold", 2048));
-        configSettings.add(new FilterConfig("Sedentary Min Activity Threshold", 2048));
-        configSettings.add(new FilterConfig("Crunch Session Duration", 120.f));
-        configSettings.add(new FilterConfig("Crunch Threshold Update Delta", 20));
-        configSettings.add(new FilterConfig("L1 Haptic Lower Bound", 0));
-        configSettings.add(new FilterConfig("L1 Haptic Upper Bound", 256));
-        configSettings.add(new FilterConfig("L2 Haptic Lower Bound", 256));
-        configSettings.add(new FilterConfig("L2 Haptic Upper Bound", 640));
-        configSettings.add(new FilterConfig("L3 Haptic Lower Bound", 640));
-        configSettings.add(new FilterConfig("L3 Haptic Upper Bound", 1023));
+        final ArrayList<FilterConfig> configSettings= new ArrayList<>();
+        configSettings.add(new FilterConfig("Sensor Data Pin", DefaultParameters.SENSOR_DATA_PIN) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withSensorDataPin(Byte.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("Sensor Ground Pin", DefaultParameters.SENSOR_GROUND_PIN) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withSensorGroundPin(Byte.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("Sedentary Reset Threshold", DefaultParameters.SEDENTARY_RESET_THRESHOLD) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withSedentaryResetThreshold(Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("Sedentary Min Activity Threshold", DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withSedentaryMinActivityThreshold(Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("Crunch Session Duration", DefaultParameters.CRUNCH_SESSION_DURATION) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withCrunchSessionDuration(Float.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("Crunch Threshold Update Delta", DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withCrunchThresholdUpdateMinChangeThreshold(Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("L1 Haptic Lower Bound", DefaultParameters.L1_HAPTIC_LOWER) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticCrunchLower(FilterParameters.HapticLevel.L1, Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("L1 Haptic Upper Bound", DefaultParameters.L1_HAPTIC_UPPER) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L1, Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("L2 Haptic Lower Bound", DefaultParameters.L2_HAPTIC_LOWER) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticCrunchLower(FilterParameters.HapticLevel.L2, Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("L2 Haptic Upper Bound", DefaultParameters.L2_HAPTIC_UPPER) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L2, Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("L3 Haptic Lower Bound", DefaultParameters.L3_HAPTIC_LOWER) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticCrunchLower(FilterParameters.HapticLevel.L3, Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig("L3 Haptic Upper Bound", DefaultParameters.L3_HAPTIC_UPPER) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L3, Integer.valueOf(this.value));
+            }
+        });
         configAdapter.addAll(configSettings);
 
         view.findViewById(R.id.filter_config_program).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FilterSetup.configure(conn.getMetaWearController(), new FilterSetup.SetupListener() {
-                    @Override
-                    public void ready(FilterState state) {
-                        Log.i("AbDisc", state.toString());
-                        conn.receivedFilterState(state);
-                    }
-                }).commit();
+                for(FilterConfig filterCfg: configSettings) {
+                    filterCfg.writeSetting();
+                }
+                parameterSetup.commit();
             }
         });
     }

@@ -50,13 +50,14 @@ public class FilterSetup {
      */
     public static FilterParameters configure(final MetaWearController mwCtrllr, final SetupListener listener) {
         return new FilterParameters() {
-            private byte sensorGPIOPin= 0, sensorPulldownPin= 1, sedentaryTime= 16;
-            private int sensorSamplingPeriod= 500, sedentaryStepPeriod= 60000, sedentaryDeltaAvgReset= 2048, sedentaryThreshold= 2048, sensorThreshold= 20;
-            private float crunchSessionDuration= 120.f, sessionWarningStrength = 100.f;
+            private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= 16;
+            private int sensorSamplingPeriod= 500, sedentaryStepPeriod= 60000, sedentaryDeltaAvgReset= DefaultParameters.SEDENTARY_RESET_THRESHOLD,
+                    sedentaryThreshold= DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD, sensorThreshold= DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE;
+            private float crunchSessionDuration= DefaultParameters.CRUNCH_SESSION_DURATION, sessionWarningStrength = 100.f;
 
-            private int l1HapticLower= 0, l1HapticUpper= 256,
-                    l2HapticLower= 256, l2HapticUpper= 640,
-                    l3HapticLower= 640, l3HapticUpper= 1024;
+            private int l1HapticLower= DefaultParameters.L1_HAPTIC_LOWER, l1HapticUpper= DefaultParameters.L1_HAPTIC_UPPER,
+                    l2HapticLower= DefaultParameters.L2_HAPTIC_LOWER, l2HapticUpper= DefaultParameters.L2_HAPTIC_UPPER,
+                    l3HapticLower= DefaultParameters.L3_HAPTIC_LOWER, l3HapticUpper= DefaultParameters.L3_HAPTIC_UPPER;
 
             private short l1HapticPeriod= 500, l2HapticPeriod= 700, l3HapticPeriod= 900, sessionWarningDuration= 450;
             private float l1HapticStrength= 40.f, l2HapticStrength= 70.f, l3HapticStrength= 90.f;
@@ -169,6 +170,38 @@ public class FilterSetup {
                         break;
                     case L3:
                         l3HapticLower= crunchLower;
+                        l3HapticUpper= crunchUpper;
+                        break;
+                }
+                return this;
+            }
+
+            @Override
+            public FilterParameters withHapticCrunchLower(HapticLevel level, int crunchLower) {
+                switch (level) {
+                    case L1:
+                        l1HapticLower= crunchLower;
+                        break;
+                    case L2:
+                        l2HapticLower= crunchLower;
+                        break;
+                    case L3:
+                        l3HapticLower= crunchLower;
+                        break;
+                }
+                return this;
+            }
+
+            @Override
+            public FilterParameters withHapticCrunchUpper(HapticLevel level, int crunchUpper) {
+                switch (level) {
+                    case L1:
+                        l1HapticUpper= crunchUpper;
+                        break;
+                    case L2:
+                        l2HapticUpper= crunchUpper;
+                        break;
+                    case L3:
                         l3HapticUpper= crunchUpper;
                         break;
                 }

@@ -43,6 +43,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.filter.FilterParameters;
 
 /**
  * Created by etsai on 6/3/2015.
@@ -54,14 +55,13 @@ public class FilterConfigAdapter extends ArrayAdapter<FilterConfig> {
 
     @Override
     public View getView(int position, View convertView, final ViewGroup parent) {
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.filter_config_entry, parent, false);
+            convertView= LayoutInflater.from(getContext()).inflate(R.layout.filter_config_entry, parent, false);
 
             viewHolder= new ViewHolder();
             viewHolder.configName= (TextView) convertView.findViewById(R.id.filter_config_setting);
             viewHolder.configValue= (TextView) convertView.findViewById(R.id.filter_config_value);
-            viewHolder.configInfo= (ImageButton) convertView.findViewById(R.id.filter_config_details);
             viewHolder.configEdit= (ImageButton) convertView.findViewById(R.id.filter_config_edit);
             viewHolder.configRevert= (ImageButton) convertView.findViewById(R.id.filter_config_revert);
 
@@ -70,34 +70,27 @@ public class FilterConfigAdapter extends ArrayAdapter<FilterConfig> {
             viewHolder= (ViewHolder) convertView.getTag();
         }
 
+        final TextView configEditValue= viewHolder.configValue;
         final FilterConfig current= getItem(position);
-        viewHolder.configName.setText(current.name);
-        viewHolder.configValue.setText(current.value.toString());
-        viewHolder.configInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
+        viewHolder.configName.setText(current.name);
+        viewHolder.configValue.setText(current.value);
         viewHolder.configEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                View dialogLayout= LayoutInflater.from(getContext()).inflate(R.layout.dialog_filter_config_edit, parent, false);
+                final EditText configValue= (EditText) dialogLayout.findViewById(R.id.filter_config_edit_value);
+                configValue.setText(current.value);
+
                 AlertDialog.Builder builder= new AlertDialog.Builder(getContext()).setTitle(R.string.title_edit_setting)
                         .setPositiveButton(R.string.label_filter_config_commit, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
+                                current.value= configValue.getText().toString();
+                                configEditValue.setText(current.value);
                             }
                         })
-                        .setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        });
-
-                View dialogLayout= LayoutInflater.from(getContext()).inflate(R.layout.dialog_filter_config_edit, parent, false);
-                ((EditText) dialogLayout.findViewById(R.id.filter_config_edit_value)).setText(current.value.toString());
+                        .setNegativeButton(R.string.label_cancel, null);
 
                 builder.setView(dialogLayout);
                 builder.show();
@@ -106,16 +99,16 @@ public class FilterConfigAdapter extends ArrayAdapter<FilterConfig> {
         viewHolder.configRevert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                current.value= current.defaultValue.toString();
+                configEditValue.setText(current.value);
             }
         });
-
 
         return convertView;
     }
 
     private class ViewHolder {
         public TextView configName, configValue;
-        public ImageButton configInfo, configEdit, configRevert;
+        public ImageButton configEdit, configRevert;
     }
 }

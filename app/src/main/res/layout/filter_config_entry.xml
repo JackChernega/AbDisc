@@ -62,15 +62,6 @@
         android:src="@android:drawable/ic_menu_edit"
         android:contentDescription="@string/description_filter_entry_edit" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/filter_config_details"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/filter_config_edit"
-        android:src="@android:drawable/ic_menu_info_details"
-        android:contentDescription="@string/description_filter_entry_info" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

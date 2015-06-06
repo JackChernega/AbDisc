@@ -29,21 +29,14 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc.debug;
+package com.mbientlab.abdisc.filter;
 
 /**
- * Created by etsai on 6/3/2015.
+ * Created by etsai on 6/5/2015.
  */
-public abstract class FilterConfig {
-    public final String name;
-    public String value;
-    public final Number defaultValue;
-
-    public FilterConfig(String name, Number defaultValue) {
-        this.name= name;
-        this.value= defaultValue.toString();
-        this.defaultValue= defaultValue;
-    }
-
-    public abstract void writeSetting();
+public class DefaultParameters {
+    public static final byte SENSOR_DATA_PIN= 0, SENSOR_GROUND_PIN= 1;
+    public static final float CRUNCH_SESSION_DURATION= 120.f;
+    public static final int SEDENTARY_RESET_THRESHOLD= 2048, SEDENTARY_MIN_ACTIVITY_THRESHOLD= 2048, CRUNCH_SESSION_THRESHOLD_UPDATE= 20,
+            L1_HAPTIC_LOWER= 16, L1_HAPTIC_UPPER= 384, L2_HAPTIC_LOWER= 384, L2_HAPTIC_UPPER= 768, L3_HAPTIC_LOWER= 768, L3_HAPTIC_UPPER= 1023;
 }
