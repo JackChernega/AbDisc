@@ -29,7 +29,7 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc.debug;
+package com.mbientlab.abdisc.filter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -41,8 +41,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.mbientlab.abdisc.DataConnection;
-import com.mbientlab.abdisc.R;
 import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;

@@ -29,7 +29,7 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc.debug;
+package com.mbientlab.abdisc.filter;
 
 /**
  * Created by etsai on 6/3/2015.

@@ -29,7 +29,7 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc.debug;
+package com.mbientlab.abdisc.filter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -41,9 +41,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import com.mbientlab.abdisc.R;
-import com.mbientlab.abdisc.filter.FilterParameters;
 
 /**
  * Created by etsai on 6/3/2015.

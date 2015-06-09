@@ -51,7 +51,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mbientlab.abdisc.debug.DebugMainActivity;
+import com.mbientlab.abdisc.filter.DebugMainActivity;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
 
@@ -59,9 +59,6 @@ import com.mbientlab.metawear.api.MetaWearController;
  * Created by etsai on 6/1/2015.
  */
 public class MainActivity extends Activity implements ServiceConnection {
-    public final static String EXTRA_BT_DEVICE=
-            "com.mbientlab.abdisc.MainActivity.EXTRA_BT_DEVICE";
-
     private final String MW_MAC_ADDRESS= "C8:D2:BA:90:60:03";
     private final static int REQUEST_ENABLE_BT= 0;
 
@@ -127,7 +124,7 @@ public class MainActivity extends Activity implements ServiceConnection {
             @Override
             public void onClick(View view) {
                 final Intent debugIntent= new Intent(MainActivity.this, DebugMainActivity.class);
-                debugIntent.putExtra(EXTRA_BT_DEVICE, btDevice);
+                debugIntent.putExtra(DebugMainActivity.EXTRA_BT_DEVICE, btDevice);
                 startActivity(debugIntent);
             }
         });

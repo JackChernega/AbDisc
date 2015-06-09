@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".debug.DebugMainActivity"
+        <activity android:name=".filter.DebugMainActivity"
             android:label="@string/app_name_debug"/>
     </application>
 

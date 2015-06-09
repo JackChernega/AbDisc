@@ -29,7 +29,7 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc;
+package com.mbientlab.abdisc.filter;
 
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearController;

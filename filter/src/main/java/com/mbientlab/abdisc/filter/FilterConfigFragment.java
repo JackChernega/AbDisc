@@ -29,7 +29,7 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc.debug;
+package com.mbientlab.abdisc.filter;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -41,13 +41,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.mbientlab.abdisc.DataConnection;
-import com.mbientlab.abdisc.R;
-import com.mbientlab.abdisc.filter.DefaultParameters;
-import com.mbientlab.abdisc.filter.FilterParameters;
-import com.mbientlab.abdisc.filter.FilterSetup;
-import com.mbientlab.abdisc.filter.FilterState;
 
 import java.util.ArrayList;
 import java.util.Locale;

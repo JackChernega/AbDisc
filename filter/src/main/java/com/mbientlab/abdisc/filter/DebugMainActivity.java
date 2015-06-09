@@ -29,7 +29,7 @@
  * contact MbientLab Inc, at www.mbientlab.com.
  */
 
-package com.mbientlab.abdisc.debug;
+package com.mbientlab.abdisc.filter;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
@@ -45,10 +45,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
-import com.mbientlab.abdisc.DataConnection;
-import com.mbientlab.abdisc.MainActivity;
-import com.mbientlab.abdisc.R;
-import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
 
@@ -56,6 +52,9 @@ import com.mbientlab.metawear.api.MetaWearController;
  * Created by etsai on 6/3/2015.
  */
 public class DebugMainActivity extends FragmentActivity implements ServiceConnection, DataConnection {
+    public final static String EXTRA_BT_DEVICE=
+            "com.mbientlab.abdisc.filter.DebugMainActivity.EXTRA_BT_DEVICE";
+
     private FragmentPagerAdapter adapterViewPager;
     private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
@@ -91,7 +90,7 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
             }
         });
 
-        btDevice= getIntent().getParcelableExtra(MainActivity.EXTRA_BT_DEVICE);
+        btDevice= getIntent().getParcelableExtra(EXTRA_BT_DEVICE);
 
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
