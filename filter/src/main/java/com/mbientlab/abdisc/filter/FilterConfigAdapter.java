@@ -79,6 +79,8 @@ public class FilterConfigAdapter extends ArrayAdapter<FilterConfig> {
                 final EditText configValue= (EditText) dialogLayout.findViewById(R.id.filter_config_edit_value);
                 configValue.setText(current.value);
 
+                ((TextView) dialogLayout.findViewById(R.id.filter_config_edit_description)).setText(current.description);
+
                 AlertDialog.Builder builder= new AlertDialog.Builder(getContext()).setTitle(R.string.title_edit_setting)
                         .setPositiveButton(R.string.label_filter_config_commit, new DialogInterface.OnClickListener() {
                             @Override

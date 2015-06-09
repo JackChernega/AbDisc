@@ -54,4 +54,31 @@
     <string name="description_filter_entry_revert">Reverts configuration setting to default value</string>
     <string name="description_filter_entry_info">Displays information about the setting</string>
     <string name="description_filter_entry_edit">Opens a box for editing the value</string>
+
+    <string name="label_filter_config_setting_01">Sensor Data Pin</string>
+    <string name="label_filter_config_setting_02">Sensor Ground Pin</string>
+    <string name="label_filter_config_setting_03">Sedentary Reset Threshold</string>
+    <string name="label_filter_config_setting_04">Sedentary Min Activity Threshold</string>
+    <string name="label_filter_config_setting_05">Crunch Session Duration</string>
+    <string name="label_filter_config_setting_06">Crunch Threshold Update Delta</string>
+    <string name="label_filter_config_setting_07">L1 Haptic Lower Bound</string>
+    <string name="label_filter_config_setting_08">L1 Haptic Upper Bound</string>
+    <string name="label_filter_config_setting_09">L2 Haptic Lower Bound</string>
+    <string name="label_filter_config_setting_10">L2 Haptic Upper Bound</string>
+    <string name="label_filter_config_setting_11">L3 Haptic Lower Bound</string>
+    <string name="label_filter_config_setting_12">L3 Haptic Upper Bound</string>
+
+    <string name="label_filter_config_description_01">GPIO pin that reads the ADC data</string>
+    <string name="label_filter_config_description_02">GPIO pin used to ground the circuit</string>
+    <string name="label_filter_config_description_03">Minimum activity required to restart the sedentary timer</string>
+    <string name="label_filter_config_description_04">Minimum activity level that indicates the device is worn</string>
+    <string name="label_filter_config_description_05">How long a crunch session will last, in seconds</string>
+    <string name="label_filter_config_description_06">Minimum change in baseline sensor value to update the crunch threshold</string>
+    <string name="label_filter_config_description_07">Lower ADC value of haptic range for Level 1 feedback</string>
+    <string name="label_filter_config_description_08">Upper ADC value of haptic range for Level 1 feedback</string>
+    <string name="label_filter_config_description_09">Lower ADC value of haptic range for Level 2 feedback</string>
+    <string name="label_filter_config_description_10">Upper ADC value of haptic range for Level 2 feedback</string>
+    <string name="label_filter_config_description_11">Lower ADC value of haptic range for Level 3 feedback</string>
+    <string name="label_filter_config_description_12">Upper ADC value of haptic range for Level 3 feedback</string>
+
 </resources>

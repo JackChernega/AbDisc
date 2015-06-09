@@ -35,12 +35,13 @@ package com.mbientlab.abdisc.filter;
  * Created by etsai on 6/3/2015.
  */
 public abstract class FilterConfig {
-    public final String name;
+    public final String name, description;
     public String value;
     public final Number defaultValue;
 
-    public FilterConfig(String name, Number defaultValue) {
+    public FilterConfig(String name, String description, Number defaultValue) {
         this.name= name;
+        this.description= description;
         this.value= defaultValue.toString();
         this.defaultValue= defaultValue;
     }
