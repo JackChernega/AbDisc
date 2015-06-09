@@ -32,6 +32,7 @@
 package com.mbientlab.abdisc.debug;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -39,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.mbientlab.abdisc.DataConnection;
 import com.mbientlab.abdisc.R;
@@ -58,6 +60,8 @@ public class FilterConfigFragment extends Fragment {
     private DataConnection conn;
     private FilterParameters parameterSetup;
 
+    private ProgressDialog setupProgress;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -75,6 +79,10 @@ public class FilterConfigFragment extends Fragment {
         parameterSetup= FilterSetup.configure(conn.getMetaWearController(), new FilterSetup.SetupListener() {
             @Override
             public void ready(FilterState state) {
+                setupProgress.dismiss();
+                setupProgress= null;
+
+                Toast.makeText(getActivity(), R.string.text_filter_setup_complete, Toast.LENGTH_SHORT).show();
                 Log.i("AbDisc", state.toString());
                 conn.receivedFilterState(state);
             }
@@ -167,6 +175,11 @@ public class FilterConfigFragment extends Fragment {
         view.findViewById(R.id.filter_config_program).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setupProgress= new ProgressDialog(getActivity());
+                setupProgress.setIndeterminate(true);
+                setupProgress.setMessage("Setting up filters...");
+                setupProgress.show();
+
                 for(FilterConfig filterCfg: configSettings) {
                     filterCfg.writeSetting();
                 }

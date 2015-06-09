@@ -2,6 +2,8 @@
     <string name="app_name">AbDisc</string>
     <string name="app_name_debug">AbDisc Debug</string>
 
+    <string name="text_filter_setup_complete">Filter setup complete</string>
+
     <string name="label_ok">OK</string>
     <string name="label_cancel">Cancel</string>
     <string name="label_reset">Reset</string>
