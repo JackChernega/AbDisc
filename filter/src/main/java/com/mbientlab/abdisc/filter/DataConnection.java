@@ -31,7 +31,6 @@
 
 package com.mbientlab.abdisc.filter;
 
-import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearController;
 
 /**

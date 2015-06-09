@@ -43,13 +43,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.widget.Toast;
 
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
 
 /**
  * Created by etsai on 6/3/2015.
+ * FragmentPagerAdapter code taken from
+ * https://github.com/codepath/android_guides/wiki/ViewPager-with-FragmentPagerAdapter
  */
 public class DebugMainActivity extends FragmentActivity implements ServiceConnection, DataConnection {
     public final static String EXTRA_BT_DEVICE=
@@ -72,8 +73,6 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
             // This method will be invoked when a new page becomes selected.
             @Override
             public void onPageSelected(int position) {
-                Toast.makeText(DebugMainActivity.this,
-                        "Selected page position: " + position, Toast.LENGTH_SHORT).show();
             }
 
             // This method will be invoked when the current page is scrolled
@@ -152,7 +151,14 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
         // Returns the page title for the top indicator
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Page " + position;
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+                    return FilterConfigFragment.getTitle();
+                case 1: // Fragment # 0 - This will show FirstFragment different title
+                    return DebugFragment.getTitle();
+                default:
+                    return "Page " + position;
+            }
         }
 
     }

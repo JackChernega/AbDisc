@@ -81,6 +81,10 @@ public class DebugFragment extends Fragment {
 
     private TextView sedentaryValue, adcValue, adcOffsetValue, adcReadValue;
 
+    public static String getTitle() {
+        return "Diagnostics";
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);

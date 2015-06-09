@@ -55,6 +55,10 @@ public class FilterConfigFragment extends Fragment {
 
     private ProgressDialog setupProgress;
 
+    public static String getTitle() {
+        return "Configuration";
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
