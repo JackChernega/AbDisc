@@ -577,6 +577,7 @@ public class FilterSetup {
 
                         mwCtrllr.removeModuleCallback(this);
                         listener.ready(new FilterState() {
+                            @Override public byte getSessionStartId() { return sessionStartId; }
                             @Override public byte getSensorTimerId() { return sensorTimerId; }
                             @Override public byte getSedentaryLogId() { return activityDiffLoggingId; }
                             @Override public byte getSensorLogId() { return sensorDataLoggingId; }
@@ -588,9 +589,15 @@ public class FilterSetup {
 
                             @Override
                             public String toString() {
-                                return String.format(Locale.US,
-                                        "{sensorTimerId: %d, activityLoggingId: %d, sensorLoggingId: %d, thresholdLoggingId: %d, activityDifferentialId: %d, sensorPassthroughId: %d, offsetUpdateId: %d}",
-                                        sensorTimerId, activityDiffLoggingId, sensorDataLoggingId, sensorThresholdLoggingId, differentialId, sensorPassthroughId, feedbackId);
+                                return String.format(Locale.US, "{%s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d}",
+                                        "sessionStartId", sessionStartId,
+                                        "sensorTimerId", sensorTimerId,
+                                        "activityLoggingId", activityDiffLoggingId,
+                                        "sensorLoggingId", sensorDataLoggingId,
+                                        "thresholdLoggingId", sensorThresholdLoggingId,
+                                        "activityDifferentialId", differentialId,
+                                        "sensorPassthroughId", sensorPassthroughId,
+                                        "offsetUpdateId", feedbackId);
                             }
                         });
                     }

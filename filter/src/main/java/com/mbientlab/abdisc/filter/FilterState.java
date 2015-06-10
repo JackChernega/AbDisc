@@ -12,6 +12,7 @@ public interface FilterState {
      */
     public byte getSensorTimerId();
 
+    public byte getSessionStartId();
     /**
      * Get the filter ID of the sedentary value
      * @return ID to be used with the DataProcessor class

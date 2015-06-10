@@ -57,6 +57,7 @@ import java.util.Locale;
  */
 public class DebugFragment extends Fragment {
     private DataConnection conn;
+    private static final int ACTIVITY_PER_STEP= 20000;
 
     private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
         @Override
@@ -64,11 +65,19 @@ public class DebugFragment extends Fragment {
             ByteBuffer buffer= ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
 
             if (filterId == conn.getFilterState().getSedentaryId()) {
-                sedentaryValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
+                short milliG= buffer.getShort();
+
+                sedentaryValue.setText(String.format(Locale.US, "%d", milliG));
+                steps+= (milliG / ACTIVITY_PER_STEP);
+                stepCountValue.setText(String.format(Locale.US, "%d", steps));
+
             } else if (filterId == conn.getFilterState().getSensorId()) {
                 adcValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
             } else if (filterId == conn.getFilterState().getOffsetUpdateId()) {
                 adcOffsetValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
+            } else if (filterId == conn.getFilterState().getSessionStartId()) {
+                crunchSessionCount++;
+                crunchSessionValue.setText(String.format(Locale.US, "%d", crunchSessionCount));
             }
         }
     };
@@ -79,7 +88,9 @@ public class DebugFragment extends Fragment {
         }
     };
 
-    private TextView sedentaryValue, adcValue, adcOffsetValue, adcReadValue;
+    private short crunchSessionCount= 0;
+    private int steps= 0;
+    private TextView sedentaryValue, adcValue, adcOffsetValue, adcReadValue, crunchSessionValue, stepCountValue;
 
     public static String getTitle() {
         return "Diagnostics";
@@ -109,24 +120,13 @@ public class DebugFragment extends Fragment {
         adcValue= (TextView) view.findViewById(R.id.debug_adc_value);
         adcOffsetValue= (TextView) view.findViewById(R.id.debug_adc_offset_value);
         adcReadValue= (TextView) view.findViewById(R.id.debug_adc_read_value);
+        crunchSessionValue= (TextView) view.findViewById(R.id.debug_crunch_session_count);
+        stepCountValue= (TextView) view.findViewById(R.id.debug_step_count_value);
 
-        ((CheckBox) view.findViewById(R.id.debug_stream_sedentary)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                DataProcessor dpCtrllr = (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
-
-                if (isChecked) {
-                    dpCtrllr.enableFilterNotify(conn.getFilterState().getSedentaryId());
-                } else {
-                    dpCtrllr.disableFilterNotify(conn.getFilterState().getSedentaryId());
-                }
-            }
-        });
+        final DataProcessor dpCtrllr= (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
         ((CheckBox) view.findViewById(R.id.debug_stream_adc)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                DataProcessor dpCtrllr= (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
-
                 if (isChecked) {
                     dpCtrllr.enableFilterNotify(conn.getFilterState().getSensorId());
                 } else {
@@ -137,8 +137,6 @@ public class DebugFragment extends Fragment {
         ((CheckBox) view.findViewById(R.id.debug_stream_adc_offset)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                DataProcessor dpCtrllr= (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
-
                 if (isChecked) {
                     dpCtrllr.enableFilterNotify(conn.getFilterState().getOffsetUpdateId());
                 } else {

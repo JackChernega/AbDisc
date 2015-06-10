@@ -43,10 +43,12 @@
     <string name="label_filter_config_entry_setting">Setting</string>
     <string name="label_filter_config_entry_value">Value</string>
     <string name="label_filter_config_commit">Commit</string>
-    <string name="label_debug_stream_sedentary">Stream Sedentary</string>
+    <string name="label_debug_sedentary">Sedentary</string>
     <string name="label_debug_stream_adc_value">Stream ADC Value</string>
     <string name="label_debug_stream_adc">Stream ADC</string>
     <string name="label_debug_adc_offset">Stream ADC Offset</string>
+    <string name="label_debug_crunch_sessions">Crunch Sessions</string>
+    <string name="label_debug_step_count">Step Count</string>
     <string name="label_debug_start">Start</string>
     <string name="label_debug_stop">Stop</string>
     <string name="label_reset">Reset</string>

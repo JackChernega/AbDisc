@@ -42,6 +42,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.mbientlab.metawear.api.Module;
+import com.mbientlab.metawear.api.controller.DataProcessor;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -82,6 +85,9 @@ public class FilterConfigFragment extends Fragment {
                 Toast.makeText(getActivity(), R.string.text_filter_setup_complete, Toast.LENGTH_SHORT).show();
                 Log.i("AbDisc", state.toString());
                 conn.receivedFilterState(state);
+                DataProcessor dpCtrllr= (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
+                dpCtrllr.enableFilterNotify(state.getSedentaryId());
+                dpCtrllr.enableFilterNotify(state.getSessionStartId());
             }
         });
         configAdapter= new FilterConfigAdapter(getActivity(), R.id.filter_config_entry_layout);
