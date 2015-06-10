@@ -39,14 +39,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.mbientlab.metawear.api.controller.DataProcessor;
-
 import java.util.Locale;
 
 /**
  * Created by etsai on 6/1/2015.
  */
-public class ActivityFragment extends Fragment {
+public class StepCountFragment extends Fragment {
     private AppState appState;
 
     @Override
@@ -61,23 +59,23 @@ public class ActivityFragment extends Fragment {
         appState= (AppState) activity;
     }
 
-    private TextView crunchSessionView;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_activity, container, false);
+        return inflater.inflate(R.layout.fragment_step_count, container, false);
     }
+
+    private TextView stepCountValue;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        crunchSessionView= (TextView) view.findViewById(R.id.app_step_count_value);
-        crunchSessionView.setText(String.format(Locale.US, "%d", appState.getCrunchSessionCount()));
+        stepCountValue = (TextView) view.findViewById(R.id.app_step_count_value);
+        stepCountValue.setText(String.format(Locale.US, "%d", appState.getStepCount()));
     }
 
-    public void crunchSessionCountUpdated(int newCrunchSessionCount) {
+    public void stepCountUpdated(int newStepCount) {
         if (isVisible()) {
-            crunchSessionView.setText(String.format(Locale.US, "%d", newCrunchSessionCount));
+            stepCountValue.setText(String.format(Locale.US, "%d", newStepCount));
         }
     }
 }

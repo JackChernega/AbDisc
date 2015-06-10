@@ -44,7 +44,7 @@ import java.util.Locale;
 /**
  * Created by etsai on 6/1/2015.
  */
-public class DistanceFragment extends Fragment {
+public class CrunchSessionFragment extends Fragment {
     private AppState appState;
 
     @Override
@@ -59,23 +59,23 @@ public class DistanceFragment extends Fragment {
         appState= (AppState) activity;
     }
 
+    private TextView crunchSessionView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_distance, container, false);
+        return inflater.inflate(R.layout.fragment_crunch_session, container, false);
     }
-
-    private TextView stepCountValue;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        stepCountValue = (TextView) view.findViewById(R.id.app_step_count_value);
-        stepCountValue.setText(String.format(Locale.US, "%d", appState.getStepCount()));
+        crunchSessionView= (TextView) view.findViewById(R.id.app_step_count_value);
+        crunchSessionView.setText(String.format(Locale.US, "%d", appState.getCrunchSessionCount()));
     }
 
-    public void stepCountUpdated(int newStepCount) {
+    public void crunchSessionCountUpdated(int newCrunchSessionCount) {
         if (isVisible()) {
-            stepCountValue.setText(String.format(Locale.US, "%d", newStepCount));
+            crunchSessionView.setText(String.format(Locale.US, "%d", newCrunchSessionCount));
         }
     }
 }

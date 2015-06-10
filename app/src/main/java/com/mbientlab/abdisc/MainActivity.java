@@ -64,7 +64,6 @@ import com.mbientlab.metawear.api.controller.Timer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Locale;
 
 /**
  * Created by etsai on 6/1/2015.
@@ -93,10 +92,10 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
                 short milliG= buffer.getShort();
 
                 steps+= (milliG / ACTIVITY_PER_STEP);
-                ((DistanceFragment) distanceFrag).stepCountUpdated(steps);
+                ((StepCountFragment) distanceFrag).stepCountUpdated(steps);
             } else if (filterId == filterState.getSessionStartId()) {
                 crunchSessionCount++;
-                ((ActivityFragment) activityFrag).crunchSessionCountUpdated(crunchSessionCount);
+                ((CrunchSessionFragment) activityFrag).crunchSessionCountUpdated(crunchSessionCount);
             }
         }
     };
@@ -137,7 +136,7 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
             public void onClick(View view) {
                 FragmentTransaction fragTransaction= fragManager.beginTransaction();
                 if (activityFrag == null) {
-                    activityFrag= new ActivityFragment();
+                    activityFrag= new CrunchSessionFragment();
                 }
 
                 fragTransaction.replace(R.id.app_content, activityFrag).commit();
@@ -148,7 +147,7 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
             public void onClick(View view) {
                 FragmentTransaction fragTransaction= fragManager.beginTransaction();
                 if (distanceFrag == null) {
-                    distanceFrag= new DistanceFragment();
+                    distanceFrag= new StepCountFragment();
                 }
 
                 fragTransaction.replace(R.id.app_content, distanceFrag).commit();
