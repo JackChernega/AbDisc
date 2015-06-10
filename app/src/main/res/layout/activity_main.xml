@@ -46,6 +46,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/start_debug_activity"
             android:src="@android:drawable/ic_menu_manage" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/connect_metawear"
+            android:src="@android:drawable/stat_sys_data_bluetooth" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/upload_filter_config"
+            android:src="@android:drawable/ic_menu_upload" />
     </LinearLayout>
 
     <FrameLayout

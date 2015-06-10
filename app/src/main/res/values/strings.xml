@@ -2,6 +2,10 @@
     <string name="app_name">AbDisc</string>
     <string name="app_name_debug">AbDisc Debug</string>
 
+    <string name="label_step_count">Step Count</string>
+    <string name="label_crunch_session">Crunch Sessions</string>
+
     <string name="error_title">Error</string>
     <string name="error_no_bluetooth">Bluetooth device not detected</string>
+    <string name="error_app_state">must implement AppState interface</string>
 </resources>

@@ -31,20 +31,64 @@
 
 package com.mbientlab.abdisc;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.mbientlab.metawear.api.controller.DataProcessor;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Locale;
 
 /**
  * Created by etsai on 6/1/2015.
  */
 public class DistanceFragment extends Fragment {
+    private static final int ACTIVITY_PER_STEP= 20000;
+    private AppState appState;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (!(activity instanceof  AppState)) {
+            throw new ClassCastException(String.format(Locale.US, "%s %s", activity.toString(),
+                    activity.getString(R.string.error_app_state)));
+        }
+
+        appState= (AppState) activity;
+        appState.getMetaWearController().addModuleCallback(dpModuleCallbacks);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_distance, container, false);
+    }
+
+    private int steps= 0;
+    private TextView stepCountValue;
+    private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
+        @Override
+        public void receivedFilterOutput(byte filterId, byte[] output) {
+            ByteBuffer buffer= ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
+
+            if (filterId == appState.getFilterState().getSedentaryId()) {
+                short milliG= buffer.getShort();
+
+                steps+= (milliG / ACTIVITY_PER_STEP);
+                stepCountValue.setText(String.format(Locale.US, "%d", steps));
+            }
+        }
+    };
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        stepCountValue= (TextView) view.findViewById(R.id.app_step_count_value);
     }
 }

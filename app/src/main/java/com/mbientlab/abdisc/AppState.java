@@ -31,57 +31,13 @@
 
 package com.mbientlab.abdisc;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.mbientlab.metawear.api.controller.DataProcessor;
-
-import java.util.Locale;
+import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.metawear.api.MetaWearController;
 
 /**
- * Created by etsai on 6/1/2015.
+ * Created by etsai on 6/10/2015.
  */
-public class ActivityFragment extends Fragment {
-    private AppState appState;
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        if (!(activity instanceof  AppState)) {
-            throw new ClassCastException(String.format(Locale.US, "%s %s", activity.toString(),
-                    activity.getString(R.string.error_app_state)));
-        }
-
-        appState= (AppState) activity;
-        appState.getMetaWearController().addModuleCallback(dpModuleCallbacks);
-    }
-
-    private TextView crunchSessionView;
-    private short crunchSessionCount;
-    private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
-        @Override
-        public void receivedFilterOutput(byte filterId, byte[] output) {
-            if (filterId == appState.getFilterState().getSessionStartId()) {
-                crunchSessionCount++;
-                crunchSessionView.setText(String.format(Locale.US, "%d", crunchSessionCount));
-            }
-        }
-    };
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_activity, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        crunchSessionView = (TextView) view.findViewById(R.id.app_step_count_value);
-    }
+public interface AppState {
+    public MetaWearController getMetaWearController();
+    public FilterState getFilterState();
 }

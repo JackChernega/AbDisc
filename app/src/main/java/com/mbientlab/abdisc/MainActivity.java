@@ -36,6 +36,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -52,18 +53,27 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mbientlab.abdisc.filter.DebugMainActivity;
+import com.mbientlab.abdisc.filter.FilterSetup;
+import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
+import com.mbientlab.metawear.api.Module;
+import com.mbientlab.metawear.api.controller.Accelerometer;
+import com.mbientlab.metawear.api.controller.DataProcessor;
+import com.mbientlab.metawear.api.controller.Timer;
 
 /**
  * Created by etsai on 6/1/2015.
  */
-public class MainActivity extends Activity implements ServiceConnection {
+public class MainActivity extends Activity implements ServiceConnection, AppState {
     private final String MW_MAC_ADDRESS= "C8:D2:BA:90:60:03";
     private final static int REQUEST_ENABLE_BT= 0;
 
     private Fragment activityFrag= null, distanceFrag= null;
 
+    private FilterState filterState;
+    private ProgressDialog setupProgress;
+    private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
     private LocalBroadcastManager broadcastManager= null;
 
@@ -128,6 +138,54 @@ public class MainActivity extends Activity implements ServiceConnection {
                 startActivity(debugIntent);
             }
         });
+        findViewById(R.id.connect_metawear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mwCtrllr.connect();
+            }
+        });
+        findViewById(R.id.upload_filter_config).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mwCtrllr.isConnected()) {
+                    setupProgress= new ProgressDialog(MainActivity.this);
+                    setupProgress.setIndeterminate(true);
+                    setupProgress.setMessage("Setting up filters...");
+                    setupProgress.show();
+
+                    FilterSetup.configure(mwCtrllr, new FilterSetup.SetupListener() {
+                        @Override
+                        public void ready(FilterState state) {
+                            filterState= state;
+
+                            DataProcessor dpCtrllr= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
+                            dpCtrllr.enableFilterNotify(state.getSedentaryId());
+                            dpCtrllr.enableFilterNotify(state.getSessionStartId());
+
+                            setupProgress.dismiss();
+                            setupProgress= null;
+
+                            Toast.makeText(MainActivity.this, R.string.text_filter_setup_complete, Toast.LENGTH_SHORT).show();
+                            Log.i("AbDisc", state.toString());
+
+                            Timer timerCtrllr= (Timer) mwCtrllr.getModuleController(Module.TIMER);
+                            timerCtrllr.startTimer(filterState.getSensorTimerId());
+
+                            Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
+                            accelCtrllr.enableXYZSampling()
+                                    .withFullScaleRange(Accelerometer.SamplingConfig.FullScaleRange.FSR_8G)
+                                    .withOutputDataRate(Accelerometer.SamplingConfig.OutputDataRate.ODR_100_HZ)
+                                    .withHighPassFilter((byte) 2)
+                                    .withSilentMode();
+                            ///< May want to configure the other options for tap detection
+                            accelCtrllr.enableTapDetection(Accelerometer.TapType.DOUBLE_TAP, Accelerometer.Axis.Z)
+                                    .withSilentMode();
+                            accelCtrllr.startComponents();
+                        }
+                    }).commit();
+                }
+            }
+        });
     }
 
     @Override
@@ -179,13 +237,23 @@ public class MainActivity extends Activity implements ServiceConnection {
                 MetaWearBleService.getMetaWearIntentFilter());
         mwService.useLocalBroadcastManager(broadcastManager);
 
-        final MetaWearController mwCtrllr= mwService.getMetaWearController(btDevice);
+        mwCtrllr= mwService.getMetaWearController(btDevice);
         mwCtrllr.addDeviceCallback(dCallbacks);
-        mwCtrllr.connect();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
 
     }
+
+    @Override
+    public MetaWearController getMetaWearController() {
+        return mwCtrllr;
+    }
+
+    @Override
+    public FilterState getFilterState() {
+        return filterState;
+    }
+
 }
