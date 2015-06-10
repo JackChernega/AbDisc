@@ -40,4 +40,6 @@ import com.mbientlab.metawear.api.MetaWearController;
 public interface AppState {
     public MetaWearController getMetaWearController();
     public FilterState getFilterState();
+    public int getStepCount();
+    public int getCrunchSessionCount();
 }

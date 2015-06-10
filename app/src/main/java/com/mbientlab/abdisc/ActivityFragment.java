@@ -59,20 +59,9 @@ public class ActivityFragment extends Fragment {
         }
 
         appState= (AppState) activity;
-        appState.getMetaWearController().addModuleCallback(dpModuleCallbacks);
     }
 
     private TextView crunchSessionView;
-    private short crunchSessionCount;
-    private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
-        @Override
-        public void receivedFilterOutput(byte filterId, byte[] output) {
-            if (filterId == appState.getFilterState().getSessionStartId()) {
-                crunchSessionCount++;
-                crunchSessionView.setText(String.format(Locale.US, "%d", crunchSessionCount));
-            }
-        }
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +71,13 @@ public class ActivityFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        crunchSessionView = (TextView) view.findViewById(R.id.app_step_count_value);
+        crunchSessionView= (TextView) view.findViewById(R.id.app_step_count_value);
+        crunchSessionView.setText(String.format(Locale.US, "%d", appState.getCrunchSessionCount()));
+    }
+
+    public void crunchSessionCountUpdated(int newCrunchSessionCount) {
+        if (isVisible()) {
+            crunchSessionView.setText(String.format(Locale.US, "%d", newCrunchSessionCount));
+        }
     }
 }

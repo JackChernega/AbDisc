@@ -62,22 +62,26 @@ public class DebugFragment extends Fragment {
     private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
         @Override
         public void receivedFilterOutput(byte filterId, byte[] output) {
-            ByteBuffer buffer= ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
+            FilterState state= conn.getFilterState();
 
-            if (filterId == conn.getFilterState().getSedentaryId()) {
-                short milliG= buffer.getShort();
+            if (state != null) {
+                ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
 
-                sedentaryValue.setText(String.format(Locale.US, "%d", milliG));
-                steps+= (milliG / ACTIVITY_PER_STEP);
-                stepCountValue.setText(String.format(Locale.US, "%d", steps));
+                if (filterId == conn.getFilterState().getSedentaryId()) {
+                    short milliG = buffer.getShort();
 
-            } else if (filterId == conn.getFilterState().getSensorId()) {
-                adcValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
-            } else if (filterId == conn.getFilterState().getOffsetUpdateId()) {
-                adcOffsetValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
-            } else if (filterId == conn.getFilterState().getSessionStartId()) {
-                crunchSessionCount++;
-                crunchSessionValue.setText(String.format(Locale.US, "%d", crunchSessionCount));
+                    sedentaryValue.setText(String.format(Locale.US, "%d", milliG));
+                    steps += (milliG / ACTIVITY_PER_STEP);
+                    stepCountValue.setText(String.format(Locale.US, "%d", steps));
+
+                } else if (filterId == conn.getFilterState().getSensorId()) {
+                    adcValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
+                } else if (filterId == conn.getFilterState().getOffsetUpdateId()) {
+                    adcOffsetValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
+                } else if (filterId == conn.getFilterState().getSessionStartId()) {
+                    crunchSessionCount++;
+                    crunchSessionValue.setText(String.format(Locale.US, "%d", crunchSessionCount));
+                }
             }
         }
     };

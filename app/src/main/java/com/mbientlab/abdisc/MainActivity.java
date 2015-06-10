@@ -62,13 +62,20 @@ import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 import com.mbientlab.metawear.api.controller.Timer;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Locale;
+
 /**
  * Created by etsai on 6/1/2015.
  */
 public class MainActivity extends Activity implements ServiceConnection, AppState {
     private final String MW_MAC_ADDRESS= "C8:D2:BA:90:60:03";
     private final static int REQUEST_ENABLE_BT= 0;
+    private static final int ACTIVITY_PER_STEP= 20000;
 
+    private short crunchSessionCount;
+    private int steps= 0;
     private Fragment activityFrag= null, distanceFrag= null;
 
     private FilterState filterState;
@@ -76,6 +83,23 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
     private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
     private LocalBroadcastManager broadcastManager= null;
+
+    private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
+        @Override
+        public void receivedFilterOutput(byte filterId, byte[] output) {
+            ByteBuffer buffer= ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
+
+            if (filterId == filterState.getSedentaryId()) {
+                short milliG= buffer.getShort();
+
+                steps+= (milliG / ACTIVITY_PER_STEP);
+                ((DistanceFragment) distanceFrag).stepCountUpdated(steps);
+            } else if (filterId == filterState.getSessionStartId()) {
+                crunchSessionCount++;
+                ((ActivityFragment) activityFrag).crunchSessionCountUpdated(crunchSessionCount);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,7 +262,7 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         mwService.useLocalBroadcastManager(broadcastManager);
 
         mwCtrllr= mwService.getMetaWearController(btDevice);
-        mwCtrllr.addDeviceCallback(dCallbacks);
+        mwCtrllr.addDeviceCallback(dCallbacks).addModuleCallback(dpModuleCallbacks);
     }
 
     @Override
@@ -254,6 +278,16 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
     @Override
     public FilterState getFilterState() {
         return filterState;
+    }
+
+    @Override
+    public int getStepCount() {
+        return steps;
+    }
+
+    @Override
+    public int getCrunchSessionCount() {
+        return crunchSessionCount;
     }
 
 }
