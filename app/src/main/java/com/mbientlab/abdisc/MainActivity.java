@@ -55,6 +55,7 @@ import android.widget.Toast;
 import com.mbientlab.abdisc.filter.DebugMainActivity;
 import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
 import com.mbientlab.metawear.api.Module;
@@ -64,12 +65,12 @@ import com.mbientlab.metawear.api.controller.Timer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.UUID;
 
 /**
  * Created by etsai on 6/1/2015.
  */
-public class MainActivity extends Activity implements ServiceConnection, AppState {
-    private final String MW_MAC_ADDRESS= "C8:D2:BA:90:60:03";
+public class MainActivity extends Activity implements ServiceConnection, AppState, BleScannerFragment.ScannerListener {
     private final static int REQUEST_ENABLE_BT= 0;
     private static final int ACTIVITY_PER_STEP= 20000;
 
@@ -79,6 +80,7 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
 
     private FilterState filterState;
     private ProgressDialog setupProgress;
+    private MetaWearBleService mwService;
     private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
     private LocalBroadcastManager broadcastManager= null;
@@ -119,8 +121,6 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
                     .create()
                     .show();
         } else {
-            btDevice= btAdapter.getRemoteDevice(MW_MAC_ADDRESS);
-
             if (!btAdapter.isEnabled()) {
                 final Intent enableIntent= new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
@@ -164,7 +164,8 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         findViewById(R.id.connect_metawear).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mwCtrllr.connect();
+                BleScannerFragment.newInstance(new UUID[]{UUID.fromString("326a9000-85cb-9195-d9dd-464cfbbae75a")})
+                        .show(getFragmentManager(), "ble_scanner_fragment");
             }
         });
         findViewById(R.id.upload_filter_config).setOnClickListener(new View.OnClickListener() {
@@ -180,6 +181,8 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
                         @Override
                         public void ready(FilterState state) {
                             filterState= state;
+
+                            mwCtrllr.addModuleCallback(dpModuleCallbacks);
 
                             DataProcessor dpCtrllr= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
                             dpCtrllr.enableFilterNotify(state.getSedentaryId());
@@ -254,14 +257,11 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        final MetaWearBleService mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
+        mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
         broadcastManager= LocalBroadcastManager.getInstance(mwService);
         broadcastManager.registerReceiver(MetaWearBleService.getMetaWearBroadcastReceiver(),
                 MetaWearBleService.getMetaWearIntentFilter());
         mwService.useLocalBroadcastManager(broadcastManager);
-
-        mwCtrllr= mwService.getMetaWearController(btDevice);
-        mwCtrllr.addDeviceCallback(dCallbacks).addModuleCallback(dpModuleCallbacks);
     }
 
     @Override
@@ -289,4 +289,11 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         return crunchSessionCount;
     }
 
+    @Override
+    public void btDeviceSelected(BluetoothDevice device) {
+        btDevice= device;
+        mwCtrllr= mwService.getMetaWearController(btDevice);
+        mwCtrllr.addDeviceCallback(dCallbacks);
+        mwCtrllr.connect();
+    }
 }
