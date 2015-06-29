@@ -51,6 +51,7 @@
     <string name="label_debug_step_count">Step Count</string>
     <string name="label_debug_start">Start</string>
     <string name="label_debug_stop">Stop</string>
+    <string name="label_debug_reconnect">Reconnect</string>
     <string name="label_reset">Reset</string>
 
     <string name="description_filter_entry_revert">Reverts configuration setting to default value</string>

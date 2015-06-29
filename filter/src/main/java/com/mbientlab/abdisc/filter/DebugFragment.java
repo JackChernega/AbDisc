@@ -193,6 +193,12 @@ public class DebugFragment extends Fragment {
                 ((Debug) conn.getMetaWearController().getModuleController(Module.DEBUG)).resetDevice();
             }
         });
+        view.findViewById(R.id.debug_reconnect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                conn.getMetaWearController().connect();
+            }
+        });
     }
 
 }

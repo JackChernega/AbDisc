@@ -161,4 +161,12 @@
         android:layout_below="@+id/debug_crunch_session_count"
         android:layout_alignParentEnd="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_debug_reconnect"
+        android:id="@+id/debug_reconnect"
+        android:layout_alignTop="@+id/debug_reset"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
