@@ -56,8 +56,17 @@ import java.util.Locale;
  * Created by etsai on 6/4/2015.
  */
 public class DebugFragment extends Fragment {
-    private DataConnection conn;
+    private static DebugFragment INSTANCE= null;
     private static final int ACTIVITY_PER_STEP= 20000;
+
+    public static DebugFragment getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE= new DebugFragment();
+        }
+        return INSTANCE;
+    }
+
+    private DataConnection conn;
 
     private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
         @Override
@@ -110,7 +119,6 @@ public class DebugFragment extends Fragment {
         }
 
         conn= (DataConnection) activity;
-        conn.getMetaWearController().addModuleCallback(dpModuleCallbacks);
     }
 
     @Override
@@ -120,6 +128,8 @@ public class DebugFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        conn.getMetaWearController().addModuleCallback(dpModuleCallbacks);
+
         sedentaryValue= (TextView) view.findViewById(R.id.debug_sedentary_value);
         adcValue= (TextView) view.findViewById(R.id.debug_adc_value);
         adcOffsetValue= (TextView) view.findViewById(R.id.debug_adc_offset_value);

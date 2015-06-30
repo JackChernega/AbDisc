@@ -63,6 +63,8 @@ import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 import com.mbientlab.metawear.api.controller.Timer;
 
+//import com.nullwire.trace.ExceptionHandler;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
@@ -107,6 +109,7 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //ExceptionHandler.register(this, "http://192.168.0.121/server.php");
         BluetoothAdapter btAdapter= ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         if (btAdapter == null) {

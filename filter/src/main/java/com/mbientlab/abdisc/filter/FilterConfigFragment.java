@@ -58,6 +58,14 @@ public class FilterConfigFragment extends Fragment {
 
     private ProgressDialog setupProgress;
 
+    private static FilterConfigFragment INSTANCE;
+    public static FilterConfigFragment getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE= new FilterConfigFragment();
+        }
+        return INSTANCE;
+    }
+
     public static String getTitle() {
         return "Configuration";
     }

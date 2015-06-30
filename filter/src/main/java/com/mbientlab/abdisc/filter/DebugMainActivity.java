@@ -140,9 +140,9 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: // Fragment # 0 - This will show FirstFragment
-                    return new FilterConfigFragment();
+                    return FilterConfigFragment.getInstance();
                 case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return new DebugFragment();
+                    return DebugFragment.getInstance();
                 default:
                     return null;
             }
