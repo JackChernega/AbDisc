@@ -31,13 +31,13 @@
 
 package com.mbientlab.abdisc.filter;
 
-import com.mbientlab.metawear.api.MetaWearController;
+import android.bluetooth.BluetoothDevice;
 
 /**
  * Created by etsai on 6/4/2015.
  */
 public interface DataConnection {
-    public MetaWearController getMetaWearController();
+    public BluetoothDevice getBluetoothDevice();
     public FilterState getFilterState();
     public void receivedFilterState(FilterState newFilterState);
 }

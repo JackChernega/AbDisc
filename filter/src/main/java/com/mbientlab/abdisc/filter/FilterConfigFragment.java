@@ -33,7 +33,12 @@ package com.mbientlab.abdisc.filter;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +47,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.mbientlab.metawear.api.MetaWearBleService;
+import com.mbientlab.metawear.api.MetaWearController;
 import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 
@@ -51,7 +58,7 @@ import java.util.Locale;
 /**
  * Created by etsai on 6/3/2015.
  */
-public class FilterConfigFragment extends Fragment {
+public class FilterConfigFragment extends Fragment implements ServiceConnection {
     private FilterConfigAdapter configAdapter;
     private DataConnection conn;
     private FilterParameters parameterSetup;
@@ -59,6 +66,8 @@ public class FilterConfigFragment extends Fragment {
     private ProgressDialog setupProgress;
 
     private static FilterConfigFragment INSTANCE;
+    private MetaWearController mwCtrllr;
+
     public static FilterConfigFragment getInstance() {
         if (INSTANCE == null) {
             INSTANCE= new FilterConfigFragment();
@@ -80,24 +89,19 @@ public class FilterConfigFragment extends Fragment {
         }
 
         conn= (DataConnection) activity;
+        activity.getApplicationContext().bindService(new Intent(activity, MetaWearBleService.class),
+                this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getActivity().getApplicationContext().unbindService(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        parameterSetup= FilterSetup.configure(conn.getMetaWearController(), new FilterSetup.SetupListener() {
-            @Override
-            public void ready(FilterState state) {
-                setupProgress.dismiss();
-                setupProgress= null;
-
-                Toast.makeText(getActivity(), R.string.text_filter_setup_complete, Toast.LENGTH_SHORT).show();
-                Log.i("AbDisc", state.toString());
-                conn.receivedFilterState(state);
-                DataProcessor dpCtrllr= (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
-                dpCtrllr.enableFilterNotify(state.getSedentaryId());
-                dpCtrllr.enableFilterNotify(state.getSessionStartId());
-            }
-        });
         configAdapter= new FilterConfigAdapter(getActivity(), R.id.filter_config_entry_layout);
         configAdapter.setNotifyOnChange(true);
         return inflater.inflate(R.layout.filter_config, container, false);
@@ -222,5 +226,31 @@ public class FilterConfigFragment extends Fragment {
                 parameterSetup.commit();
             }
         });
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        final MetaWearBleService mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
+        mwCtrllr= mwService.getMetaWearController(conn.getBluetoothDevice());
+
+        parameterSetup= FilterSetup.configure(mwCtrllr, new FilterSetup.SetupListener() {
+            @Override
+            public void ready(FilterState state) {
+                setupProgress.dismiss();
+                setupProgress= null;
+
+                Toast.makeText(getActivity(), R.string.text_filter_setup_complete, Toast.LENGTH_SHORT).show();
+                Log.i("AbDisc", state.toString());
+                conn.receivedFilterState(state);
+                DataProcessor dpCtrllr= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
+                dpCtrllr.enableFilterNotify(state.getSedentaryId());
+                dpCtrllr.enableFilterNotify(state.getSessionStartId());
+            }
+        });
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+
     }
 }

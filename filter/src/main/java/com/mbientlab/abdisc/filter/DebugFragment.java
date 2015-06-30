@@ -32,7 +32,12 @@
 package com.mbientlab.abdisc.filter;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +46,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.mbientlab.metawear.api.MetaWearBleService;
+import com.mbientlab.metawear.api.MetaWearController;
 import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
@@ -55,7 +62,7 @@ import java.util.Locale;
 /**
  * Created by etsai on 6/4/2015.
  */
-public class DebugFragment extends Fragment {
+public class DebugFragment extends Fragment implements ServiceConnection {
     private static DebugFragment INSTANCE= null;
     private static final int ACTIVITY_PER_STEP= 20000;
 
@@ -100,6 +107,8 @@ public class DebugFragment extends Fragment {
             adcReadValue.setText(String.format(Locale.US, "%d", value));
         }
     };
+    private MetaWearController mwCtrllr;
+    private DataProcessor dpCtrllr;
 
     private short crunchSessionCount= 0;
     private int steps= 0;
@@ -119,6 +128,8 @@ public class DebugFragment extends Fragment {
         }
 
         conn= (DataConnection) activity;
+        activity.getApplicationContext().bindService(new Intent(activity, MetaWearBleService.class),
+                this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -128,8 +139,6 @@ public class DebugFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        conn.getMetaWearController().addModuleCallback(dpModuleCallbacks);
-
         sedentaryValue= (TextView) view.findViewById(R.id.debug_sedentary_value);
         adcValue= (TextView) view.findViewById(R.id.debug_adc_value);
         adcOffsetValue= (TextView) view.findViewById(R.id.debug_adc_offset_value);
@@ -137,7 +146,6 @@ public class DebugFragment extends Fragment {
         crunchSessionValue= (TextView) view.findViewById(R.id.debug_crunch_session_count);
         stepCountValue= (TextView) view.findViewById(R.id.debug_step_count_value);
 
-        final DataProcessor dpCtrllr= (DataProcessor) conn.getMetaWearController().getModuleController(Module.DATA_PROCESSOR);
         ((CheckBox) view.findViewById(R.id.debug_stream_adc)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -162,9 +170,9 @@ public class DebugFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    conn.getMetaWearController().addModuleCallback(gpioModuleCallbacks);
+                    mwCtrllr.addModuleCallback(gpioModuleCallbacks);
                 } else {
-                    conn.getMetaWearController().removeModuleCallback(gpioModuleCallbacks);
+                    mwCtrllr.removeModuleCallback(gpioModuleCallbacks);
                 }
             }
         });
@@ -172,10 +180,10 @@ public class DebugFragment extends Fragment {
         view.findViewById(R.id.debug_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Timer timerCtrllr= (Timer) conn.getMetaWearController().getModuleController(Module.TIMER);
+                Timer timerCtrllr= (Timer) mwCtrllr.getModuleController(Module.TIMER);
                 timerCtrllr.startTimer(conn.getFilterState().getSensorTimerId());
 
-                Accelerometer accelCtrllr = (Accelerometer) conn.getMetaWearController().getModuleController(Module.ACCELEROMETER);
+                Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
                 accelCtrllr.enableXYZSampling()
                         .withFullScaleRange(Accelerometer.SamplingConfig.FullScaleRange.FSR_8G)
                         .withOutputDataRate(Accelerometer.SamplingConfig.OutputDataRate.ODR_100_HZ)
@@ -190,25 +198,42 @@ public class DebugFragment extends Fragment {
         view.findViewById(R.id.debug_stop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Timer timerCtrllr= (Timer) conn.getMetaWearController().getModuleController(Module.TIMER);
+                Timer timerCtrllr= (Timer) mwCtrllr.getModuleController(Module.TIMER);
                 timerCtrllr.stopTimer(conn.getFilterState().getSensorTimerId());
 
-                Accelerometer accelCtrllr = (Accelerometer) conn.getMetaWearController().getModuleController(Module.ACCELEROMETER);
+                Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
                 accelCtrllr.startComponents();
             }
         });
         view.findViewById(R.id.debug_reset).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((Debug) conn.getMetaWearController().getModuleController(Module.DEBUG)).resetDevice();
+                ((Debug) mwCtrllr.getModuleController(Module.DEBUG)).resetDevice();
             }
         });
         view.findViewById(R.id.debug_reconnect).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                conn.getMetaWearController().connect();
+                mwCtrllr.connect();
             }
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getActivity().getApplicationContext().unbindService(this);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        final MetaWearBleService mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
+        mwCtrllr= mwService.getMetaWearController(conn.getBluetoothDevice());
+        dpCtrllr= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
+        mwCtrllr.addModuleCallback(dpModuleCallbacks);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) { }
 }

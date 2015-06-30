@@ -108,8 +108,8 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
 
     private FilterState filterState;
     @Override
-    public MetaWearController getMetaWearController() {
-        return mwCtrllr;
+    public BluetoothDevice getBluetoothDevice() {
+        return btDevice;
     }
 
     @Override
