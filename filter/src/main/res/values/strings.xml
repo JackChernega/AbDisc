@@ -34,6 +34,8 @@
     <string name="error_data_connection">must implement DataConnection interface</string>
 
     <string name="text_filter_setup_complete">Filter setup complete</string>
+    <string name="text_filter_setup_required">Filters must be setup to use this panel</string>
+    <string name="text_select_device">No MetaWear device selected</string>
 
     <string name="title_edit_setting">Edit Setting</string>
 

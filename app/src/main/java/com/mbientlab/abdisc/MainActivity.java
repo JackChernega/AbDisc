@@ -159,9 +159,13 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         findViewById(R.id.start_debug_activity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Intent debugIntent= new Intent(MainActivity.this, DebugMainActivity.class);
-                debugIntent.putExtra(DebugMainActivity.EXTRA_BT_DEVICE, btDevice);
-                startActivity(debugIntent);
+                if (btDevice != null) {
+                    final Intent debugIntent = new Intent(MainActivity.this, DebugMainActivity.class);
+                    debugIntent.putExtra(DebugMainActivity.EXTRA_BT_DEVICE, btDevice);
+                    startActivity(debugIntent);
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.text_select_device, Toast.LENGTH_LONG).show();
+                }
             }
         });
         findViewById(R.id.connect_metawear).setOnClickListener(new View.OnClickListener() {

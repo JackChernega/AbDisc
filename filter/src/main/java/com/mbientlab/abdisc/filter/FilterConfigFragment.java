@@ -215,15 +215,19 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
         view.findViewById(R.id.filter_config_program).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setupProgress= new ProgressDialog(getActivity());
-                setupProgress.setIndeterminate(true);
-                setupProgress.setMessage("Setting up filters...");
-                setupProgress.show();
+                if (conn.getBluetoothDevice() != null) {
+                    setupProgress = new ProgressDialog(getActivity());
+                    setupProgress.setIndeterminate(true);
+                    setupProgress.setMessage("Setting up filters...");
+                    setupProgress.show();
 
-                for(FilterConfig filterCfg: configSettings) {
-                    filterCfg.writeSetting();
+                    for (FilterConfig filterCfg : configSettings) {
+                        filterCfg.writeSetting();
+                    }
+                    parameterSetup.commit();
+                } else {
+                    Toast.makeText(getActivity(), R.string.text_select_device, Toast.LENGTH_LONG).show();
                 }
-                parameterSetup.commit();
             }
         });
     }
