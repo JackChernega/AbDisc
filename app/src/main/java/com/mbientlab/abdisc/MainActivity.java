@@ -164,7 +164,7 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
                     debugIntent.putExtra(DebugMainActivity.EXTRA_BT_DEVICE, btDevice);
                     startActivity(debugIntent);
                 } else {
-                    Toast.makeText(MainActivity.this, R.string.text_select_device, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, R.string.text_select_device, Toast.LENGTH_SHORT).show();
                 }
             }
         });

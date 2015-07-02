@@ -76,7 +76,7 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
             public void onPageSelected(int position) {
                 if (position == 1) {
                     if (filterState == null) {
-                        Toast.makeText(DebugMainActivity.this, R.string.text_filter_setup_required, Toast.LENGTH_LONG).show();
+                        Toast.makeText(DebugMainActivity.this, R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
                     }
                 }
             }

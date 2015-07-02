@@ -150,30 +150,42 @@ public class DebugFragment extends Fragment implements ServiceConnection {
         ((CheckBox) view.findViewById(R.id.debug_stream_adc)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    dpCtrllr.enableFilterNotify(conn.getFilterState().getSensorId());
+                if (conn.getFilterState() != null) {
+                    if (isChecked) {
+                        dpCtrllr.enableFilterNotify(conn.getFilterState().getSensorId());
+                    } else {
+                        dpCtrllr.disableFilterNotify(conn.getFilterState().getSensorId());
+                    }
                 } else {
-                    dpCtrllr.disableFilterNotify(conn.getFilterState().getSensorId());
+                    Toast.makeText(getActivity(), R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
                 }
             }
         });
         ((CheckBox) view.findViewById(R.id.debug_stream_adc_offset)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    dpCtrllr.enableFilterNotify(conn.getFilterState().getOffsetUpdateId());
+                if (conn.getFilterState() != null) {
+                    if (isChecked) {
+                        dpCtrllr.enableFilterNotify(conn.getFilterState().getOffsetUpdateId());
+                    } else {
+                        dpCtrllr.disableFilterNotify(conn.getFilterState().getOffsetUpdateId());
+                    }
                 } else {
-                    dpCtrllr.disableFilterNotify(conn.getFilterState().getOffsetUpdateId());
+                    Toast.makeText(getActivity(), R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
                 }
             }
         });
         ((CheckBox) view.findViewById(R.id.debug_stream_adc_value)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mwCtrllr.addModuleCallback(gpioModuleCallbacks);
+                if (conn.getFilterState() != null) {
+                    if (isChecked) {
+                        mwCtrllr.addModuleCallback(gpioModuleCallbacks);
+                    } else {
+                        mwCtrllr.removeModuleCallback(gpioModuleCallbacks);
+                    }
                 } else {
-                    mwCtrllr.removeModuleCallback(gpioModuleCallbacks);
+                    Toast.makeText(getActivity(), R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -181,29 +193,37 @@ public class DebugFragment extends Fragment implements ServiceConnection {
         view.findViewById(R.id.debug_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Timer timerCtrllr= (Timer) mwCtrllr.getModuleController(Module.TIMER);
-                timerCtrllr.startTimer(conn.getFilterState().getSensorTimerId());
+                if (conn.getFilterState() != null) {
+                    Timer timerCtrllr = (Timer) mwCtrllr.getModuleController(Module.TIMER);
+                    timerCtrllr.startTimer(conn.getFilterState().getSensorTimerId());
 
-                Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
-                accelCtrllr.enableXYZSampling()
-                        .withFullScaleRange(Accelerometer.SamplingConfig.FullScaleRange.FSR_8G)
-                        .withOutputDataRate(Accelerometer.SamplingConfig.OutputDataRate.ODR_100_HZ)
-                        .withHighPassFilter((byte) 2)
-                        .withSilentMode();
-                ///< May want to configure the other options for tap detection
-                accelCtrllr.enableTapDetection(Accelerometer.TapType.DOUBLE_TAP, Accelerometer.Axis.Z)
-                        .withSilentMode();
-                accelCtrllr.startComponents();
+                    Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
+                    accelCtrllr.enableXYZSampling()
+                            .withFullScaleRange(Accelerometer.SamplingConfig.FullScaleRange.FSR_8G)
+                            .withOutputDataRate(Accelerometer.SamplingConfig.OutputDataRate.ODR_100_HZ)
+                            .withHighPassFilter((byte) 2)
+                            .withSilentMode();
+                    ///< May want to configure the other options for tap detection
+                    accelCtrllr.enableTapDetection(Accelerometer.TapType.DOUBLE_TAP, Accelerometer.Axis.Z)
+                            .withSilentMode();
+                    accelCtrllr.startComponents();
+                } else {
+                    Toast.makeText(getActivity(), R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
+                }
             }
         });
         view.findViewById(R.id.debug_stop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Timer timerCtrllr= (Timer) mwCtrllr.getModuleController(Module.TIMER);
-                timerCtrllr.stopTimer(conn.getFilterState().getSensorTimerId());
+                if (conn.getFilterState() != null) {
+                    Timer timerCtrllr = (Timer) mwCtrllr.getModuleController(Module.TIMER);
+                    timerCtrllr.stopTimer(conn.getFilterState().getSensorTimerId());
 
-                Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
-                accelCtrllr.startComponents();
+                    Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
+                    accelCtrllr.startComponents();
+                } else {
+                    Toast.makeText(getActivity(), R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
+                }
             }
         });
         view.findViewById(R.id.debug_reset).setOnClickListener(new View.OnClickListener() {
