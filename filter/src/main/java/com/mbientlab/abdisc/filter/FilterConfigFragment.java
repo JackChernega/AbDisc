@@ -178,6 +178,14 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L1, Integer.valueOf(this.value));
             }
         });
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_13),
+                owner.getString(R.string.label_filter_config_description_13),
+                DefaultParameters.L1_HAPTIC_STRENGTH) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticStrength(FilterParameters.HapticLevel.L1, Float.valueOf(this.value));
+            }
+        });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_09),
                 owner.getString(R.string.label_filter_config_description_09),
                 DefaultParameters.L2_HAPTIC_LOWER) {
@@ -194,6 +202,14 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L2, Integer.valueOf(this.value));
             }
         });
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_14),
+                owner.getString(R.string.label_filter_config_description_14),
+                DefaultParameters.L2_HAPTIC_STRENGTH) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticStrength(FilterParameters.HapticLevel.L2, Float.valueOf(this.value));
+            }
+        });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_11),
                 owner.getString(R.string.label_filter_config_description_11),
                 DefaultParameters.L3_HAPTIC_LOWER) {
@@ -208,6 +224,14 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L3, Integer.valueOf(this.value));
+            }
+        });
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_15),
+                owner.getString(R.string.label_filter_config_description_15),
+                DefaultParameters.L3_HAPTIC_STRENGTH) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withHapticStrength(FilterParameters.HapticLevel.L3, Float.valueOf(this.value));
             }
         });
         configAdapter.addAll(configSettings);

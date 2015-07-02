@@ -60,7 +60,8 @@ public class FilterSetup {
                     l3HapticLower= DefaultParameters.L3_HAPTIC_LOWER, l3HapticUpper= DefaultParameters.L3_HAPTIC_UPPER;
 
             private short l1HapticPeriod= 500, l2HapticPeriod= 700, l3HapticPeriod= 900, sessionWarningDuration= 450;
-            private float l1HapticStrength= 40.f, l2HapticStrength= 70.f, l3HapticStrength= 90.f;
+            private float l1HapticStrength= DefaultParameters.L1_HAPTIC_STRENGTH, l2HapticStrength= DefaultParameters.L2_HAPTIC_STRENGTH,
+                    l3HapticStrength= DefaultParameters.L3_HAPTIC_STRENGTH;
 
             private byte sensorDataId, sedentaryId;
 
@@ -203,6 +204,22 @@ public class FilterSetup {
                         break;
                     case L3:
                         l3HapticUpper= crunchUpper;
+                        break;
+                }
+                return this;
+            }
+
+            @Override
+            public FilterParameters withHapticStrength(HapticLevel level, float motorStrength) {
+                switch (level) {
+                    case L1:
+                        l1HapticStrength= motorStrength;
+                        break;
+                    case L2:
+                        l2HapticStrength= motorStrength;
+                        break;
+                    case L3:
+                        l3HapticStrength= motorStrength;
                         break;
                 }
                 return this;

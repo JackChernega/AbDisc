@@ -72,6 +72,9 @@
     <string name="label_filter_config_setting_10">L2 Haptic Upper Bound</string>
     <string name="label_filter_config_setting_11">L3 Haptic Lower Bound</string>
     <string name="label_filter_config_setting_12">L3 Haptic Upper Bound</string>
+    <string name="label_filter_config_setting_13">L1 Haptic Strength</string>
+    <string name="label_filter_config_setting_14">L2 Haptic Strength</string>
+    <string name="label_filter_config_setting_15">L3 Haptic Strength</string>
 
     <string name="label_filter_config_description_01">GPIO pin that reads the ADC data</string>
     <string name="label_filter_config_description_02">GPIO pin used to ground the circuit</string>
@@ -85,5 +88,8 @@
     <string name="label_filter_config_description_10">Upper ADC value of haptic range for Level 2 feedback</string>
     <string name="label_filter_config_description_11">Lower ADC value of haptic range for Level 3 feedback</string>
     <string name="label_filter_config_description_12">Upper ADC value of haptic range for Level 3 feedback</string>
+    <string name="label_filter_config_description_13">Level 1 feedback strength</string>
+    <string name="label_filter_config_description_14">Level 2 feedback strength</string>
+    <string name="label_filter_config_description_15">Level 3 feedback strength</string>
 
 </resources>
