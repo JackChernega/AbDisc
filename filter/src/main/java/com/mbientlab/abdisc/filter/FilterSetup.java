@@ -53,7 +53,8 @@ public class FilterSetup {
             private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= DefaultParameters.SEDENTARY_TIME;
             private int sensorSamplingPeriod= 500, sedentaryStepPeriod= 60000, sedentaryDeltaAvgReset= DefaultParameters.SEDENTARY_RESET_THRESHOLD,
                     sedentaryThreshold= DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD, sensorThreshold= DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE;
-            private float crunchSessionDuration= DefaultParameters.CRUNCH_SESSION_DURATION, sessionWarningStrength = 100.f;
+            private float crunchSessionDuration= DefaultParameters.CRUNCH_SESSION_DURATION, sessionWarningStrength = 100.f,
+                    tapThreshold= DefaultParameters.TAP_THRESHOLD;
 
             private int l1HapticLower= DefaultParameters.L1_HAPTIC_LOWER, l1HapticUpper= DefaultParameters.L1_HAPTIC_UPPER,
                     l2HapticLower= DefaultParameters.L2_HAPTIC_LOWER, l2HapticUpper= DefaultParameters.L2_HAPTIC_UPPER,
@@ -222,6 +223,12 @@ public class FilterSetup {
                         l3HapticStrength= motorStrength;
                         break;
                 }
+                return this;
+            }
+
+            @Override
+            public FilterParameters withTapThreshold(float threshold) {
+                tapThreshold= threshold;
                 return this;
             }
 
@@ -603,10 +610,11 @@ public class FilterSetup {
                             @Override public byte getSedentaryId() { return differentialId; }
                             @Override public byte getSensorId() { return sensorPassthroughId; }
                             @Override public byte getOffsetUpdateId() { return feedbackId; }
+                            @Override public float getTapThreshold() { return tapThreshold; }
 
                             @Override
                             public String toString() {
-                                return String.format(Locale.US, "{%s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d}",
+                                return String.format(Locale.US, "{%s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %d, %s: %.3f}",
                                         "sessionStartId", sessionStartId,
                                         "sensorTimerId", sensorTimerId,
                                         "activityLoggingId", activityDiffLoggingId,
@@ -614,7 +622,8 @@ public class FilterSetup {
                                         "thresholdLoggingId", sensorThresholdLoggingId,
                                         "activityDifferentialId", differentialId,
                                         "sensorPassthroughId", sensorPassthroughId,
-                                        "offsetUpdateId", feedbackId);
+                                        "offsetUpdateId", feedbackId,
+                                        "tapThreshold", tapThreshold);
                             }
                         });
                     }

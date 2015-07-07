@@ -121,6 +121,16 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
 
         final Activity owner= getActivity();
         final ArrayList<FilterConfig> configSettings= new ArrayList<>();
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_17),
+                owner.getString(R.string.label_filter_config_description_17),
+                sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_17), DefaultParameters.TAP_THRESHOLD),
+                DefaultParameters.TAP_THRESHOLD) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withTapThreshold(Float.valueOf(this.value));
+                editor.putFloat(owner.getString(R.string.label_filter_config_setting_17), Float.valueOf(this.value));
+            }
+        });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_01),
                 owner.getString(R.string.label_filter_config_description_01),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_01), DefaultParameters.SENSOR_DATA_PIN),

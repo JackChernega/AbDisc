@@ -205,6 +205,7 @@ public class DebugFragment extends Fragment implements ServiceConnection {
                             .withSilentMode();
                     ///< May want to configure the other options for tap detection
                     accelCtrllr.enableTapDetection(Accelerometer.TapType.DOUBLE_TAP, Accelerometer.Axis.Z)
+                            .withThreshold(conn.getFilterState().getTapThreshold())
                             .withSilentMode();
                     accelCtrllr.startComponents();
                 } else {

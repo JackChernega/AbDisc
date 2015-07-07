@@ -129,6 +129,7 @@ public interface FilterParameters {
     public FilterParameters withHapticCrunchUpper(HapticLevel level, int crunchUpper);
     public FilterParameters withHapticStrength(HapticLevel level, float motorStrength);
 
+    public FilterParameters withTapThreshold(float threshold);
     /**
      * Write filter chain to the board
      */
