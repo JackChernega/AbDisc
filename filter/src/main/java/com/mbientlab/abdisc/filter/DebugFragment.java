@@ -204,7 +204,7 @@ public class DebugFragment extends Fragment implements ServiceConnection {
                     accelCtrllr.enableXYZSampling()
                             .withFullScaleRange(Accelerometer.SamplingConfig.FullScaleRange.FSR_8G)
                             .withOutputDataRate(Accelerometer.SamplingConfig.OutputDataRate.ODR_100_HZ)
-                            .withHighPassFilter((byte) 2)
+                            .withHighPassFilter((byte) 0)
                             .withSilentMode();
                     ///< May want to configure the other options for tap detection
                     accelCtrllr.enableTapDetection(Accelerometer.TapType.DOUBLE_TAP, Accelerometer.Axis.Z)
