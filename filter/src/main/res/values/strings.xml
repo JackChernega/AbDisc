@@ -75,6 +75,7 @@
     <string name="label_filter_config_setting_13">L1 Haptic Strength</string>
     <string name="label_filter_config_setting_14">L2 Haptic Strength</string>
     <string name="label_filter_config_setting_15">L3 Haptic Strength</string>
+    <string name="label_filter_config_setting_16">Sedentary Time</string>
 
     <string name="label_filter_config_description_01">GPIO pin that reads the ADC data</string>
     <string name="label_filter_config_description_02">GPIO pin used to ground the circuit</string>
@@ -91,5 +92,6 @@
     <string name="label_filter_config_description_13">Level 1 feedback strength</string>
     <string name="label_filter_config_description_14">Level 2 feedback strength</string>
     <string name="label_filter_config_description_15">Level 3 feedback strength</string>
+    <string name="label_filter_config_description_16">Units of sedentary step period</string>
 
 </resources>

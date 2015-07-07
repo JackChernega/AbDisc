@@ -50,7 +50,7 @@ public class FilterSetup {
      */
     public static FilterParameters configure(final MetaWearController mwCtrllr, final SetupListener listener) {
         return new FilterParameters() {
-            private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= 16;
+            private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= DefaultParameters.SEDENTARY_TIME;
             private int sensorSamplingPeriod= 500, sedentaryStepPeriod= 60000, sedentaryDeltaAvgReset= DefaultParameters.SEDENTARY_RESET_THRESHOLD,
                     sedentaryThreshold= DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD, sensorThreshold= DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE;
             private float crunchSessionDuration= DefaultParameters.CRUNCH_SESSION_DURATION, sessionWarningStrength = 100.f;

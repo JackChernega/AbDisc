@@ -161,6 +161,16 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_04), Integer.valueOf(this.value));
             }
         });
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_16),
+                owner.getString(R.string.label_filter_config_description_16),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_16), DefaultParameters.SEDENTARY_TIME),
+                DefaultParameters.SEDENTARY_TIME) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withSedentaryTime(Byte.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_16), Byte.valueOf(this.value));
+            }
+        });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_05),
                 owner.getString(R.string.label_filter_config_description_05),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_05), DefaultParameters.CRUNCH_SESSION_DURATION),
