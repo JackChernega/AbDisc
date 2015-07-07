@@ -37,6 +37,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -59,14 +60,9 @@ import java.util.Locale;
  * Created by etsai on 6/3/2015.
  */
 public class FilterConfigFragment extends Fragment implements ServiceConnection {
-    private FilterConfigAdapter configAdapter;
-    private DataConnection conn;
-    private FilterParameters parameterSetup;
-
-    private ProgressDialog setupProgress;
+    private static String SHARED_PREF_KEY= "com.mbientlab.abdisc.filter.FilterConfigFragment";
 
     private static FilterConfigFragment INSTANCE;
-    private MetaWearController mwCtrllr;
 
     public static FilterConfigFragment getInstance() {
         if (INSTANCE == null) {
@@ -78,6 +74,14 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
     public static String getTitle() {
         return "Configuration";
     }
+
+    private FilterConfigAdapter configAdapter;
+    private DataConnection conn;
+    private FilterParameters parameterSetup;
+
+    private ProgressDialog setupProgress;
+    private MetaWearController mwCtrllr;
+    private SharedPreferences sharedPref;
 
     @Override
     public void onAttach(Activity activity) {
@@ -91,6 +95,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
         conn= (DataConnection) activity;
         activity.getApplicationContext().bindService(new Intent(activity, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
+        sharedPref = activity.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -109,6 +114,8 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        final SharedPreferences.Editor editor = sharedPref.edit();
+
         ListView configList= (ListView) view.findViewById(R.id.filter_config_list);
         configList.setAdapter(configAdapter);
 
@@ -116,122 +123,152 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
         final ArrayList<FilterConfig> configSettings= new ArrayList<>();
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_01),
                 owner.getString(R.string.label_filter_config_description_01),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_01), DefaultParameters.SENSOR_DATA_PIN),
                 DefaultParameters.SENSOR_DATA_PIN) {
             @Override
             public void writeSetting() {
                 parameterSetup.withSensorDataPin(Byte.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_01), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_02),
                 owner.getString(R.string.label_filter_config_description_02),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_02), DefaultParameters.SENSOR_GROUND_PIN),
                 DefaultParameters.SENSOR_GROUND_PIN) {
             @Override
             public void writeSetting() {
                 parameterSetup.withSensorGroundPin(Byte.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_02), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_03),
                 owner.getString(R.string.label_filter_config_description_03),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_03), DefaultParameters.SEDENTARY_RESET_THRESHOLD),
                 DefaultParameters.SEDENTARY_RESET_THRESHOLD) {
             @Override
             public void writeSetting() {
                 parameterSetup.withSedentaryResetThreshold(Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_03), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_04),
                 owner.getString(R.string.label_filter_config_description_04),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_04), DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD),
                 DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD) {
             @Override
             public void writeSetting() {
                 parameterSetup.withSedentaryMinActivityThreshold(Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_04), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_05),
                 owner.getString(R.string.label_filter_config_description_05),
+                sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_05), DefaultParameters.CRUNCH_SESSION_DURATION),
                 DefaultParameters.CRUNCH_SESSION_DURATION) {
             @Override
             public void writeSetting() {
                 parameterSetup.withCrunchSessionDuration(Float.valueOf(this.value));
+                editor.putFloat(owner.getString(R.string.label_filter_config_setting_05), Float.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_06),
                 owner.getString(R.string.label_filter_config_description_06),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_06), DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE),
                 DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE) {
             @Override
             public void writeSetting() {
                 parameterSetup.withCrunchThresholdUpdateMinChangeThreshold(Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_06), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_07),
                 owner.getString(R.string.label_filter_config_description_07),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_07), DefaultParameters.L1_HAPTIC_LOWER),
                 DefaultParameters.L1_HAPTIC_LOWER) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchLower(FilterParameters.HapticLevel.L1, Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_07), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_08),
                 owner.getString(R.string.label_filter_config_description_08),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_08), DefaultParameters.L1_HAPTIC_UPPER),
                 DefaultParameters.L1_HAPTIC_UPPER) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L1, Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_08), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_13),
                 owner.getString(R.string.label_filter_config_description_13),
+                sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_13), DefaultParameters.L1_HAPTIC_STRENGTH),
                 DefaultParameters.L1_HAPTIC_STRENGTH) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticStrength(FilterParameters.HapticLevel.L1, Float.valueOf(this.value));
+                editor.putFloat(owner.getString(R.string.label_filter_config_setting_13), Float.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_09),
                 owner.getString(R.string.label_filter_config_description_09),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_09), DefaultParameters.L2_HAPTIC_LOWER),
                 DefaultParameters.L2_HAPTIC_LOWER) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchLower(FilterParameters.HapticLevel.L2, Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_09), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_10),
                 owner.getString(R.string.label_filter_config_description_10),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_10), DefaultParameters.L2_HAPTIC_UPPER),
                 DefaultParameters.L2_HAPTIC_UPPER) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L2, Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_10), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_14),
                 owner.getString(R.string.label_filter_config_description_14),
+                sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_14), DefaultParameters.L2_HAPTIC_STRENGTH),
                 DefaultParameters.L2_HAPTIC_STRENGTH) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticStrength(FilterParameters.HapticLevel.L2, Float.valueOf(this.value));
+                editor.putFloat(owner.getString(R.string.label_filter_config_setting_14), Float.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_11),
                 owner.getString(R.string.label_filter_config_description_11),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_11), DefaultParameters.L3_HAPTIC_LOWER),
                 DefaultParameters.L3_HAPTIC_LOWER) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchLower(FilterParameters.HapticLevel.L3, Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_11), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_12),
                 owner.getString(R.string.label_filter_config_description_12),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_12), DefaultParameters.L3_HAPTIC_UPPER),
                 DefaultParameters.L3_HAPTIC_UPPER) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticCrunchUpper(FilterParameters.HapticLevel.L3, Integer.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_12), Integer.valueOf(this.value));
             }
         });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_15),
                 owner.getString(R.string.label_filter_config_description_15),
+                sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_15), DefaultParameters.L3_HAPTIC_STRENGTH),
                 DefaultParameters.L3_HAPTIC_STRENGTH) {
             @Override
             public void writeSetting() {
                 parameterSetup.withHapticStrength(FilterParameters.HapticLevel.L3, Float.valueOf(this.value));
+                editor.putFloat(owner.getString(R.string.label_filter_config_setting_15), Float.valueOf(this.value));
             }
         });
         configAdapter.addAll(configSettings);
@@ -249,6 +286,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                         filterCfg.writeSetting();
                     }
                     parameterSetup.commit();
+                    editor.commit();
                 } else {
                     Toast.makeText(getActivity(), R.string.text_select_device, Toast.LENGTH_LONG).show();
                 }
