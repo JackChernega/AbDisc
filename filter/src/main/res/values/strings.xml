@@ -46,6 +46,7 @@
     <string name="label_filter_config_entry_value">Value</string>
     <string name="label_filter_config_commit">Commit</string>
     <string name="label_debug_sedentary">Sedentary</string>
+    <string name="label_debug_crunch_offset">Crunch Offset</string>
     <string name="label_debug_stream_adc_value">Stream ADC Value</string>
     <string name="label_debug_stream_adc">Stream ADC</string>
     <string name="label_debug_adc_offset">Stream ADC Offset</string>

@@ -606,6 +606,7 @@ public class FilterSetup {
                             @Override public byte getSedentaryLogId() { return activityDiffLoggingId; }
                             @Override public byte getSensorLogId() { return sensorDataLoggingId; }
                             @Override public byte getSensorOffsetLoggingId() { return sensorThresholdLoggingId; }
+                            @Override public byte getCrunchOffsetId() { return crunchOffsetId; }
 
                             @Override public byte getSedentaryId() { return differentialId; }
                             @Override public byte getSensorId() { return sensorPassthroughId; }

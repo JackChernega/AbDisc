@@ -98,6 +98,8 @@ public class DebugFragment extends Fragment implements ServiceConnection {
                 } else if (filterId == conn.getFilterState().getSessionStartId()) {
                     crunchSessionCount++;
                     crunchSessionValue.setText(String.format(Locale.US, "%d", crunchSessionCount));
+                } else if (filterId == conn.getFilterState().getCrunchOffsetId()) {
+                    crunchOffsetValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
                 }
             }
         }
@@ -113,7 +115,7 @@ public class DebugFragment extends Fragment implements ServiceConnection {
 
     private short crunchSessionCount= 0;
     private int steps= 0;
-    private TextView sedentaryValue, adcValue, adcOffsetValue, adcReadValue, crunchSessionValue, stepCountValue;
+    private TextView sedentaryValue, adcValue, adcOffsetValue, adcReadValue, crunchSessionValue, stepCountValue, crunchOffsetValue;
 
     public static String getTitle() {
         return "Diagnostics";
@@ -146,6 +148,7 @@ public class DebugFragment extends Fragment implements ServiceConnection {
         adcReadValue= (TextView) view.findViewById(R.id.debug_adc_read_value);
         crunchSessionValue= (TextView) view.findViewById(R.id.debug_crunch_session_count);
         stepCountValue= (TextView) view.findViewById(R.id.debug_step_count_value);
+        crunchOffsetValue= (TextView) view.findViewById(R.id.debug_crunch_offset_value);
 
         ((CheckBox) view.findViewById(R.id.debug_stream_adc)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

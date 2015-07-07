@@ -55,5 +55,6 @@ public interface FilterState {
      */
     public byte getSensorOffsetLoggingId();
 
+    public byte getCrunchOffsetId();
     public float getTapThreshold();
 }
