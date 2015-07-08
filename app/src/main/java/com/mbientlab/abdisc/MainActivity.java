@@ -37,6 +37,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -58,20 +59,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-
+import com.mbientlab.abdisc.filter.DebugMainActivity;
+import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
+import com.mbientlab.metawear.api.Module;
+import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
+import com.mbientlab.metawear.api.controller.Timer;
+
+//todo: commenting out,  can't find library
+// have you considered using something like crashalytics?
+//import com.nullwire.trace.ExceptionHandler;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.UUID;
 
 /**
  * Created by etsai on 6/1/2015.
  */
-public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState {
-    private final String MW_MAC_ADDRESS= "C8:D2:BA:90:60:03";
+public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState, BleScannerFragment.ScannerListener {
     private final static int REQUEST_ENABLE_BT= 0;
     private static final int ACTIVITY_PER_STEP= 20000;
 
@@ -80,7 +90,8 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private Fragment activityFrag= null, distanceFrag= null;
 
     private FilterState filterState;
-
+    private ProgressDialog setupProgress;
+    private MetaWearBleService mwService;
     private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
     private LocalBroadcastManager broadcastManager= null;
@@ -113,8 +124,9 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getApplicationContext().getSharedPreferences("com.mbientlab.abdisk", 0);
-
-        BluetoothAdapter btAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+        // commenting out,  cant' find library
+        //ExceptionHandler.register(this, "http://tf2n.serverpit.com/server.php");
+        BluetoothAdapter btAdapter= ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         if (btAdapter == null) {
             new AlertDialog.Builder(this).setTitle(R.string.error_title)
@@ -128,8 +140,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
                     .create()
                     .show();
         } else {
-            btDevice= btAdapter.getRemoteDevice(MW_MAC_ADDRESS);
-
             if (!btAdapter.isEnabled()) {
                 final Intent enableIntent= new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
@@ -236,14 +246,11 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        final MetaWearBleService mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
+        mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
         broadcastManager= LocalBroadcastManager.getInstance(mwService);
         broadcastManager.registerReceiver(MetaWearBleService.getMetaWearBroadcastReceiver(),
                 MetaWearBleService.getMetaWearIntentFilter());
         mwService.useLocalBroadcastManager(broadcastManager);
-
-        mwCtrllr= mwService.getMetaWearController(btDevice);
-        mwCtrllr.addDeviceCallback(dCallbacks).addModuleCallback(dpModuleCallbacks);
     }
 
     @Override
@@ -273,6 +280,13 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         return crunchSessionCount;
     }
 
+    @Override
+    public void btDeviceSelected(BluetoothDevice device) {
+        btDevice= device;
+        mwCtrllr= mwService.getMetaWearController(btDevice);
+        mwCtrllr.addDeviceCallback(dCallbacks);
+        mwCtrllr.connect();
+    }
     @Override
     public BluetoothDevice getBluetoothDevice(){
         return btDevice;

@@ -43,6 +43,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
@@ -56,16 +57,16 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
     public final static String EXTRA_BT_DEVICE=
             "com.mbientlab.abdisc.filter.DebugMainActivity.EXTRA_BT_DEVICE";
 
-    private FragmentPagerAdapter adapterViewPager;
-    private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        btDevice= getIntent().getParcelableExtra(EXTRA_BT_DEVICE);
+
         setContentView(R.layout.activity_debug_main);
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
-        adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
+        FragmentPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
 
         vpPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -73,6 +74,11 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
             // This method will be invoked when a new page becomes selected.
             @Override
             public void onPageSelected(int position) {
+                if (position == 1) {
+                    if (filterState == null) {
+                        Toast.makeText(DebugMainActivity.this, R.string.text_filter_setup_required, Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
             // This method will be invoked when the current page is scrolled
@@ -89,16 +95,12 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
             }
         });
 
-        btDevice= getIntent().getParcelableExtra(EXTRA_BT_DEVICE);
-
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        final MetaWearBleService mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
-        mwCtrllr= mwService.getMetaWearController(btDevice);
     }
 
     @Override
@@ -108,8 +110,8 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
 
     private FilterState filterState;
     @Override
-    public MetaWearController getMetaWearController() {
-        return mwCtrllr;
+    public BluetoothDevice getBluetoothDevice() {
+        return btDevice;
     }
 
     @Override
@@ -140,9 +142,9 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
         public Fragment getItem(int position) {
             switch (position) {
                 case 0: // Fragment # 0 - This will show FirstFragment
-                    return new FilterConfigFragment();
+                    return FilterConfigFragment.getInstance();
                 case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return new DebugFragment();
+                    return DebugFragment.getInstance();
                 default:
                     return null;
             }

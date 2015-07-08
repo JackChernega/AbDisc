@@ -39,10 +39,10 @@ public abstract class FilterConfig {
     public String value;
     public final Number defaultValue;
 
-    public FilterConfig(String name, String description, Number defaultValue) {
+    public FilterConfig(String name, String description, Number initialValue, Number defaultValue) {
         this.name= name;
         this.description= description;
-        this.value= defaultValue.toString();
+        this.value= initialValue.toString();
         this.defaultValue= defaultValue;
     }
 

@@ -34,6 +34,8 @@
     <string name="error_data_connection">must implement DataConnection interface</string>
 
     <string name="text_filter_setup_complete">Filter setup complete</string>
+    <string name="text_filter_setup_required">Filters must be setup to use this panel</string>
+    <string name="text_select_device">No MetaWear device selected</string>
 
     <string name="title_edit_setting">Edit Setting</string>
 
@@ -44,13 +46,15 @@
     <string name="label_filter_config_entry_value">Value</string>
     <string name="label_filter_config_commit">Commit</string>
     <string name="label_debug_sedentary">Sedentary</string>
-    <string name="label_debug_stream_adc_value">Stream ADC Value</string>
-    <string name="label_debug_stream_adc">Stream ADC</string>
-    <string name="label_debug_adc_offset">Stream ADC Offset</string>
+    <string name="label_debug_crunch_offset">Crunch Value</string>
+    <string name="label_debug_stream_adc_value">Sensor ADC Value</string>
+    <string name="label_debug_stream_adc">Crunch ADC</string>
+    <string name="label_debug_adc_offset">Crunch ADC Offset</string>
     <string name="label_debug_crunch_sessions">Crunch Sessions</string>
     <string name="label_debug_step_count">Step Count</string>
     <string name="label_debug_start">Start</string>
     <string name="label_debug_stop">Stop</string>
+    <string name="label_debug_reconnect">Reconnect</string>
     <string name="label_reset">Reset</string>
 
     <string name="description_filter_entry_revert">Reverts configuration setting to default value</string>
@@ -69,6 +73,11 @@
     <string name="label_filter_config_setting_10">L2 Haptic Upper Bound</string>
     <string name="label_filter_config_setting_11">L3 Haptic Lower Bound</string>
     <string name="label_filter_config_setting_12">L3 Haptic Upper Bound</string>
+    <string name="label_filter_config_setting_13">L1 Haptic Strength</string>
+    <string name="label_filter_config_setting_14">L2 Haptic Strength</string>
+    <string name="label_filter_config_setting_15">L3 Haptic Strength</string>
+    <string name="label_filter_config_setting_16">Sedentary Time</string>
+    <string name="label_filter_config_setting_17">Tap Strength</string>
 
     <string name="label_filter_config_description_01">GPIO pin that reads the ADC data</string>
     <string name="label_filter_config_description_02">GPIO pin used to ground the circuit</string>
@@ -82,5 +91,10 @@
     <string name="label_filter_config_description_10">Upper ADC value of haptic range for Level 2 feedback</string>
     <string name="label_filter_config_description_11">Lower ADC value of haptic range for Level 3 feedback</string>
     <string name="label_filter_config_description_12">Upper ADC value of haptic range for Level 3 feedback</string>
+    <string name="label_filter_config_description_13">Level 1 feedback strength</string>
+    <string name="label_filter_config_description_14">Level 2 feedback strength</string>
+    <string name="label_filter_config_description_15">Level 3 feedback strength</string>
+    <string name="label_filter_config_description_16">Units of sedentary step period</string>
+    <string name="label_filter_config_description_17">Threshold for a tap to register, max 8G</string>
 
 </resources>

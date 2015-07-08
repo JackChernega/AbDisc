@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:text="@string/label_debug_stream_adc"
         android:id="@+id/debug_stream_adc"
-        android:layout_below="@+id/debug_stream_sedentary"
+        android:layout_below="@+id/debug_crunch_offset"
         android:layout_alignParentStart="true"
         android:checked="false" />
 
@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/debug_adc_value"
-        android:layout_below="@+id/debug_stream_sedentary"
+        android:layout_below="@+id/debug_crunch_offset_value"
         android:layout_alignParentEnd="true" />
 
     <TextView
@@ -160,5 +160,30 @@
         android:id="@+id/debug_step_count_value"
         android:layout_below="@+id/debug_crunch_session_count"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_debug_reconnect"
+        android:id="@+id/debug_reconnect"
+        android:layout_alignTop="@+id/debug_reset"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/label_debug_crunch_offset"
+        android:id="@+id/debug_crunch_offset"
+        android:layout_below="@+id/debug_stream_sedentary"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/debug_crunch_offset_value"
+        android:layout_below="@+id/debug_sedentary_value"
+        android:layout_alignEnd="@+id/debug_sedentary_value" />
 
 </RelativeLayout>

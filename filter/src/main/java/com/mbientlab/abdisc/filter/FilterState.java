@@ -54,4 +54,7 @@ public interface FilterState {
      * @see com.mbientlab.metawear.api.controller.Logging
      */
     public byte getSensorOffsetLoggingId();
+
+    public byte getCrunchOffsetId();
+    public float getTapThreshold();
 }
