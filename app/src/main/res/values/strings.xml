@@ -4,8 +4,24 @@
 
     <string name="label_step_count">Step Count</string>
     <string name="label_crunch_session">Crunch Sessions</string>
-
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="error_title">Error</string>
     <string name="error_no_bluetooth">Bluetooth device not detected</string>
     <string name="error_app_state">must implement AppState interface</string>
+    <string name="label_profile_main_header">YOUR PROFILE</string>
+    <string name="label_profile_name">Name</string>
+    <string name="label_profile_email">EMAIL</string>
+    <string name="label_profile_facebook">Facebook</string>
+    <string name="label_profile_twitter">Twitter</string>
+    <string name="label_profile_password">Password</string>
+    <string name="label_profile_ab_disk_mode">AB-DISK MODE</string>
+    <string name="label_profile_data_header">YOUR DATA</string>
+    <string name="label_profile_height">Height</string>
+    <string name="label_profile_weight">Weight</string>
+    <string name="label_profile_age">Age</string>
+    <string name="label_profile_gender">Gender</string>
+    <string name="label_profile_stride">Stride</string>
+    <string name="label_profile_mode_crunch">Crunch</string>
+    <string name="label_profile_mode_posture">Posture</string>
 </resources>

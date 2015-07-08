@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ColorPrimary">#ff0083bf</color>
+    <color name="ColorPrimaryDark">#ff003398</color>
+    <color name="ColorControlNormal">#ff003398</color>
+    <color name="ColorNavBackground">#ff7e7e7e</color>
+    <color name="ColorDrawerBackground">#ffffff</color>
+    <color name="ColorPreferencesHeader">#ff2586b2</color>
+    <color name="ColorPreferencesEntry">#ff585454</color>
+</resources>

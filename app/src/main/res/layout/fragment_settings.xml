@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="1400dp"
+    android:background="@color/ColorDrawerBackground"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/start_debug_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_manage" />
+
+    <ImageButton
+        android:id="@+id/connect_metawear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/stat_sys_data_bluetooth" />
+
+    <ImageButton
+        android:id="@+id/upload_filter_config"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_upload" />
+
+    <TextView
+        android:id="@+id/profileOption"
+        style="@style/AppPreferencePopupName"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="@string/label_profile_main_header"
+        android:gravity="center_vertical" />
+
+</LinearLayout>

@@ -2,7 +2,41 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/ColorPreferencesHeader</item>
+        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/ab_gradient</item>
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/ab_gradient</item>
+    </style>
+
+    <style name="AppPreferenceTitle">
+        <item name="android:textSize">@dimen/text_size_large_material</item>
+        <item name="android:textColor">@color/ColorPreferencesHeader</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="AppPreferencePopupName">
+        <item name="android:textSize">@dimen/text_size_profile_name</item>
+        <item name="android:textColor">@color/ColorPreferencesEntry</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+    <style name="AppPreferenceName">
+        <item name="android:textSize">@dimen/text_size_profile_name</item>
+        <item name="android:textColor">@color/ColorPreferencesEntry</item>
+        <item name="android:layout_weight">.40</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="AppPreferenceEntry">
+        <item name="android:textSize">@dimen/text_size_profile_name</item>
+        <item name="android:textColor">@color/ColorPreferencesEntry</item>
+        <item name="android:layout_weight">.60</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
 </resources>

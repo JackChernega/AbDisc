@@ -31,12 +31,12 @@
 
 package com.mbientlab.abdisc;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -45,22 +45,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mbientlab.abdisc.filter.DebugMainActivity;
-import com.mbientlab.abdisc.filter.FilterSetup;
+
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
-import com.mbientlab.metawear.api.Module;
-import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
-import com.mbientlab.metawear.api.controller.Timer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -68,7 +70,7 @@ import java.nio.ByteOrder;
 /**
  * Created by etsai on 6/1/2015.
  */
-public class MainActivity extends Activity implements ServiceConnection, AppState {
+public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState {
     private final String MW_MAC_ADDRESS= "C8:D2:BA:90:60:03";
     private final static int REQUEST_ENABLE_BT= 0;
     private static final int ACTIVITY_PER_STEP= 20000;
@@ -78,10 +80,14 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
     private Fragment activityFrag= null, distanceFrag= null;
 
     private FilterState filterState;
-    private ProgressDialog setupProgress;
+
     private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
     private LocalBroadcastManager broadcastManager= null;
+    private SettingsFragment mSettingsFragment;
+    private ProfileFragment profileFragment;
+    private SharedPreferences sharedPreferences;
+    private Editor editor;
 
     private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
         @Override
@@ -103,9 +109,12 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-        BluetoothAdapter btAdapter= ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+        sharedPreferences = getApplicationContext().getSharedPreferences("com.mbientlab.abdisk", 0);
+
+        BluetoothAdapter btAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         if (btAdapter == null) {
             new AlertDialog.Builder(this).setTitle(R.string.error_title)
@@ -130,13 +139,13 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
             }
         }
 
-        final FragmentManager fragManager= getFragmentManager();
+        final FragmentManager fragManager = getFragmentManager();
         findViewById(R.id.tab_activity).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction fragTransaction= fragManager.beginTransaction();
+                FragmentTransaction fragTransaction = fragManager.beginTransaction();
                 if (activityFrag == null) {
-                    activityFrag= new CrunchSessionFragment();
+                    activityFrag = new CrunchSessionFragment();
                 }
 
                 fragTransaction.replace(R.id.app_content, activityFrag).commit();
@@ -145,70 +154,43 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         findViewById(R.id.tab_distance).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction fragTransaction= fragManager.beginTransaction();
+                FragmentTransaction fragTransaction = fragManager.beginTransaction();
                 if (distanceFrag == null) {
-                    distanceFrag= new StepCountFragment();
+                    distanceFrag = new StepCountFragment();
                 }
 
                 fragTransaction.replace(R.id.app_content, distanceFrag).commit();
             }
         });
-        findViewById(R.id.start_debug_activity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Intent debugIntent= new Intent(MainActivity.this, DebugMainActivity.class);
-                debugIntent.putExtra(DebugMainActivity.EXTRA_BT_DEVICE, btDevice);
-                startActivity(debugIntent);
-            }
-        });
-        findViewById(R.id.connect_metawear).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mwCtrllr.connect();
-            }
-        });
-        findViewById(R.id.upload_filter_config).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mwCtrllr.isConnected()) {
-                    setupProgress= new ProgressDialog(MainActivity.this);
-                    setupProgress.setIndeterminate(true);
-                    setupProgress.setMessage("Setting up filters...");
-                    setupProgress.show();
 
-                    FilterSetup.configure(mwCtrllr, new FilterSetup.SetupListener() {
-                        @Override
-                        public void ready(FilterState state) {
-                            filterState= state;
+        mSettingsFragment = (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.settings_drawer);
+        mSettingsFragment.setUp(
+                R.id.settings_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
 
-                            DataProcessor dpCtrllr= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
-                            dpCtrllr.enableFilterNotify(state.getSedentaryId());
-                            dpCtrllr.enableFilterNotify(state.getSessionStartId());
 
-                            setupProgress.dismiss();
-                            setupProgress= null;
 
-                            Toast.makeText(MainActivity.this, R.string.text_filter_setup_complete, Toast.LENGTH_SHORT).show();
-                            Log.i("AbDisc", state.toString());
+        // eventually make this conditional.
+        FragmentTransaction fragTransaction = fragManager.beginTransaction();
+        if (profileFragment == null) {
+            profileFragment = new ProfileFragment();
+        }
 
-                            Timer timerCtrllr= (Timer) mwCtrllr.getModuleController(Module.TIMER);
-                            timerCtrllr.startTimer(filterState.getSensorTimerId());
+        fragTransaction.replace(R.id.app_content, profileFragment).commit();
+    }
 
-                            Accelerometer accelCtrllr = (Accelerometer) mwCtrllr.getModuleController(Module.ACCELEROMETER);
-                            accelCtrllr.enableXYZSampling()
-                                    .withFullScaleRange(Accelerometer.SamplingConfig.FullScaleRange.FSR_8G)
-                                    .withOutputDataRate(Accelerometer.SamplingConfig.OutputDataRate.ODR_100_HZ)
-                                    .withHighPassFilter((byte) 2)
-                                    .withSilentMode();
-                            ///< May want to configure the other options for tap detection
-                            accelCtrllr.enableTapDetection(Accelerometer.TapType.DOUBLE_TAP, Accelerometer.Axis.Z)
-                                    .withSilentMode();
-                            accelCtrllr.startComponents();
-                        }
-                    }).commit();
-                }
-            }
-        });
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+        mSettingsFragment.syncDrawerToggle();
+    }
+
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_gradient));
     }
 
     @Override
@@ -280,6 +262,8 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
     }
 
     @Override
+    public void setFilterState(FilterState filterState) {this.filterState = filterState;}
+    @Override
     public int getStepCount() {
         return steps;
     }
@@ -289,4 +273,40 @@ public class MainActivity extends Activity implements ServiceConnection, AppStat
         return crunchSessionCount;
     }
 
+    @Override
+    public BluetoothDevice getBluetoothDevice(){
+        return btDevice;
+    }
+
+    @Override
+    public SharedPreferences getSharedPreferences(){
+        return sharedPreferences;
+    }
+
+    public ProfileFragment getProfileFragment(){
+        return profileFragment;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        /**if (id == R.id.action_settings) {
+         return true;
+         }*/
+
+        if (item != null && id == android.R.id.home) {
+            if (mSettingsFragment.isDrawerOpen(Gravity.LEFT)) {
+                mSettingsFragment.closeDrawer(Gravity.LEFT);
+            } else {
+                mSettingsFragment.openDrawer(Gravity.LEFT);
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
