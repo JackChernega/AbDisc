@@ -21,7 +21,37 @@
     <string name="label_profile_weight">Weight</string>
     <string name="label_profile_age">Age</string>
     <string name="label_profile_gender">Gender</string>
+    <string name="label_profile_gender_male">Male</string>
+    <string name="label_profile_gender_female">Female</string>
     <string name="label_profile_stride">Stride</string>
     <string name="label_profile_mode_crunch">Crunch</string>
     <string name="label_profile_mode_posture">Posture</string>
+    <string name="label_profile_feet">\'</string>
+    <string name="label_profile_inches">\"</string>
+    <string name="label_profile_in_pounds"> In Pounds</string>
+    <string name="label_profile_pounds">lbs</string>
+    <string-array name="height_feet">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+    <string-array name="height_inches">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+    </string-array>
 </resources>

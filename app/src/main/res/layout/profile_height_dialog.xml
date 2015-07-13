@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/profileDialogTitle"
+        style="@style/AppPreferencePopupName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_profile_height" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:orientation="horizontal">
+
+        <Spinner xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/profileDialogHeightFeet"
+            android:layout_width="0dp"
+            android:layout_weight=".4"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:spinnerMode="dropdown" />
+
+        <TextView
+            android:id="@+id/profileDialogFeetLabel"
+            style="@style/AppPreferenceEntry"
+            android:layout_width="0dp"
+            android:layout_weight=".1"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:text="@string/label_profile_feet"/>
+
+        <Spinner xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/profileDialogHeightInches"
+            android:layout_width="0dp"
+            android:layout_weight=".4"
+            android:layout_height="match_parent"
+            android:spinnerMode="dropdown"
+            android:padding="10dp"/>
+
+        <TextView
+            android:id="@+id/profileDialogInchesLabel"
+            style="@style/AppPreferenceEntry"
+            android:layout_width="0dp"
+            android:layout_weight=".1"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:text="@string/label_profile_inches"/>
+    </LinearLayout>
+
+</LinearLayout>
