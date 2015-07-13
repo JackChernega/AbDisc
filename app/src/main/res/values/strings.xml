@@ -29,7 +29,13 @@
     <string name="label_profile_feet">\'</string>
     <string name="label_profile_inches">\"</string>
     <string name="label_profile_in_pounds"> In Pounds</string>
+    <string name="label_profile_ok">OK</string>
+    <string name="label_profile_cancel">Cancel</string>
+    <string name="label_profile_yes">Yes</string>
+    <string name="label_profile_no">No</string>
     <string name="label_profile_pounds">lbs</string>
+    <string name="label_profile_use_auto">Use Automatic Settings</string>
+    <string name="label_profile_yes_no_text_stride">Your stride length is calculated according to your height.  Do you wish to override that value?</string>
     <string-array name="height_feet">
         <item>0</item>
         <item>1</item>

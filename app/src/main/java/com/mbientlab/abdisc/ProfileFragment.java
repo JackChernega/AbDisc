@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -87,6 +88,115 @@ public class ProfileFragment extends Fragment {
         setupTextFieldDialogs(view, sharedPreferences, alertDialogBuilder);
         setupRadioDialogs(view, sharedPreferences, alertDialogBuilder);
         setupSpinnerDialogs(view, sharedPreferences, alertDialogBuilder);
+        setupYesNoDialogs(view, sharedPreferences, alertDialogBuilder);
+    }
+
+    private int getHeightInInches(SharedPreferences sharedPreferences) {
+        int heightInFeet = sharedPreferences.getInt("profile_height_feet", 0);
+        int heightInInches = sharedPreferences.getInt("profile_height_inches", 0);
+        return ((heightInFeet * 12) + heightInInches);
+    }
+
+    private int calculateStride(SharedPreferences sharedPreferences) {
+        String gender = sharedPreferences.getString("profile_gender", "");
+        int genderHeightOffset = 0;
+        int genderOffset = 0;
+        int heightInInches = getHeightInInches(sharedPreferences);
+
+        if (heightInInches > 0) {
+            if (gender.equals("male")) {
+                genderHeightOffset = 70;
+                genderOffset = 31;
+            } else if (gender.equals("female")) {
+                genderHeightOffset = 64;
+                genderOffset = 26;
+            }
+        }
+        return ((new Double(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
+    }
+
+    private void setupConditionalDialog(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
+        // hard coded for stride until others need this
+
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.profile_dialog_with_default, null);
+        TextView promptLabel = (TextView) promptView.findViewById(R.id.profileDialogWithDefaultTitle);
+        final EditText promptContent = (EditText) promptView.findViewById(R.id.profileDialogWithDefaultText);
+        final CheckBox useAutomaticCheckbox = (CheckBox) promptView.findViewById(R.id.profileDialogWithDefaultUseAutoCheckbox);
+        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+        promptLabel.setText(R.string.label_profile_stride);
+        promptContent.setText(String.valueOf(sharedPreferences.getInt("profile_stride", 0)));
+
+        useAutomaticCheckbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (useAutomaticCheckbox.isChecked()) {
+                    promptContent.setEnabled(false);
+                    promptContent.setText(String.valueOf(calculateStride(sharedPreferences)));
+                } else {
+                    promptContent.setEnabled(true);
+                }
+            }
+        });
+
+        alertDialogBuilder.setView(promptView);
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        String promptValue = promptContent.getText().toString();
+                        boolean useAutomaticSettings = useAutomaticCheckbox.isChecked();
+
+                        editor.putInt("profile_stride", Integer.valueOf(promptValue));
+                        editor.putBoolean("profile_stride_automatic", useAutomaticSettings);
+
+                        editor.apply();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+
+    }
+
+    private void setupYesNoDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
+        final int profileFieldIds[] = {R.id.stride};
+        final Hashtable<Integer, Integer> alertText = new Hashtable();
+        alertText.put(R.id.stride, R.string.label_profile_yes_no_text_stride);
+
+        for (int i = 0; i < profileFieldIds.length; i++) {
+
+            view.findViewById(profileFieldIds[i]).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+                    View promptView = layoutInflater.inflate(R.layout.profile_dialog_yes_no, null);
+                    TextView promptLabel = (TextView) promptView.findViewById(R.id.profileDialogYesNoText);
+                    promptLabel.setText(alertText.get(view.getId()));
+
+                    alertDialogBuilder.setView(promptView);
+                    alertDialogBuilder.setCancelable(false)
+                            .setPositiveButton(R.string.label_profile_yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    setupConditionalDialog(view, sharedPreferences, alertDialogBuilder);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNegativeButton(R.string.label_profile_no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = alertDialogBuilder.create();
+                    alert.show();
+                }
+            });
+        }
     }
 
     private void setupTextFieldDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
@@ -119,9 +229,9 @@ public class ProfileFragment extends Fragment {
 
         for (int i = 0; i < profileFieldIds.length; i++) {
             TextView profileEntry = (TextView) view.findViewById(profileEntries[i]);
-            if(profileEntry.getId() == R.id.weightEntry){
+            if (profileEntry.getId() == R.id.weightEntry) {
                 profileEntry.setText(String.valueOf(sharedPreferences.getInt(sharedPreferenceKeys.get(profileFieldIds[i]), 0)) + getString(R.string.label_profile_pounds));
-            }else if (profileEntry.getId() == R.id.ageEntry){
+            } else if (profileEntry.getId() == R.id.ageEntry) {
                 profileEntry.setText(String.valueOf(sharedPreferences.getInt(sharedPreferenceKeys.get(profileFieldIds[i]), 0)));
             } else {
                 profileEntry.setText(sharedPreferences.getString(sharedPreferenceKeys.get(profileFieldIds[i]), ""));
@@ -151,13 +261,13 @@ public class ProfileFragment extends Fragment {
                         promptLabel.setText(profileFieldNames.get(view.getId()));
                     }
 
-                    if (view.getId() == R.id.weight){
+                    if (view.getId() == R.id.weight) {
                         int weight = sharedPreferences.getInt(sharedPreferenceKeys.get(view.getId()), 0);
                         String weightString = String.valueOf(weight);
                         promptContent.setText(weightString);
-                    } else if(view.getId() == R.id.age){
+                    } else if (view.getId() == R.id.age) {
                         promptContent.setText(String.valueOf(sharedPreferences.getInt(sharedPreferenceKeys.get(view.getId()), 0)));
-                    } else{
+                    } else {
                         promptContent.setText(sharedPreferences.getString(sharedPreferenceKeys.get(view.getId()), ""));
                     }
 
@@ -169,13 +279,13 @@ public class ProfileFragment extends Fragment {
                                     String promptValue = promptContent.getText().toString();
                                     editor.putString(sharedPreferenceKeys.get(view.getId()), promptValue);
                                     TextView profileValue = (TextView) view.findViewById(profileFieldEntries.get(view.getId()));
-                                    if(view.getId() == R.id.weight){
+                                    if (view.getId() == R.id.weight) {
                                         profileValue.setText(promptValue + getString(R.string.label_profile_pounds));
                                         editor.putInt(sharedPreferenceKeys.get(view.getId()), Integer.valueOf(promptValue));
-                                    }else {
-                                        if(view.getId() == R.id.age){
+                                    } else {
+                                        if (view.getId() == R.id.age) {
                                             editor.putInt(sharedPreferenceKeys.get(view.getId()), Integer.valueOf(promptValue));
-                                        }else{
+                                        } else {
                                             editor.putString(sharedPreferenceKeys.get(view.getId()), promptValue);
                                         }
                                         profileValue.setText(promptValue);
@@ -197,7 +307,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void setupRadioDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder){
+    private void setupRadioDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         // radio button code
         final int profileFieldIds[] = {R.id.abDiskMode, R.id.gender};
         final Hashtable<Integer, Integer> profileFieldNames = new Hashtable();
@@ -233,7 +343,7 @@ public class ProfileFragment extends Fragment {
                     String checkboxSelection = sharedPreferences.getString(sharedPreferenceKeys.get(view.getId()), "");
 
                     if ((view.getId() == R.id.abDiskMode && checkboxSelection.equals("posture")) ||
-                            (view.getId() == R.id.gender && checkboxSelection.equals("male"))) {
+                            (view.getId() == R.id.gender && checkboxSelection.equals("female"))) {
                         radioGroup.check(R.id.profileDialogButton1);
                     } else {
                         radioGroup.check(R.id.profileDialogButton0);
@@ -242,10 +352,10 @@ public class ProfileFragment extends Fragment {
                     RadioButton radioButton0 = (RadioButton) promptView.findViewById(R.id.profileDialogButton0);
                     RadioButton radioButton1 = (RadioButton) promptView.findViewById(R.id.profileDialogButton1);
 
-                    if(view.getId() == R.id.abDiskMode){
+                    if (view.getId() == R.id.abDiskMode) {
                         radioButton0.setText(R.string.label_profile_mode_crunch);
                         radioButton1.setText(R.string.label_profile_mode_posture);
-                    }else{
+                    } else {
                         radioButton0.setText(R.string.label_profile_gender_male);
                         radioButton1.setText(R.string.label_profile_gender_female);
                     }
@@ -259,12 +369,11 @@ public class ProfileFragment extends Fragment {
                                     String checkboxSelection = "";
                                     if ((checkedId == R.id.profileDialogButton0) && (view.getId() == R.id.abDiskMode)) {
                                         checkboxSelection = "crunch";
-                                    }else if ((checkedId == R.id.profileDialogButton0) && (view.getId() == R.id.gender)){
+                                    } else if ((checkedId == R.id.profileDialogButton0) && (view.getId() == R.id.gender)) {
                                         checkboxSelection = "male";
-                                    }else if (view.getId() == R.id.gender){
+                                    } else if (view.getId() == R.id.gender) {
                                         checkboxSelection = "female";
-                                    }
-                                    else {
+                                    } else {
                                         checkboxSelection = "posture";
                                     }
                                     editor.putString(sharedPreferenceKeys.get(view.getId()), checkboxSelection);
@@ -288,14 +397,14 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private String getHeightString(int feet, int inches){
-        return String.valueOf(feet) +"' " + String.valueOf(inches) + "\"";
+    private String getHeightString(int feet, int inches) {
+        return String.valueOf(feet) + "' " + String.valueOf(inches) + "\"";
     }
 
-    private void setupSpinnerDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder){
+    private void setupSpinnerDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         final TextView profileEntry = (TextView) view.findViewById(R.id.heightEntry);
-        int heightFeet = sharedPreferences.getInt("height_feet", 0);
-        int heightInches = sharedPreferences.getInt("height_inches", 0);
+        int heightFeet = sharedPreferences.getInt("profile_height_feet", 0);
+        int heightInches = sharedPreferences.getInt("profile_height_inches", 0);
         profileEntry.setText(getHeightString(heightFeet, heightInches));
 
         view.findViewById(R.id.height).setOnClickListener(new View.OnClickListener() {
@@ -322,8 +431,8 @@ public class ProfileFragment extends Fragment {
                 // Apply the adapter to the spinner
                 heightSpinnerInches.setAdapter(heightAdapterInches);
 
-                int heightFeet = sharedPreferences.getInt("height_feet", 0);
-                int heightInches = sharedPreferences.getInt("height_inches", 0);
+                int heightFeet = sharedPreferences.getInt("profile_height_feet", 0);
+                int heightInches = sharedPreferences.getInt("profile_height_inches", 0);
 
                 heightSpinnerFeet.setSelection(heightFeet);
                 heightSpinnerInches.setSelection(heightInches);
@@ -336,8 +445,8 @@ public class ProfileFragment extends Fragment {
                                 int heightFeet = heightSpinnerFeet.getSelectedItemPosition();
                                 int heightInches = heightSpinnerInches.getSelectedItemPosition();
 
-                                editor.putInt("height_feet", heightFeet);
-                                editor.putInt("height_inches", heightInches);
+                                editor.putInt("profile_height_feet", heightFeet);
+                                editor.putInt("profile_height_inches", heightInches);
 
                                 profileEntry.setText(getHeightString(heightFeet, heightInches));
                                 editor.apply();
