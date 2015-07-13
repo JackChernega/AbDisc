@@ -115,7 +115,7 @@ public class ProfileFragment extends Fragment {
         return ((new Double(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
     }
 
-    private void setupConditionalDialog(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
+    private void setupConditionalDialog(final View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         // hard coded for stride until others need this
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -126,6 +126,7 @@ public class ProfileFragment extends Fragment {
         promptContent.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
         promptLabel.setText(R.string.label_profile_stride);
         promptContent.setText(String.valueOf(sharedPreferences.getInt("profile_stride", 0)));
+        promptContent.setEnabled(true);
 
         useAutomaticCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,7 +150,8 @@ public class ProfileFragment extends Fragment {
 
                         editor.putInt("profile_stride", Integer.valueOf(promptValue));
                         editor.putBoolean("profile_stride_automatic", useAutomaticSettings);
-
+                        TextView strideEntry = (TextView) view.findViewById(R.id.strideEntry);
+                        strideEntry.setText(promptValue + getString(R.string.label_profile_inches));
                         editor.apply();
                         dialog.dismiss();
                     }
@@ -169,34 +171,48 @@ public class ProfileFragment extends Fragment {
         final Hashtable<Integer, Integer> alertText = new Hashtable();
         alertText.put(R.id.stride, R.string.label_profile_yes_no_text_stride);
 
-        for (int i = 0; i < profileFieldIds.length; i++) {
+        TextView strideEntry = (TextView) view.findViewById(R.id.strideEntry);
 
+        int stride = 0;
+
+        for (int i = 0; i < profileFieldIds.length; i++) {
             view.findViewById(profileFieldIds[i]).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-                    View promptView = layoutInflater.inflate(R.layout.profile_dialog_yes_no, null);
-                    TextView promptLabel = (TextView) promptView.findViewById(R.id.profileDialogYesNoText);
-                    promptLabel.setText(alertText.get(view.getId()));
+                    if (sharedPreferences.getBoolean("profile_stride_automatic", true)) {
+                        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+                        View promptView = layoutInflater.inflate(R.layout.profile_dialog_yes_no, null);
+                        TextView promptLabel = (TextView) promptView.findViewById(R.id.profileDialogYesNoText);
+                        promptLabel.setText(alertText.get(view.getId()));
 
-                    alertDialogBuilder.setView(promptView);
-                    alertDialogBuilder.setCancelable(false)
-                            .setPositiveButton(R.string.label_profile_yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    setupConditionalDialog(view, sharedPreferences, alertDialogBuilder);
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNegativeButton(R.string.label_profile_no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert = alertDialogBuilder.create();
-                    alert.show();
+                        alertDialogBuilder.setView(promptView);
+                        alertDialogBuilder.setCancelable(false)
+                                .setPositiveButton(R.string.label_profile_yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        setupConditionalDialog(view, sharedPreferences, alertDialogBuilder);
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(R.string.label_profile_no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = alertDialogBuilder.create();
+                        alert.show();
+                    } else {
+                        setupConditionalDialog(view, sharedPreferences, alertDialogBuilder);
+                    }
                 }
             });
         }
+        if (sharedPreferences.getBoolean("profile_stride_automatic", true)) {
+            stride = calculateStride(sharedPreferences);
+        } else {
+            stride = sharedPreferences.getInt("profile_stride", 0);
+        }
+        strideEntry.setText(String.valueOf(stride) + getString(R.string.label_profile_inches));
+
     }
 
     private void setupTextFieldDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
