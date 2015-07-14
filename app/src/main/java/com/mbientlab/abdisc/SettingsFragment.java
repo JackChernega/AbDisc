@@ -25,12 +25,14 @@ import android.widget.Toast;
 import com.mbientlab.abdisc.filter.DebugMainActivity;
 import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 import com.mbientlab.metawear.api.controller.Timer;
 import com.mbientlab.abdisc.filter.FilterState;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -161,7 +163,8 @@ public class SettingsFragment extends Fragment {
         view.findViewById(R.id.connect_metawear).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                appState.getMetaWearController().connect();
+                BleScannerFragment.newInstance(new UUID[]{UUID.fromString("326a9000-85cb-9195-d9dd-464cfbbae75a")})
+                        .show(getActivity().getFragmentManager(), "ble_scanner_fragment");
             }
         });
 
