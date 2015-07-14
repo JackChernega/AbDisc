@@ -85,12 +85,11 @@ public class DebugFragment extends Fragment implements ServiceConnection {
                 ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
 
                 if (filterId == conn.getFilterState().getSedentaryId()) {
-                    short milliG = buffer.getShort();
+                    int milliG = buffer.getInt();
 
                     sedentaryValue.setText(String.format(Locale.US, "%d", milliG));
                     steps += (milliG / ACTIVITY_PER_STEP);
                     stepCountValue.setText(String.format(Locale.US, "%d", steps));
-
                 } else if (filterId == conn.getFilterState().getSensorId()) {
                     adcValue.setText(String.format(Locale.US, "%d", buffer.getShort()));
                 } else if (filterId == conn.getFilterState().getOffsetUpdateId()) {

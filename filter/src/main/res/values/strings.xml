@@ -81,7 +81,7 @@
 
     <string name="label_filter_config_description_01">GPIO pin that reads the ADC data</string>
     <string name="label_filter_config_description_02">GPIO pin used to ground the circuit</string>
-    <string name="label_filter_config_description_03">Minimum activity required to restart the sedentary timer</string>
+    <string name="label_filter_config_description_03">Minimum activity signifying an active user</string>
     <string name="label_filter_config_description_04">Minimum activity level that indicates the device is worn</string>
     <string name="label_filter_config_description_05">How long a crunch session will last, in seconds</string>
     <string name="label_filter_config_description_06">Minimum change in baseline sensor value to update the crunch threshold</string>
