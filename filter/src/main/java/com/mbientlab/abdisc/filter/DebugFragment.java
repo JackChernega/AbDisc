@@ -65,7 +65,7 @@ import java.util.Locale;
  */
 public class DebugFragment extends Fragment implements ServiceConnection {
     private static DebugFragment INSTANCE= null;
-    private static final int ACTIVITY_PER_STEP= 20000;
+    private static final int ACTIVITY_PER_STEP= 6700;
 
     public static DebugFragment getInstance() {
         if (INSTANCE == null) {
