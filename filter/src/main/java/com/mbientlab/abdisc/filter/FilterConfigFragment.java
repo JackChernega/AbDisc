@@ -121,6 +121,17 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
 
         final Activity owner= getActivity();
         final ArrayList<FilterConfig> configSettings= new ArrayList<>();
+        
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_18),
+                owner.getString(R.string.label_filter_config_description_18),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_18), DefaultParameters.ADC_SAMPLE_SIZE),
+                DefaultParameters.ADC_SAMPLE_SIZE) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withAdcSampleSize(Byte.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_18), Byte.valueOf(this.value));
+            }
+        });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_17),
                 owner.getString(R.string.label_filter_config_description_17),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_17), DefaultParameters.TAP_THRESHOLD),

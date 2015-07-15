@@ -5,6 +5,7 @@ package com.mbientlab.abdisc.filter;
  * @author Eric Tsai
  */
 public interface FilterParameters {
+    public FilterParameters withAdcSampleSize(byte sampleSize);
     /**
      * Sets how long the warning period is before starting a crunch session, defaults to 450ms
      * @param duration Duration of the warning period, in milliseconds

@@ -27,7 +27,7 @@ import java.util.Locale;
  * @author Eric Tsai
  */
 public class FilterSetup {
-    private static final byte RMS_DATA_SIZE= 4, SENSOR_AVG_DEPTH= 4;
+    private static final byte RMS_DATA_SIZE= 4;
     private static final short SESSION_WARNING_NUM_PULSES= 2, SESSION_START_DELAY= 2000;
     private static final int CRUNCH_THRESHOLD_UPDATE_PERIOD= 15000, CRUNCH_THRESHOLD_CHECK_PERIOD= 3000;
 
@@ -50,7 +50,8 @@ public class FilterSetup {
      */
     public static FilterParameters configure(final MetaWearController mwCtrllr, final SetupListener listener) {
         return new FilterParameters() {
-            private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= DefaultParameters.SEDENTARY_TIME;
+            private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= DefaultParameters.SEDENTARY_TIME,
+                    adcSampleSize= DefaultParameters.ADC_SAMPLE_SIZE;
             private int sensorSamplingPeriod= 500, sedentaryStepPeriod= 60000, sedentaryDeltaAvgReset= DefaultParameters.SEDENTARY_RESET_THRESHOLD,
                     sedentaryThreshold= DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD, sensorThreshold= DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE;
             private float crunchSessionDuration= DefaultParameters.CRUNCH_SESSION_DURATION, sessionWarningStrength = 100.f,
@@ -69,6 +70,12 @@ public class FilterSetup {
             /** These IDs need to be exposed to the user */
             private byte sensorTimerId= -1, activityDiffLoggingId= -1, sensorDataLoggingId= -1, sensorThresholdLoggingId= -1,
                     differentialId= -1, sensorPassthroughId= -1, feedbackId= -1;
+
+            @Override
+            public FilterParameters withAdcSampleSize(byte sampleSize) {
+                adcSampleSize= sampleSize;
+                return this;
+            }
 
             public FilterParameters withSessionWarningDuration(short duration) {
                 sessionWarningDuration= duration;
@@ -251,7 +258,7 @@ public class FilterSetup {
 
                         mwCtrllr.removeModuleCallback(this);
                         LowPassBuilder builder= new LowPassBuilder();
-                        builder.withSampleSize(SENSOR_AVG_DEPTH)
+                        builder.withSampleSize(adcSampleSize)
                                 .withInputSize(GPIO.ANALOG_DATA_SIZE)
                                 .withOutputSize(GPIO.ANALOG_DATA_SIZE);
                         dpController.addReadFilter(TriggerBuilder.buildGPIOAnalogTrigger(true, sensorGPIOPin), builder.build());
