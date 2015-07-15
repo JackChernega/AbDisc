@@ -29,7 +29,7 @@ import java.util.Locale;
 public class FilterSetup {
     private static final byte RMS_DATA_SIZE= 4;
     private static final short SESSION_WARNING_NUM_PULSES= 2, SESSION_START_DELAY= 2000;
-    private static final int CRUNCH_THRESHOLD_UPDATE_PERIOD= 15000, CRUNCH_THRESHOLD_CHECK_PERIOD= 3000;
+    private static final int CRUNCH_THRESHOLD_CHECK_PERIOD= 3000;
 
     /**
      * Interface definition for a callback when the filter chain is setup
@@ -53,7 +53,8 @@ public class FilterSetup {
             private byte sensorGPIOPin= DefaultParameters.SENSOR_DATA_PIN, sensorPulldownPin= DefaultParameters.SENSOR_GROUND_PIN, sedentaryTime= DefaultParameters.SEDENTARY_TIME,
                     adcSampleSize= DefaultParameters.ADC_SAMPLE_SIZE;
             private int sensorSamplingPeriod= 500, sedentaryStepPeriod= 60000, sedentaryDeltaAvgReset= DefaultParameters.SEDENTARY_RESET_THRESHOLD,
-                    sedentaryThreshold= DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD, sensorThreshold= DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE;
+                    sedentaryThreshold= DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD, sensorThreshold= DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE,
+                    crunchThresholdUpdatePeriod= DefaultParameters.CRUNCH_THRESHOLD_UPDATE_PERIOD;
             private float crunchSessionDuration= DefaultParameters.CRUNCH_SESSION_DURATION, sessionWarningStrength = 100.f,
                     tapThreshold= DefaultParameters.TAP_THRESHOLD;
 
@@ -108,6 +109,12 @@ public class FilterSetup {
             @Override
             public FilterParameters withCrunchThresholdUpdateMinChangeThreshold(int threshold) {
                 sensorThreshold= threshold;
+                return this;
+            }
+
+            @Override
+            public FilterParameters withCrunchThresholdUpdateCheckPeriod(int period) {
+                crunchThresholdUpdatePeriod= period;
                 return this;
             }
 
@@ -490,7 +497,7 @@ public class FilterSetup {
                         mwCtrllr.removeModuleCallback(this);
                         mwCtrllr.addModuleCallback(crunchThsUpdateCallback);
                         TimeDelayBuilder builder= new TimeDelayBuilder();
-                        builder.withDataSize(GPIO.ANALOG_DATA_SIZE).withPeriod(CRUNCH_THRESHOLD_UPDATE_PERIOD)
+                        builder.withDataSize(GPIO.ANALOG_DATA_SIZE).withPeriod(crunchThresholdUpdatePeriod)
                                 .withFilterMode(TimeDelayBuilder.FilterMode.DIFFERENTIAL);
                         dpController.chainFilters(sensorFilterPass, GPIO.ANALOG_DATA_SIZE, builder.build());
 

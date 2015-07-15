@@ -79,6 +79,7 @@
     <string name="label_filter_config_setting_16">Sedentary Time</string>
     <string name="label_filter_config_setting_17">Tap Strength</string>
     <string name="label_filter_config_setting_18">ADC Sample Size</string>
+    <string name="label_filter_config_setting_19">Crunch Threshold Update Check Period</string>
 
     <string name="label_filter_config_description_01">GPIO pin that reads the ADC data</string>
     <string name="label_filter_config_description_02">GPIO pin used to ground the circuit</string>
@@ -98,5 +99,6 @@
     <string name="label_filter_config_description_16">Units of sedentary step period</string>
     <string name="label_filter_config_description_17">Threshold for a tap to register, max 8G</string>
     <string name="label_filter_config_description_18">Sample size of the ADC average</string>
+    <string name="label_filter_config_description_19">How often, in milliseconds, to check if the crunch threshold should be updated</string>
 
 </resources>

@@ -83,7 +83,7 @@ public interface FilterParameters {
      * @return Calling object
      */
     public FilterParameters withCrunchThresholdUpdateMinChangeThreshold(int threshold);
-
+    public FilterParameters withCrunchThresholdUpdateCheckPeriod(int period);
 
     /**
      * Enumeration of haptic feedback levels.  Depending on which range the relative ADC value lays in,

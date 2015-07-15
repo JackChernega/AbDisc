@@ -202,6 +202,16 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putFloat(owner.getString(R.string.label_filter_config_setting_05), Float.valueOf(this.value));
             }
         });
+        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_19),
+                owner.getString(R.string.label_filter_config_description_19),
+                sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_19), DefaultParameters.CRUNCH_THRESHOLD_UPDATE_PERIOD),
+                DefaultParameters.CRUNCH_THRESHOLD_UPDATE_PERIOD) {
+            @Override
+            public void writeSetting() {
+                parameterSetup.withCrunchSessionDuration(Float.valueOf(this.value));
+                editor.putInt(owner.getString(R.string.label_filter_config_setting_19), Integer.valueOf(this.value));
+            }
+        });
         configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_06),
                 owner.getString(R.string.label_filter_config_description_06),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_06), DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE),
