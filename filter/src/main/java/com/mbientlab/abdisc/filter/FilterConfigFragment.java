@@ -60,7 +60,7 @@ import java.util.Locale;
  * Created by etsai on 6/3/2015.
  */
 public class FilterConfigFragment extends Fragment implements ServiceConnection {
-    private static String SHARED_PREF_KEY= "com.mbientlab.abdisc.filter.FilterConfigFragment";
+    private static final String SHARED_PREF_KEY= "com.mbientlab.abdisc.filter.FilterConfigFragment";
 
     private static FilterConfigFragment INSTANCE;
 
@@ -327,7 +327,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                         filterCfg.writeSetting();
                     }
                     parameterSetup.commit();
-                    editor.commit();
+                    editor.apply();
                 } else {
                     Toast.makeText(getActivity(), R.string.text_select_device, Toast.LENGTH_LONG).show();
                 }

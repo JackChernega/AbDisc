@@ -36,6 +36,14 @@
     <string name="label_profile_pounds">lbs</string>
     <string name="label_profile_use_auto">Use Automatic Settings</string>
     <string name="label_profile_yes_no_text_stride">Your stride length is calculated according to your height.  Do you wish to override that value?</string>
+    <string name="label_profile_steps">Steps</string>
+    <string name="label_profile_your_goals">YOUR GOALS</string>
+    <string name="label_profile_yes_no_steps">Your Steps goal is calculated according to your age, and assumes a \"moderate\" fitness level.  It will be automatically adjusted as you use your Ab-Disc, or you can change it manually.</string>
+    <string name="label_profile_crunch_sessions">Crunch Sessions</string>
+    <string name="label_profile_posture_sessions">Posture Sessions</string>
+    <string name="label_profile_calories">Calories</string>
+    <string name="label_profile_yes_no_text_sessions">This value will be automatically adjusted as you use your Ab-Disc, or you can change it manually</string>
+    <string name="label_profile_no_edit_calories_text">\'Calories\' is calculated from your Steps, Stride, Weight and Gender.</string>
     <string-array name="height_feet">
         <item>0</item>
         <item>1</item>

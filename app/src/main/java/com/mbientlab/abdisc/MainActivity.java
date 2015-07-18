@@ -31,7 +31,6 @@
 
 package com.mbientlab.abdisc;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -59,24 +58,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mbientlab.abdisc.filter.DebugMainActivity;
-import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
-import com.mbientlab.metawear.api.Module;
-import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
-import com.mbientlab.metawear.api.controller.Timer;
-
-//todo: commenting out,  can't find library
-// have you considered using something like crashalytics?
-//import com.nullwire.trace.ExceptionHandler;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.UUID;
 
 /**
  * Created by etsai on 6/1/2015.
@@ -314,10 +303,10 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
          }*/
 
         if (item != null && id == android.R.id.home) {
-            if (mSettingsFragment.isDrawerOpen(Gravity.LEFT)) {
-                mSettingsFragment.closeDrawer(Gravity.LEFT);
+            if (mSettingsFragment.isDrawerOpen(Gravity.START)) {
+                mSettingsFragment.closeDrawer(Gravity.START);
             } else {
-                mSettingsFragment.openDrawer(Gravity.LEFT);
+                mSettingsFragment.openDrawer(Gravity.START);
             }
             return true;
         }

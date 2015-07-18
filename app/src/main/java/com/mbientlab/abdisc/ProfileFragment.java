@@ -6,9 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.preference.DialogPreference;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Hashtable;
 import java.util.Locale;
@@ -60,7 +59,25 @@ import java.util.Locale;
  * Twitter: @lgleasain
  */
 public class ProfileFragment extends Fragment {
-    AppState appState;
+    public static final String PROFILE_HEIGHT_FEET = "profile_height_feet";
+    public static final String PROFILE_HEIGHT_INCHES = "profile_height_inches";
+    public static final String PROFILE_GENDER = "profile_gender";
+    public static final String PROFILE_AGE = "profile_age";
+    public static final String PROFILE_SESSIONS = "profile_sessions";
+    public static final String PROFILE_STEPS = "profile_steps";
+    public static final String PROFILE_AB_DISK_MODE = "profile_ab_disk_mode";
+    public static final String PROFILE_STRIDE = "profile_stride";
+    public static final String PROFILE_SESSIONS_AUTOMATIC = "profile_sessions_automatic";
+    public static final String PROFILE_STEPS_AUTOMATIC = "profile_steps_automatic";
+    public static final String PROFILE_STRIDE_AUTOMATIC = "profile_stride_automatic";
+    public static final String PROFILE_NAME = "profile_name";
+    public static final String PROFILE_EMAIL = "profile_email";
+    public static final String PROFILE_FACEBOOK = "profile_facebook";
+    public static final String PROFILE_TWITTER = "profile_twitter";
+    public static final String PROFILE_PASSWORD = "profile_password";
+    public static final String PROFILE_WEIGHT = "profile_weight";
+
+    private AppState appState;
 
     @Override
     public void onAttach(Activity activity) {
@@ -89,16 +106,17 @@ public class ProfileFragment extends Fragment {
         setupRadioDialogs(view, sharedPreferences, alertDialogBuilder);
         setupSpinnerDialogs(view, sharedPreferences, alertDialogBuilder);
         setupYesNoDialogs(view, sharedPreferences, alertDialogBuilder);
+        setupNoEditToast(view);
     }
 
     private int getHeightInInches(SharedPreferences sharedPreferences) {
-        int heightInFeet = sharedPreferences.getInt("profile_height_feet", 0);
-        int heightInInches = sharedPreferences.getInt("profile_height_inches", 0);
+        int heightInFeet = sharedPreferences.getInt(PROFILE_HEIGHT_FEET, 0);
+        int heightInInches = sharedPreferences.getInt(PROFILE_HEIGHT_INCHES, 0);
         return ((heightInFeet * 12) + heightInInches);
     }
 
     private int calculateStride(SharedPreferences sharedPreferences) {
-        String gender = sharedPreferences.getString("profile_gender", "");
+        String gender = sharedPreferences.getString(PROFILE_GENDER, "");
         int genderHeightOffset = 0;
         int genderOffset = 0;
         int heightInInches = getHeightInInches(sharedPreferences);
@@ -112,20 +130,54 @@ public class ProfileFragment extends Fragment {
                 genderOffset = 26;
             }
         }
-        return ((new Double(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
+        return ((Double.valueOf(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
+    }
+
+    private int calculateSteps(SharedPreferences sharedPreferences) {
+        int age = sharedPreferences.getInt(PROFILE_AGE, 0);
+        return(11000 - (age * 75));
+    }
+
+    private void setupNoEditToast(final View view) {
+        view.findViewById(R.id.calories).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                Toast noEditMessage = Toast.makeText(view.getContext(), R.string.label_profile_no_edit_calories_text, Toast.LENGTH_LONG);
+                noEditMessage.show();
+            }
+        });
     }
 
     private void setupConditionalDialog(final View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         // hard coded for stride until others need this
+
+        int labelId;
+        String sharedPreferenceKey;
+
+        if (view.getId() == R.id.stride) {
+            labelId = R.string.label_profile_stride;
+            sharedPreferenceKey = PROFILE_STRIDE;
+        } else if (view.getId() == R.id.sessions) {
+            int sessionsLabelId = R.string.label_profile_crunch_sessions;
+            if (sharedPreferences.getString(PROFILE_AB_DISK_MODE, "").equals("posture")) {
+                sessionsLabelId = R.string.label_profile_posture_sessions;
+            }
+            labelId = sessionsLabelId;
+            sharedPreferenceKey = PROFILE_SESSIONS;
+        } else {
+            labelId = R.string.label_profile_steps;
+            sharedPreferenceKey = PROFILE_STEPS;
+        }
+
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         View promptView = layoutInflater.inflate(R.layout.profile_dialog_with_default, null);
         TextView promptLabel = (TextView) promptView.findViewById(R.id.profileDialogWithDefaultTitle);
         final EditText promptContent = (EditText) promptView.findViewById(R.id.profileDialogWithDefaultText);
         final CheckBox useAutomaticCheckbox = (CheckBox) promptView.findViewById(R.id.profileDialogWithDefaultUseAutoCheckbox);
-        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-        promptLabel.setText(R.string.label_profile_stride);
-        promptContent.setText(String.valueOf(sharedPreferences.getInt("profile_stride", 0)));
+        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER);
+        promptLabel.setText(labelId);
+        promptContent.setText(String.valueOf(sharedPreferences.getInt(sharedPreferenceKey, 0)));
         promptContent.setEnabled(true);
 
         useAutomaticCheckbox.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +185,13 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 if (useAutomaticCheckbox.isChecked()) {
                     promptContent.setEnabled(false);
-                    promptContent.setText(String.valueOf(calculateStride(sharedPreferences)));
+                    if (view.getId() == R.id.stride) {
+                        promptContent.setText(String.valueOf(calculateStride(sharedPreferences)));
+                    } else if (view.getId() == R.id.sessions) {
+                        promptContent.setText(String.valueOf(12));
+                    } else {
+                        promptContent.setText(String.valueOf(calculateSteps(sharedPreferences)));
+                    }
                 } else {
                     promptContent.setEnabled(true);
                 }
@@ -142,44 +200,70 @@ public class ProfileFragment extends Fragment {
 
         alertDialogBuilder.setView(promptView);
         alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        String promptValue = promptContent.getText().toString();
-                        boolean useAutomaticSettings = useAutomaticCheckbox.isChecked();
+                .setPositiveButton(R.string.label_profile_ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                String promptValue = promptContent.getText().toString();
+                                boolean useAutomaticSettings = useAutomaticCheckbox.isChecked();
 
-                        editor.putInt("profile_stride", Integer.valueOf(promptValue));
-                        editor.putBoolean("profile_stride_automatic", useAutomaticSettings);
-                        TextView strideEntry = (TextView) view.findViewById(R.id.strideEntry);
-                        strideEntry.setText(promptValue + getString(R.string.label_profile_inches));
-                        editor.apply();
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                switch (view.getId()) {
+                                    case R.id.stride:
+                                        editor.putInt(PROFILE_STRIDE, Integer.valueOf(promptValue));
+                                        editor.putBoolean(PROFILE_STRIDE_AUTOMATIC, useAutomaticSettings);
+                                        TextView strideEntry = (TextView) view.findViewById(R.id.strideEntry);
+                                        strideEntry.setText(promptValue + getString(R.string.label_profile_inches));
+                                        break;
+                                    case R.id.sessions:
+                                        editor.putInt(PROFILE_SESSIONS, Integer.valueOf(promptValue));
+                                        editor.putBoolean(PROFILE_SESSIONS_AUTOMATIC, useAutomaticSettings);
+                                        TextView sessionsEntry = (TextView) view.findViewById(R.id.sessionsEntry);
+                                        sessionsEntry.setText(promptValue);
+                                        break;
+                                    default:
+                                        editor.putInt(PROFILE_STEPS, Integer.valueOf(promptValue));
+                                        editor.putBoolean(PROFILE_STEPS_AUTOMATIC, useAutomaticSettings);
+                                        TextView stepsEntry = (TextView) view.findViewById(R.id.stepsEntry);
+                                        stepsEntry.setText(promptValue);
+                                }
+                                editor.apply();
+                                dialog.dismiss();
+                            }
+                        }
+                ).setNegativeButton(R.string.label_profile_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
-                });
+                }
+
+        );
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
 
     }
 
     private void setupYesNoDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
-        final int profileFieldIds[] = {R.id.stride};
-        final Hashtable<Integer, Integer> alertText = new Hashtable();
+        final int profileFieldIds[] = {R.id.stride, R.id.steps, R.id.sessions};
+        final Hashtable<Integer, Integer> alertText = new Hashtable<Integer, Integer>();
         alertText.put(R.id.stride, R.string.label_profile_yes_no_text_stride);
+        alertText.put(R.id.steps, R.string.label_profile_yes_no_steps);
+        alertText.put(R.id.sessions, R.string.label_profile_yes_no_text_sessions);
 
         TextView strideEntry = (TextView) view.findViewById(R.id.strideEntry);
+        TextView stepsEntry = (TextView) view.findViewById(R.id.stepsEntry);
+        TextView sessionsLabel = (TextView) view.findViewById(R.id.sessionsLabel);
+        TextView sessionsEntry = (TextView) view.findViewById(R.id.sessionsEntry);
 
-        int stride = 0;
+        int stride;
+        int steps;
+        int sessions;
 
-        for (int i = 0; i < profileFieldIds.length; i++) {
-            view.findViewById(profileFieldIds[i]).setOnClickListener(new View.OnClickListener() {
+        for (int profileFieldId : profileFieldIds) {
+            view.findViewById(profileFieldId).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    if (sharedPreferences.getBoolean("profile_stride_automatic", true)) {
+                    if (((view.getId() == R.id.stride) && sharedPreferences.getBoolean(PROFILE_STRIDE_AUTOMATIC, true)) ||
+                            (view.getId() == R.id.steps) && sharedPreferences.getBoolean(PROFILE_STEPS_AUTOMATIC, true) ||
+                            ((view.getId() == R.id.sessions) && sharedPreferences.getBoolean(PROFILE_SESSIONS_AUTOMATIC, true))) {
                         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
                         View promptView = layoutInflater.inflate(R.layout.profile_dialog_yes_no, null);
                         TextView promptLabel = (TextView) promptView.findViewById(R.id.profileDialogYesNoText);
@@ -206,18 +290,40 @@ public class ProfileFragment extends Fragment {
                 }
             });
         }
-        if (sharedPreferences.getBoolean("profile_stride_automatic", true)) {
+
+        if (sharedPreferences.getBoolean(PROFILE_STRIDE_AUTOMATIC, true)) {
             stride = calculateStride(sharedPreferences);
         } else {
-            stride = sharedPreferences.getInt("profile_stride", 0);
+            stride = sharedPreferences.getInt(PROFILE_STRIDE, 0);
         }
-        strideEntry.setText(String.valueOf(stride) + getString(R.string.label_profile_inches));
 
+        if (sharedPreferences.getBoolean(PROFILE_STEPS_AUTOMATIC, true)) {
+            steps = calculateSteps(sharedPreferences);
+        } else {
+            steps = sharedPreferences.getInt(PROFILE_STEPS, 0);
+        }
+
+        int sessionsLabelId = R.string.label_profile_crunch_sessions;
+
+        if (sharedPreferences.getString(PROFILE_AB_DISK_MODE, "").equals("posture")) {
+            sessionsLabelId = R.string.label_profile_posture_sessions;
+        }
+
+        if (sharedPreferences.getBoolean(PROFILE_SESSIONS_AUTOMATIC, true)) {
+            sessions = 12;
+        } else {
+            sessions = sharedPreferences.getInt(PROFILE_SESSIONS, 0);
+        }
+
+        sessionsLabel.setText(sessionsLabelId);
+        sessionsEntry.setText(String.valueOf(sessions));
+        strideEntry.setText(String.valueOf(stride) + getString(R.string.label_profile_inches));
+        stepsEntry.setText(String.valueOf(steps));
     }
 
     private void setupTextFieldDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         final int profileFieldIds[] = {R.id.name, R.id.email, R.id.facebook, R.id.twitter, R.id.password, R.id.weight, R.id.age};
-        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable();
+        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<Integer, Integer>();
         profileFieldNames.put(R.id.name, R.string.label_profile_name);
         profileFieldNames.put(R.id.email, R.string.label_profile_email);
         profileFieldNames.put(R.id.facebook, R.string.label_profile_facebook);
@@ -227,13 +333,13 @@ public class ProfileFragment extends Fragment {
         profileFieldNames.put(R.id.age, R.string.label_profile_age);
         final int[] profileEntries = {R.id.nameEntry, R.id.emailEntry, R.id.facebookEntry, R.id.twitterEntry, R.id.passwordEntry, R.id.weightEntry, R.id.ageEntry};
         final Hashtable<Integer, String> sharedPreferenceKeys = new Hashtable<>();
-        sharedPreferenceKeys.put(R.id.name, "profile_name");
-        sharedPreferenceKeys.put(R.id.email, "profile_email");
-        sharedPreferenceKeys.put(R.id.facebook, "profile_facebook");
-        sharedPreferenceKeys.put(R.id.twitter, "profile_twitter");
-        sharedPreferenceKeys.put(R.id.password, "profile_password");
-        sharedPreferenceKeys.put(R.id.weight, "profile_weight");
-        sharedPreferenceKeys.put(R.id.age, "profile_age");
+        sharedPreferenceKeys.put(R.id.name, PROFILE_AGE);
+        sharedPreferenceKeys.put(R.id.email, PROFILE_EMAIL);
+        sharedPreferenceKeys.put(R.id.facebook, PROFILE_FACEBOOK);
+        sharedPreferenceKeys.put(R.id.twitter, PROFILE_TWITTER);
+        sharedPreferenceKeys.put(R.id.password, PROFILE_PASSWORD);
+        sharedPreferenceKeys.put(R.id.weight, PROFILE_WEIGHT);
+        sharedPreferenceKeys.put(R.id.age, PROFILE_AGE);
         final Hashtable<Integer, Integer> profileFieldEntries = new Hashtable<>();
         profileFieldEntries.put(R.id.name, R.id.nameEntry);
         profileFieldEntries.put(R.id.email, R.id.emailEntry);
@@ -269,10 +375,10 @@ public class ProfileFragment extends Fragment {
                         promptContent.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                     } else if (view.getId() == R.id.weight) {
                         promptLabel.setText(getString(profileFieldNames.get(view.getId())) + getString(R.string.label_profile_in_pounds));
-                        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER);
                     } else if (view.getId() == R.id.age) {
                         promptLabel.setText(profileFieldNames.get(view.getId()));
-                        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                        promptContent.setInputType(InputType.TYPE_CLASS_NUMBER);
                     } else {
                         promptLabel.setText(profileFieldNames.get(view.getId()));
                     }
@@ -289,7 +395,7 @@ public class ProfileFragment extends Fragment {
 
                     alertDialogBuilder.setView(promptView);
                     alertDialogBuilder.setCancelable(false)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(R.string.label_ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
                                     String promptValue = promptContent.getText().toString();
@@ -310,7 +416,7 @@ public class ProfileFragment extends Fragment {
                                     dialog.dismiss();
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
                                 }
@@ -326,26 +432,25 @@ public class ProfileFragment extends Fragment {
     private void setupRadioDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         // radio button code
         final int profileFieldIds[] = {R.id.abDiskMode, R.id.gender};
-        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable();
+        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<Integer, Integer>();
         profileFieldNames.put(R.id.abDiskMode, R.string.label_profile_ab_disk_mode);
         profileFieldNames.put(R.id.gender, R.string.label_profile_gender);
-        final int[] profileEntries = {R.id.abDiskModeEntry, R.id.genderEntry};
         final Hashtable<Integer, String> sharedPreferenceKeys = new Hashtable<>();
-        sharedPreferenceKeys.put(R.id.abDiskMode, "profile_ab_disk_mode");
-        sharedPreferenceKeys.put(R.id.gender, "profile_gender");
+        sharedPreferenceKeys.put(R.id.abDiskMode, PROFILE_AB_DISK_MODE);
+        sharedPreferenceKeys.put(R.id.gender, PROFILE_GENDER);
         final Hashtable<Integer, Integer> profileFieldEntries = new Hashtable<>();
         profileFieldEntries.put(R.id.abDiskMode, R.id.abDiskModeEntry);
         profileFieldEntries.put(R.id.gender, R.id.genderEntry);
 
-        for (int i = 0; i < profileFieldIds.length; i++) {
-            TextView profileEntry = (TextView) view.findViewById(profileFieldEntries.get(profileFieldIds[i]));
-            String currentSetting = sharedPreferences.getString(sharedPreferenceKeys.get(profileFieldIds[i]), "");
+        for (int profileFieldId : profileFieldIds) {
+            TextView profileEntry = (TextView) view.findViewById(profileFieldEntries.get(profileFieldId));
+            String currentSetting = sharedPreferences.getString(sharedPreferenceKeys.get(profileFieldId), "");
             if (currentSetting.length() > 0) {
                 currentSetting = currentSetting.substring(0, 1).toUpperCase() + currentSetting.substring(1);
             }
             profileEntry.setText(currentSetting);
 
-            view.findViewById(profileFieldIds[i]).setOnClickListener(new View.OnClickListener() {
+            view.findViewById(profileFieldId).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
                     LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
@@ -378,11 +483,11 @@ public class ProfileFragment extends Fragment {
 
                     alertDialogBuilder.setView(promptView);
                     alertDialogBuilder.setCancelable(false)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(R.string.label_ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     SharedPreferences.Editor editor = sharedPreferences.edit();
                                     int checkedId = radioGroup.getCheckedRadioButtonId();
-                                    String checkboxSelection = "";
+                                    String checkboxSelection;
                                     if ((checkedId == R.id.profileDialogButton0) && (view.getId() == R.id.abDiskMode)) {
                                         checkboxSelection = "crunch";
                                     } else if ((checkedId == R.id.profileDialogButton0) && (view.getId() == R.id.gender)) {
@@ -400,7 +505,7 @@ public class ProfileFragment extends Fragment {
                                     dialog.dismiss();
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
                                 }
@@ -419,8 +524,8 @@ public class ProfileFragment extends Fragment {
 
     private void setupSpinnerDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         final TextView profileEntry = (TextView) view.findViewById(R.id.heightEntry);
-        int heightFeet = sharedPreferences.getInt("profile_height_feet", 0);
-        int heightInches = sharedPreferences.getInt("profile_height_inches", 0);
+        int heightFeet = sharedPreferences.getInt(PROFILE_HEIGHT_FEET, 0);
+        int heightInches = sharedPreferences.getInt(PROFILE_HEIGHT_INCHES, 0);
         profileEntry.setText(getHeightString(heightFeet, heightInches));
 
         view.findViewById(R.id.height).setOnClickListener(new View.OnClickListener() {
@@ -447,29 +552,29 @@ public class ProfileFragment extends Fragment {
                 // Apply the adapter to the spinner
                 heightSpinnerInches.setAdapter(heightAdapterInches);
 
-                int heightFeet = sharedPreferences.getInt("profile_height_feet", 0);
-                int heightInches = sharedPreferences.getInt("profile_height_inches", 0);
+                int heightFeet = sharedPreferences.getInt(PROFILE_HEIGHT_FEET, 0);
+                int heightInches = sharedPreferences.getInt(PROFILE_HEIGHT_INCHES, 0);
 
                 heightSpinnerFeet.setSelection(heightFeet);
                 heightSpinnerInches.setSelection(heightInches);
 
                 alertDialogBuilder.setView(promptView);
                 alertDialogBuilder.setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.label_ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 int heightFeet = heightSpinnerFeet.getSelectedItemPosition();
                                 int heightInches = heightSpinnerInches.getSelectedItemPosition();
 
-                                editor.putInt("profile_height_feet", heightFeet);
-                                editor.putInt("profile_height_inches", heightInches);
+                                editor.putInt(PROFILE_HEIGHT_FEET, heightFeet);
+                                editor.putInt(PROFILE_HEIGHT_INCHES, heightInches);
 
                                 profileEntry.setText(getHeightString(heightFeet, heightInches));
                                 editor.apply();
                                 dialog.dismiss();
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.label_cancel, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }

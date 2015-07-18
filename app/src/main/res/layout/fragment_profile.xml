@@ -49,8 +49,8 @@
                     style="@style/AppPreferenceEntry"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_profile_name"
-                    android:inputType="textCapWords" />
+                    android:inputType="textCapWords"
+                    android:text="@string/label_profile_name" />
 
             </LinearLayout>
 
@@ -147,8 +147,8 @@
                     style="@style/AppPreferenceEntry"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_profile_password"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:text="@string/label_profile_password" />
             </LinearLayout>
 
             <LinearLayout
@@ -172,8 +172,8 @@
                     style="@style/AppPreferenceEntry"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_profile_ab_disk_mode"
-                    android:inputType="textCapWords" />
+                    android:inputType="textCapWords"
+                    android:text="@string/label_profile_ab_disk_mode" />
             </LinearLayout>
 
         </LinearLayout>
@@ -317,5 +317,96 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/goals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/goalsHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_profile_your_goals"
+                android:textAppearance="@style/AppPreferenceTitle" />
+
+            <LinearLayout
+                android:id="@+id/steps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/stepsLabel"
+                    style="@style/AppPreferenceName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_steps" />
+
+                <TextView
+                    android:id="@+id/stepsEntry"
+                    style="@style/AppPreferenceEntry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_steps" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sessions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/sessionsLabel"
+                    style="@style/AppPreferenceName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_crunch_sessions" />
+
+                <TextView
+                    android:id="@+id/sessionsEntry"
+                    style="@style/AppPreferenceEntry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_crunch_sessions" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/calories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/caloriesLabel"
+                    style="@style/AppPreferenceName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_calories" />
+
+                <TextView
+                    android:id="@+id/caloriesEntry"
+                    style="@style/AppPreferenceEntry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="0" />
+            </LinearLayout>
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

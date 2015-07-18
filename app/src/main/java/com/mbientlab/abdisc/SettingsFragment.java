@@ -30,7 +30,6 @@ import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 import com.mbientlab.metawear.api.controller.Timer;
-import com.mbientlab.abdisc.filter.FilterState;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -146,7 +145,7 @@ public class SettingsFragment extends Fragment {
                 final FragmentManager fragmentManager = activity.getFragmentManager();
                 final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.app_content, ((MainActivity) activity).getProfileFragment()).commit();
-                closeDrawer(Gravity.LEFT);
+                closeDrawer(Gravity.START);
             }
         });
 
@@ -316,17 +315,6 @@ public class SettingsFragment extends Fragment {
 
     public void openDrawer(int gravity) {
         mDrawerLayout.openDrawer(gravity);
-    }
-
-    /**
-     * Per the navigation drawer design guidelines, updates the action bar to show the global app
-     * 'context', rather than just what's in the current screen.
-     */
-    private void showGlobalContextActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
     }
 
 }

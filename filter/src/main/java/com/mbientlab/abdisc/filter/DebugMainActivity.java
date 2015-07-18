@@ -46,7 +46,6 @@ import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
 import com.mbientlab.metawear.api.MetaWearBleService;
-import com.mbientlab.metawear.api.MetaWearController;
 
 /**
  * Created by etsai on 6/3/2015.
@@ -125,7 +124,7 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 2;
+        private static final int NUM_ITEMS = 2;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
