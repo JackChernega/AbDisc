@@ -39,9 +39,20 @@
         <item name="android:layout_weight">.60</item>
         <item name="android:layout_margin">4dp</item>
     </style>
-    <style name="AppGraphDate">
-        <item name="android:textSize">@dimen/text_size_large_graph</item>
+    <style name="AppGraph">
+        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/ColorGraphText</item>
+    </style>
+    <style name="AppGraphBig" parent="AppGraph">
+        <item name="android:textSize">@dimen/text_size_large_graph</item>
         <item name="android:textStyle">bold</item>
     </style>
- </resources>
+    <style name="AppGraphMediumLarge" parent="AppGraph">
+        <item name="android:textSize">@dimen/text_size_medium_large_graph</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+     <style name="AppGraphMedium" parent="AppGraph">
+        <item name="android:textSize">@dimen/text_size_medium_graph</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+  </resources>

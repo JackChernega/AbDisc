@@ -14,4 +14,7 @@
     <color name="ColorGraphBackgroundLight">#ff4c4c4c</color>
     <color name="ColorGraphBackgroundDark">#ff292929</color>
     <color name="ColorGraphBackgroundDarkTop">#ff2e2e2e</color>
+    <color name="ColorTimeButtonsBorder">#ff060607</color>
+    <color name="ColorTimeButtonsBackgroundInactive">#3c000000</color>
+    <color name="ColorTimeButtonsBackgroundActive">#3c7d7d7d</color>
 </resources>
