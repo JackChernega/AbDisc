@@ -333,7 +333,7 @@ public class ProfileFragment extends Fragment {
         profileFieldNames.put(R.id.age, R.string.label_profile_age);
         final int[] profileEntries = {R.id.nameEntry, R.id.emailEntry, R.id.facebookEntry, R.id.twitterEntry, R.id.passwordEntry, R.id.weightEntry, R.id.ageEntry};
         final Hashtable<Integer, String> sharedPreferenceKeys = new Hashtable<>();
-        sharedPreferenceKeys.put(R.id.name, PROFILE_AGE);
+        sharedPreferenceKeys.put(R.id.name, PROFILE_NAME);
         sharedPreferenceKeys.put(R.id.email, PROFILE_EMAIL);
         sharedPreferenceKeys.put(R.id.facebook, PROFILE_FACEBOOK);
         sharedPreferenceKeys.put(R.id.twitter, PROFILE_TWITTER);
