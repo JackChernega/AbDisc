@@ -39,4 +39,9 @@
         <item name="android:layout_weight">.60</item>
         <item name="android:layout_margin">4dp</item>
     </style>
-</resources>
+    <style name="AppGraphDate">
+        <item name="android:textSize">@dimen/text_size_large_graph</item>
+        <item name="android:textColor">@color/ColorGraphText</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+ </resources>

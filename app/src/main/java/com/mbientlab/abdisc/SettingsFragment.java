@@ -144,7 +144,8 @@ public class SettingsFragment extends Fragment {
 
                 final FragmentManager fragmentManager = activity.getFragmentManager();
                 final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.app_content, ((MainActivity) activity).getProfileFragment()).commit();
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.app_content, ((MainActivity) activity).getProfileFragment()).commit();
+                ((MainActivity) activity).onFragmentSettingsOptionSelected(v.getId());
                 closeDrawer(Gravity.START);
             }
         });
@@ -317,4 +318,8 @@ public class SettingsFragment extends Fragment {
         mDrawerLayout.openDrawer(gravity);
     }
 
+    public interface OnFragmentSettingsListener {
+        // TODO: Update argument type and name
+        public void onFragmentSettingsOptionSelected(int optionId);
+    }
 }

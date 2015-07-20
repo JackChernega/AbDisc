@@ -7,4 +7,11 @@
     <color name="ColorDrawerBackground">#ffffff</color>
     <color name="ColorPreferencesHeader">#ff2586b2</color>
     <color name="ColorPreferencesEntry">#ff585454</color>
+    <color name="ColorGraphLow">#ff005cec</color>
+    <color name="ColorGraphHigh">#ffbcea21</color>
+    <color name="ColorGraphText">#ffffff</color>
+    <color name="ColorButtonBarSeparator">#ff585858</color>
+    <color name="ColorGraphBackgroundLight">#ff4c4c4c</color>
+    <color name="ColorGraphBackgroundDark">#ff292929</color>
+    <color name="ColorGraphBackgroundDarkTop">#ff2e2e2e</color>
 </resources>

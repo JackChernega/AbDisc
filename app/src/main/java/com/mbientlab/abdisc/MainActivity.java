@@ -56,6 +56,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.mbientlab.abdisc.filter.FilterState;
@@ -70,34 +72,34 @@ import java.nio.ByteOrder;
 /**
  * Created by etsai on 6/1/2015.
  */
-public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState, BleScannerFragment.ScannerListener {
-    private final static int REQUEST_ENABLE_BT= 0;
-    private static final int ACTIVITY_PER_STEP= 20000;
+public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState, BleScannerFragment.ScannerListener, SettingsFragment.OnFragmentSettingsListener {
+    private final static int REQUEST_ENABLE_BT = 0;
+    private static final int ACTIVITY_PER_STEP = 20000;
 
     private short crunchSessionCount;
-    private int steps= 0;
-    private Fragment activityFrag= null, distanceFrag= null;
+    private int steps = 0;
+    private Fragment activityFrag = null, distanceFrag = null;
 
     private FilterState filterState;
     private ProgressDialog setupProgress;
     private MetaWearBleService mwService;
     private MetaWearController mwCtrllr;
     private BluetoothDevice btDevice;
-    private LocalBroadcastManager broadcastManager= null;
+    private LocalBroadcastManager broadcastManager = null;
     private SettingsFragment mSettingsFragment;
     private ProfileFragment profileFragment;
     private SharedPreferences sharedPreferences;
     private Editor editor;
 
-    private final DataProcessor.Callbacks dpModuleCallbacks= new DataProcessor.Callbacks() {
+    private final DataProcessor.Callbacks dpModuleCallbacks = new DataProcessor.Callbacks() {
         @Override
         public void receivedFilterOutput(byte filterId, byte[] output) {
-            ByteBuffer buffer= ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.LITTLE_ENDIAN);
 
             if (filterId == filterState.getSedentaryId()) {
-                short milliG= buffer.getShort();
+                short milliG = buffer.getShort();
 
-                steps+= (milliG / ACTIVITY_PER_STEP);
+                steps += (milliG / ACTIVITY_PER_STEP);
                 ((StepCountFragment) distanceFrag).stepCountUpdated(steps);
             } else if (filterId == filterState.getSessionStartId()) {
                 crunchSessionCount++;
@@ -115,7 +117,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         sharedPreferences = getApplicationContext().getSharedPreferences("com.mbientlab.abdisk", 0);
         // commenting out,  cant' find library
         //ExceptionHandler.register(this, "http://tf2n.serverpit.com/server.php");
-        BluetoothAdapter btAdapter= ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+        BluetoothAdapter btAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
 
         if (btAdapter == null) {
             new AlertDialog.Builder(this).setTitle(R.string.error_title)
@@ -130,7 +132,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
                     .show();
         } else {
             if (!btAdapter.isEnabled()) {
-                final Intent enableIntent= new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             } else {
                 getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
@@ -144,10 +146,11 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
             public void onClick(View view) {
                 FragmentTransaction fragTransaction = fragManager.beginTransaction();
                 if (activityFrag == null) {
-                    activityFrag = new CrunchSessionFragment();
+                    activityFrag = new DayActivityFragment();
                 }
-
-                fragTransaction.replace(R.id.app_content, activityFrag).commit();
+                mainTabButtonPressed(R.id.tab_activity);
+                fragTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.app_content, activityFrag).commit();
             }
         });
         findViewById(R.id.tab_distance).setOnClickListener(new View.OnClickListener() {
@@ -157,7 +160,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
                 if (distanceFrag == null) {
                     distanceFrag = new StepCountFragment();
                 }
-
+                mainTabButtonPressed(R.id.tab_distance);
                 fragTransaction.replace(R.id.app_content, distanceFrag).commit();
             }
         });
@@ -166,7 +169,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         mSettingsFragment.setUp(
                 R.id.settings_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
 
 
         // eventually make this conditional.
@@ -179,14 +181,31 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState){
+    public void onFragmentSettingsOptionSelected(int optionId){
+        mainTabButtonPressed(0);
+    }
+
+    public void mainTabButtonPressed(int buttonId) {
+        int buttons[] = {R.id.tab_activity, R.id.tab_burn, R.id.tab_crunch, R.id.tab_distance};
+        for (int i = 0; i < buttons.length; i++) {
+            ImageButton button = (ImageButton) findViewById(buttons[i]);
+            if(buttons[i] == buttonId){
+                button.setBackgroundColor(getResources().getColor(R.color.ColorGraphHigh));
+            } else {
+                button.setBackgroundColor(getResources().getColor(R.color.ColorNavBackground));
+            }
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mSettingsFragment.syncDrawerToggle();
     }
 
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_gradient));
@@ -194,7 +213,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch(requestCode) {
+        switch (requestCode) {
             case REQUEST_ENABLE_BT:
                 if (resultCode == Activity.RESULT_CANCELED) {
                     finish();
@@ -219,7 +238,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         getApplicationContext().unbindService(this);
     }
 
-    private final MetaWearController.DeviceCallbacks dCallbacks= new MetaWearController.DeviceCallbacks() {
+    private final MetaWearController.DeviceCallbacks dCallbacks = new MetaWearController.DeviceCallbacks() {
         @Override
         public void connected() {
             Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
@@ -235,8 +254,8 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        mwService= ((MetaWearBleService.LocalBinder) iBinder).getService();
-        broadcastManager= LocalBroadcastManager.getInstance(mwService);
+        mwService = ((MetaWearBleService.LocalBinder) iBinder).getService();
+        broadcastManager = LocalBroadcastManager.getInstance(mwService);
         broadcastManager.registerReceiver(MetaWearBleService.getMetaWearBroadcastReceiver(),
                 MetaWearBleService.getMetaWearIntentFilter());
         mwService.useLocalBroadcastManager(broadcastManager);
@@ -258,7 +277,10 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     }
 
     @Override
-    public void setFilterState(FilterState filterState) {this.filterState = filterState;}
+    public void setFilterState(FilterState filterState) {
+        this.filterState = filterState;
+    }
+
     @Override
     public int getStepCount() {
         return steps;
@@ -271,22 +293,23 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void btDeviceSelected(BluetoothDevice device) {
-        btDevice= device;
-        mwCtrllr= mwService.getMetaWearController(btDevice);
+        btDevice = device;
+        mwCtrllr = mwService.getMetaWearController(btDevice);
         mwCtrllr.addDeviceCallback(dCallbacks);
         mwCtrllr.connect();
     }
+
     @Override
-    public BluetoothDevice getBluetoothDevice(){
+    public BluetoothDevice getBluetoothDevice() {
         return btDevice;
     }
 
     @Override
-    public SharedPreferences getSharedPreferences(){
+    public SharedPreferences getSharedPreferences() {
         return sharedPreferences;
     }
 
-    public ProfileFragment getProfileFragment(){
+    public ProfileFragment getProfileFragment() {
         return profileFragment;
     }
 

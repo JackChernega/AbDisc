@@ -3,5 +3,6 @@
 <resources>
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="text_size_large_material">30dp</dimen>
+    <dimen name="text_size_large_graph">25dp</dimen>
     <dimen name="text_size_profile_name">15dp</dimen>
 </resources>

@@ -47,7 +47,8 @@
             android:id="@+id/app_content"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.81" />
+            android:layout_weight="1.81"
+            android:touchscreenBlocksFocus="false" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -55,7 +56,11 @@
             android:layout_weight="0.20"
             android:orientation="horizontal"
             android:background="@color/ColorNavBackground"
-            android:weightSum="4">
+            android:weightSum="4"
+            android:divider="@drawable/separator"
+            android:dividerPadding="0dp"
+            android:showDividers="middle"
+            android:focusableInTouchMode="false">
 
             <ImageButton
                 android:id="@+id/tab_distance"
