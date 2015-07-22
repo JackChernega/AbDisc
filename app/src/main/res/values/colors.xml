@@ -18,4 +18,5 @@
     <color name="ColorTimeButtonsBackgroundInactive">#3c000000</color>
     <color name="ColorTimeButtonsBackgroundActive">#3c7d7d7d</color>
     <color name="ColorTransparent">#ffffff</color>
+    <color name="ColorGraphAxis">#ff161616</color>
 </resources>

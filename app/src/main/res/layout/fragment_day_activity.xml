@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@drawable/graph_verticle_gradient"
     android:orientation="vertical"
     tools:context="com.mbientlab.abdisc.DayActivityFragment">
@@ -10,6 +10,7 @@
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
+        android:id="@+id/graph_day"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start|top"
@@ -48,6 +49,7 @@
 
 
     <LinearLayout
+        android:id="@+id/graph_button_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -113,6 +115,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/graph_calories_burned"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -139,42 +142,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:paddingTop="10dp">
-
-        <View
-            android:layout_width="275dp"
-            android:layout_height="1dp"
-            android:background="@color/ColorGraphBackgroundDark"
-            android:layout_gravity="center" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <TextView
-            android:id="@+id/total_intense_active_minutes"
-            style="@style/AppGraphMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="25.5 "
-            android:textColor="@color/ColorGraphHigh" />
+            android:id="@+id/chart_spacer1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight=".03" />
 
-        <TextView
-            android:id="@+id/total_intense_active_minutes_label"
-            style="@style/AppGraphMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_graph_total_intense_active_minutes" />
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/active_minutes_day_chart"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:layout_weight=".94"/>
+
+       <TextView
+            android:id="@+id/chart_spacer2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight=".03" />
+
     </LinearLayout>
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/active_minutes_day_chart"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-         />
 </LinearLayout>
