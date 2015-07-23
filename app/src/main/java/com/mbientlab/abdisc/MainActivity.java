@@ -250,6 +250,14 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
             Toast.makeText(MainActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
             Log.i("AbDisc", "Connection lost");
         }
+
+        @Override
+        public void receivedGattError(GattOperation gattOp, int status) {
+            mwCtrllr.close(true);
+            Log.i("AbDisc", "Gatt Error: " + gattOp.toString() + " (status= " + status + ")");
+        }
+
+
     };
 
     @Override
