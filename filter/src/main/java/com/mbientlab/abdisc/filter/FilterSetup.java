@@ -29,7 +29,7 @@ import java.util.Locale;
 public class FilterSetup {
     private static final byte RMS_DATA_SIZE= 4;
     private static final short SESSION_WARNING_NUM_PULSES= 2, SESSION_START_DELAY= 2000;
-    private static final int CRUNCH_THRESHOLD_CHECK_PERIOD= 3000;
+    private static final int CRUNCH_THRESHOLD_CHECK_PERIOD= 3000, CRUNCH_OFFSET_UPDATE_COUNT= 16;
 
     /**
      * Interface definition for a callback when the filter chain is setup
@@ -383,55 +383,136 @@ public class FilterSetup {
                 dpController.addFilter(TriggerBuilder.buildAccelerometerTrigger(), builder.build());
             }
 
-            private byte sensorFilterPass, firstPassthrough, sessionStartId, thresholdId, sensorTimeDelayId, crunchOffsetId;
+            private DataProcessor.FilterConfig buildEventCounter() {
+                AccumulatorBuilder builder= new AccumulatorBuilder();
+                final DataProcessor.FilterConfig original= builder.withInputSize(GPIO.ANALOG_DATA_SIZE).withOutputSize(GPIO.ANALOG_DATA_SIZE).build();
+                final DataProcessor.FilterConfig eventConfig= new DataProcessor.FilterConfig() {
+                    @Override
+                    public byte[] bytes() {
+                        byte[] configBytes= original.bytes();
+                        configBytes[0] |= 0x10;
+                        return new byte[0];
+                    }
+
+                    @Override
+                    public DataProcessor.FilterType type() {
+                        return original.type();
+                    }
+                };
+
+                return eventConfig;
+            }
+
+            private byte sensorFilterPass, firstPassthrough, sessionStartId, crunchOffsetId, crunchOffsetCheckId,
+                    offsetUpdateGtId, offsetUpdateGtCounterId;
             private void setupCrunchFilter(final MetaWearController mwCtrllr) {
                 final Event eventController= (Event) mwCtrllr.getModuleController(Module.EVENT);
                 final DataProcessor dpController= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
                 final Logging logController= (Logging) mwCtrllr.getModuleController(Module.LOGGING);
 
-                final DataProcessor.Callbacks mathCallback= new DataProcessor.Callbacks() {
+                final DataProcessor.Callbacks offsetUpdateLteEndCallback= new DataProcessor.Callbacks() {
                     @Override
                     public void receivedFilterId(byte filterId) {
-                        crunchOffsetId= filterId;
-
-                        dpController.enableFilterNotify(crunchOffsetId);
-
-                        MathBuilder builder= new MathBuilder();
-                        builder.withOperation(MathBuilder.Operation.SUBTRACT)
-                                .withOperand(0)
-                                .withOutputSize(GPIO.ANALOG_DATA_SIZE)
-                                .withInputSize(GPIO.ANALOG_DATA_SIZE);
-
-                        eventController.recordCommand(DataProcessor.Register.FILTER_NOTIFICATION, feedbackId, new byte[] {0x2, 0x0, 0x4});
-                        dpController.setFilterConfiguration(crunchOffsetId, builder.build());
+                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, filterId);
+                        dpController.setFilterState(feedbackId, new byte[] { 0x1, 0x0 });
                         eventController.stopRecord();
 
                         mwCtrllr.removeModuleCallback(this);
                         setupSessionHaptic(mwCtrllr);
                     }
+                }, offsetLteCounterCallback= new DataProcessor.Callbacks() {
+                    @Override
+                    public void receivedFilterId(byte filterId) {
+                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, offsetUpdateGtId);
+                        dpController.setFilterState(filterId, new byte[] { 0, 0, 0, 0 });
+                        eventController.stopRecord();
+
+                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, feedbackId);
+                        dpController.setFilterState(filterId, new byte[] { 0, 0, 0, 0 });
+                        eventController.stopRecord();
+
+                        ComparatorBuilder builder= new ComparatorBuilder();
+                        builder.withReference(CRUNCH_OFFSET_UPDATE_COUNT).withOperation(ComparatorBuilder.Operation.EQ);
+
+                        mwCtrllr.removeModuleCallback(this);
+                        mwCtrllr.addModuleCallback(offsetUpdateLteEndCallback);
+                        dpController.chainFilters(filterId, GPIO.ANALOG_DATA_SIZE, buildEventCounter());
+                    }
+                }, offsetUpdateLteCallback= new DataProcessor.Callbacks() {
+                    @Override
+                    public void receivedFilterId(byte filterId) {
+                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, filterId);
+                        dpController.setFilterState(offsetUpdateGtCounterId, new byte[] { 0, 0, 0, 0 });
+                        eventController.stopRecord();
+
+                        mwCtrllr.removeModuleCallback(this);
+                        mwCtrllr.addModuleCallback(offsetLteCounterCallback);
+                        dpController.chainFilters(filterId, GPIO.ANALOG_DATA_SIZE, buildEventCounter());
+                    }
+                }, offsetUpdateGtEndCallback= new DataProcessor.Callbacks() {
+                    @Override
+                    public void receivedFilterId(byte filterId) {
+                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, filterId);
+                        dpController.setFilterState(feedbackId, new byte[] { 0x1, 0x0 });
+                        eventController.stopRecord();
+
+                        ComparatorBuilder builder= new ComparatorBuilder();
+                        builder.withReference(0).withOperation(ComparatorBuilder.Operation.LTE);
+
+                        mwCtrllr.removeModuleCallback(this);
+                        mwCtrllr.addModuleCallback(offsetUpdateLteCallback);
+                        dpController.chainFilters(crunchOffsetCheckId, GPIO.ANALOG_DATA_SIZE, builder.build());
+                    }
+                }, offsetGteCounterCallback= new DataProcessor.Callbacks() {
+                    @Override
+                    public void receivedFilterId(byte filterId) {
+                        offsetUpdateGtCounterId = filterId;
+
+                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, feedbackId);
+                        dpController.setFilterState(offsetUpdateGtCounterId, new byte[] { 0, 0, 0, 0 });
+                        eventController.stopRecord();
+
+                        ComparatorBuilder builder= new ComparatorBuilder();
+                        builder.withReference(CRUNCH_OFFSET_UPDATE_COUNT).withOperation(ComparatorBuilder.Operation.EQ);
+
+                        mwCtrllr.removeModuleCallback(this);
+                        mwCtrllr.addModuleCallback(offsetUpdateGtEndCallback);
+                        dpController.chainFilters(offsetUpdateGtCounterId, GPIO.ANALOG_DATA_SIZE, buildEventCounter());
+                    }
+                }, offsetUpdateGteCallback= new DataProcessor.Callbacks() {
+                    @Override
+                    public void receivedFilterId(byte filterId) {
+                        offsetUpdateGtId = filterId;
+
+                        mwCtrllr.removeModuleCallback(this);
+                        mwCtrllr.addModuleCallback(offsetGteCounterCallback);
+                        dpController.chainFilters(offsetUpdateGtId, GPIO.ANALOG_DATA_SIZE, buildEventCounter());
+                    }
                 }, time3sCallback= new DataProcessor.Callbacks() {
                     @Override
                     public void receivedFilterId(byte filterId) {
-                        sensorTimeDelayId= filterId;
+                        crunchOffsetId= filterId;
 
-                        MathBuilder builder= new MathBuilder();
-                        builder.withOperation(MathBuilder.Operation.SUBTRACT)
+                        ComparatorBuilder builder= new ComparatorBuilder();
+                        builder.withReference(0).withOperation(ComparatorBuilder.Operation.GT);
+
+                        mwCtrllr.removeModuleCallback(this);
+                        mwCtrllr.addModuleCallback(offsetUpdateGteCallback);
+                        dpController.chainFilters(crunchOffsetCheckId, GPIO.ANALOG_DATA_SIZE, builder.build());
+                    }
+                }, crunchOffsetCallback= new DataProcessor.Callbacks() {
+                    @Override
+                    public void receivedFilterId(byte filterId) {
+                        crunchOffsetCheckId = filterId;
+
+                        MathBuilder cfgUpdateBuilder= new MathBuilder();
+                        cfgUpdateBuilder.withOperation(MathBuilder.Operation.SUBTRACT)
                                 .withOperand(0)
                                 .withOutputSize(GPIO.ANALOG_DATA_SIZE)
                                 .withInputSize(GPIO.ANALOG_DATA_SIZE);
 
-                        mwCtrllr.removeModuleCallback(this);
-                        mwCtrllr.addModuleCallback(mathCallback);
-                        dpController.chainFilters(sensorTimeDelayId, GPIO.ANALOG_DATA_SIZE, builder.build());
-                    }
-                }, feedbackCallback= new DataProcessor.Callbacks() {
-                    @Override
-                    public void receivedFilterId(byte filterId) {
-                        feedbackId= filterId;
-                        logController.addTrigger(TriggerBuilder.buildDataFilterTrigger(feedbackId, GPIO.ANALOG_DATA_SIZE));
-
-                        eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, thresholdId);
-                        dpController.setFilterState(feedbackId, new byte[] { 0x1, 0x0 });
+                        eventController.recordCommand(DataProcessor.Register.FILTER_NOTIFICATION, feedbackId, new byte[] {0x2, 0x0, 0x4});
+                        dpController.setFilterConfiguration(crunchOffsetCheckId, cfgUpdateBuilder.build());
                         eventController.stopRecord();
 
                         TimeDelayBuilder builder= new TimeDelayBuilder();
@@ -439,41 +520,23 @@ public class FilterSetup {
 
                         mwCtrllr.removeModuleCallback(this);
                         mwCtrllr.addModuleCallback(time3sCallback);
-                        dpController.chainFilters(sensorFilterPass, GPIO.ANALOG_DATA_SIZE, builder.build());
+                        dpController.chainFilters(crunchOffsetCheckId, GPIO.ANALOG_DATA_SIZE, builder.build());
                     }
-                }, thresholdCompCallback= new DataProcessor.Callbacks() {
+                }, crunchOffsetUpdateCallback= new DataProcessor.Callbacks() {
                     @Override
                     public void receivedFilterId(byte filterId) {
-                        thresholdId= filterId;
-                        PassthroughBuilder builder= new PassthroughBuilder();
-                        builder.withMode(PassthroughBuilder.Mode.COUNT);
+                        feedbackId= filterId;
+                        logController.addTrigger(TriggerBuilder.buildDataFilterTrigger(feedbackId, GPIO.ANALOG_DATA_SIZE));
 
-                        mwCtrllr.removeModuleCallback(this);
-                        mwCtrllr.addModuleCallback(feedbackCallback);
-                        dpController.chainFilters(sensorFilterPass, GPIO.ANALOG_DATA_SIZE, builder.build());
-                    }
-                }, absValueCallback= new DataProcessor.Callbacks() {
-                    @Override
-                    public void receivedFilterId(byte filterId) {
-                        ComparatorBuilder builder= new ComparatorBuilder();
-                        builder.withReference(sensorThreshold)
-                                .withOperation(ComparatorBuilder.Operation.GTE);
-
-                        mwCtrllr.removeModuleCallback(this);
-                        mwCtrllr.addModuleCallback(thresholdCompCallback);
-                        dpController.chainFilters(filterId, GPIO.ANALOG_DATA_SIZE, builder.build());
-                    }
-                }, crunchThsUpdateCallback= new DataProcessor.Callbacks() {
-                    @Override
-                    public void receivedFilterId(byte filterId) {
                         MathBuilder builder= new MathBuilder();
-                        builder.withOperation(MathBuilder.Operation.ABS_VALUE)
-                                .withInputSize(GPIO.ANALOG_DATA_SIZE)
-                                .withOutputSize(GPIO.ANALOG_DATA_SIZE);
+                        builder.withOperation(MathBuilder.Operation.SUBTRACT)
+                                .withOperand(0)
+                                .withOutputSize(GPIO.ANALOG_DATA_SIZE)
+                                .withInputSize(GPIO.ANALOG_DATA_SIZE);
 
                         mwCtrllr.removeModuleCallback(this);
-                        mwCtrllr.addModuleCallback(absValueCallback);
-                        dpController.chainFilters(filterId, GPIO.ANALOG_DATA_SIZE, builder.build());
+                        mwCtrllr.addModuleCallback(crunchOffsetCallback);
+                        dpController.chainFilters(sensorFilterPass, GPIO.ANALOG_DATA_SIZE, builder.build());
                     }
                 }, passthroughCallback2= new DataProcessor.Callbacks() {
                     @Override
@@ -481,24 +544,24 @@ public class FilterSetup {
                         sessionStartId= filterId;
 
                         eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, firstPassthrough);
-                        dpController.setFilterState(sensorFilterPass, new byte[] { 0x0, 0x0 });
+                        dpController.setFilterState(sensorFilterPass, new byte[]{0x0, 0x0});
                         dpController.setFilterState(sessionStartId, new byte[] { 0x0, 0x0 });
                         eventController.stopRecord();
 
                         eventController.recordMacro(Accelerometer.Register.PULSE_STATUS);
-                        dpController.setFilterState(sessionStartId, new byte[] { 0x1, 0x0 });
+                        dpController.setFilterState(sessionStartId, new byte[]{0x1, 0x0});
                         dpController.setFilterState(firstPassthrough, new byte[] { 0x1, 0x0 });
                         eventController.stopRecord();
 
                         eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, sessionStartId);
-                        dpController.setFilterState(firstPassthrough, new byte[] { 0x0, 0x0 });
+                        dpController.setFilterState(firstPassthrough, new byte[]{0x0, 0x0});
                         eventController.stopRecord();
 
+                        PassthroughBuilder builder= new PassthroughBuilder();
+                        builder.withMode(PassthroughBuilder.Mode.COUNT);
+
                         mwCtrllr.removeModuleCallback(this);
-                        mwCtrllr.addModuleCallback(crunchThsUpdateCallback);
-                        TimeDelayBuilder builder= new TimeDelayBuilder();
-                        builder.withDataSize(GPIO.ANALOG_DATA_SIZE).withPeriod(crunchThresholdUpdatePeriod)
-                                .withFilterMode(TimeDelayBuilder.FilterMode.DIFFERENTIAL);
+                        mwCtrllr.addModuleCallback(crunchOffsetUpdateCallback);
                         dpController.chainFilters(sensorFilterPass, GPIO.ANALOG_DATA_SIZE, builder.build());
 
                     }
@@ -516,7 +579,7 @@ public class FilterSetup {
                 }, sensorPassCallback= new DataProcessor.Callbacks() {
                     @Override
                     public void receivedFilterId(final byte filterId) {
-                        sensorPassthroughId= filterId;
+                        sensorPassthroughId = filterId;
                         logController.addTrigger(TriggerBuilder.buildDataFilterTrigger(sensorPassthroughId, GPIO.ANALOG_DATA_SIZE));
 
                         sensorFilterPass= filterId;

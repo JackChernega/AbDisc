@@ -75,7 +75,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
         return "Configuration";
     }
 
-    private FilterConfigAdapter configAdapter;
+    private ParameterAdapter configAdapter;
     private DataConnection conn;
     private FilterParameters parameterSetup;
 
@@ -107,7 +107,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        configAdapter= new FilterConfigAdapter(getActivity(), R.id.filter_config_entry_layout);
+        configAdapter= new ParameterAdapter(getActivity(), R.id.filter_config_entry_layout);
         configAdapter.setNotifyOnChange(true);
         return inflater.inflate(R.layout.filter_config, container, false);
     }
@@ -120,9 +120,9 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
         configList.setAdapter(configAdapter);
 
         final Activity owner= getActivity();
-        final ArrayList<FilterConfig> configSettings= new ArrayList<>();
+        final ArrayList<Parameter> configSettings= new ArrayList<>();
         
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_18),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_18),
                 owner.getString(R.string.label_filter_config_description_18),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_18), DefaultParameters.ADC_SAMPLE_SIZE),
                 DefaultParameters.ADC_SAMPLE_SIZE) {
@@ -132,7 +132,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_18), Byte.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_17),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_17),
                 owner.getString(R.string.label_filter_config_description_17),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_17), DefaultParameters.TAP_THRESHOLD),
                 DefaultParameters.TAP_THRESHOLD) {
@@ -142,7 +142,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putFloat(owner.getString(R.string.label_filter_config_setting_17), Float.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_01),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_01),
                 owner.getString(R.string.label_filter_config_description_01),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_01), DefaultParameters.SENSOR_DATA_PIN),
                 DefaultParameters.SENSOR_DATA_PIN) {
@@ -152,7 +152,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_01), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_02),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_02),
                 owner.getString(R.string.label_filter_config_description_02),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_02), DefaultParameters.SENSOR_GROUND_PIN),
                 DefaultParameters.SENSOR_GROUND_PIN) {
@@ -162,7 +162,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_02), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_03),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_03),
                 owner.getString(R.string.label_filter_config_description_03),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_03), DefaultParameters.SEDENTARY_RESET_THRESHOLD),
                 DefaultParameters.SEDENTARY_RESET_THRESHOLD) {
@@ -172,7 +172,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_03), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_04),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_04),
                 owner.getString(R.string.label_filter_config_description_04),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_04), DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD),
                 DefaultParameters.SEDENTARY_MIN_ACTIVITY_THRESHOLD) {
@@ -182,7 +182,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_04), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_16),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_16),
                 owner.getString(R.string.label_filter_config_description_16),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_16), DefaultParameters.SEDENTARY_TIME),
                 DefaultParameters.SEDENTARY_TIME) {
@@ -192,7 +192,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_16), Byte.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_05),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_05),
                 owner.getString(R.string.label_filter_config_description_05),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_05), DefaultParameters.CRUNCH_SESSION_DURATION),
                 DefaultParameters.CRUNCH_SESSION_DURATION) {
@@ -202,7 +202,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putFloat(owner.getString(R.string.label_filter_config_setting_05), Float.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_19),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_19),
                 owner.getString(R.string.label_filter_config_description_19),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_19), DefaultParameters.CRUNCH_THRESHOLD_UPDATE_PERIOD),
                 DefaultParameters.CRUNCH_THRESHOLD_UPDATE_PERIOD) {
@@ -212,7 +212,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_19), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_06),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_06),
                 owner.getString(R.string.label_filter_config_description_06),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_06), DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE),
                 DefaultParameters.CRUNCH_SESSION_THRESHOLD_UPDATE) {
@@ -222,7 +222,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_06), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_07),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_07),
                 owner.getString(R.string.label_filter_config_description_07),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_07), DefaultParameters.L1_HAPTIC_LOWER),
                 DefaultParameters.L1_HAPTIC_LOWER) {
@@ -232,7 +232,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_07), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_08),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_08),
                 owner.getString(R.string.label_filter_config_description_08),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_08), DefaultParameters.L1_HAPTIC_UPPER),
                 DefaultParameters.L1_HAPTIC_UPPER) {
@@ -242,7 +242,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_08), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_13),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_13),
                 owner.getString(R.string.label_filter_config_description_13),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_13), DefaultParameters.L1_HAPTIC_STRENGTH),
                 DefaultParameters.L1_HAPTIC_STRENGTH) {
@@ -252,7 +252,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putFloat(owner.getString(R.string.label_filter_config_setting_13), Float.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_09),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_09),
                 owner.getString(R.string.label_filter_config_description_09),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_09), DefaultParameters.L2_HAPTIC_LOWER),
                 DefaultParameters.L2_HAPTIC_LOWER) {
@@ -262,7 +262,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_09), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_10),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_10),
                 owner.getString(R.string.label_filter_config_description_10),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_10), DefaultParameters.L2_HAPTIC_UPPER),
                 DefaultParameters.L2_HAPTIC_UPPER) {
@@ -272,7 +272,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_10), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_14),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_14),
                 owner.getString(R.string.label_filter_config_description_14),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_14), DefaultParameters.L2_HAPTIC_STRENGTH),
                 DefaultParameters.L2_HAPTIC_STRENGTH) {
@@ -282,7 +282,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putFloat(owner.getString(R.string.label_filter_config_setting_14), Float.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_11),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_11),
                 owner.getString(R.string.label_filter_config_description_11),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_11), DefaultParameters.L3_HAPTIC_LOWER),
                 DefaultParameters.L3_HAPTIC_LOWER) {
@@ -292,7 +292,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_11), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_12),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_12),
                 owner.getString(R.string.label_filter_config_description_12),
                 sharedPref.getInt(owner.getString(R.string.label_filter_config_setting_12), DefaultParameters.L3_HAPTIC_UPPER),
                 DefaultParameters.L3_HAPTIC_UPPER) {
@@ -302,7 +302,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 editor.putInt(owner.getString(R.string.label_filter_config_setting_12), Integer.valueOf(this.value));
             }
         });
-        configSettings.add(new FilterConfig(owner.getString(R.string.label_filter_config_setting_15),
+        configSettings.add(new Parameter(owner.getString(R.string.label_filter_config_setting_15),
                 owner.getString(R.string.label_filter_config_description_15),
                 sharedPref.getFloat(owner.getString(R.string.label_filter_config_setting_15), DefaultParameters.L3_HAPTIC_STRENGTH),
                 DefaultParameters.L3_HAPTIC_STRENGTH) {
@@ -323,7 +323,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                     setupProgress.setMessage("Setting up filters...");
                     setupProgress.show();
 
-                    for (FilterConfig filterCfg : configSettings) {
+                    for (Parameter filterCfg : configSettings) {
                         filterCfg.writeSetting();
                     }
                     parameterSetup.commit();

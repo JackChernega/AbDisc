@@ -45,8 +45,8 @@ import android.widget.TextView;
 /**
  * Created by etsai on 6/3/2015.
  */
-public class FilterConfigAdapter extends ArrayAdapter<FilterConfig> {
-    public FilterConfigAdapter(Context context, int resource) {
+public class ParameterAdapter extends ArrayAdapter<Parameter> {
+    public ParameterAdapter(Context context, int resource) {
         super(context, resource);
     }
 
@@ -68,7 +68,7 @@ public class FilterConfigAdapter extends ArrayAdapter<FilterConfig> {
         }
 
         final TextView configEditValue= viewHolder.configValue;
-        final FilterConfig current= getItem(position);
+        final Parameter current= getItem(position);
 
         viewHolder.configName.setText(current.name);
         viewHolder.configValue.setText(current.value);
