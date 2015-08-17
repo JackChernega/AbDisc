@@ -31,4 +31,16 @@
         android:text="@string/label_profile_main_header"
         android:gravity="center_vertical" />
 
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Data"
+        android:id="@+id/testData" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate Test Data"
+        android:id="@+id/populateData" />
+
 </LinearLayout>

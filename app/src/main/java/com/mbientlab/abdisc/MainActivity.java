@@ -60,11 +60,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
 import com.mbientlab.metawear.api.controller.DataProcessor;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -111,6 +113,8 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(getApplication());
+        FlowManager.init(getApplication());
 
         setContentView(R.layout.activity_main);
 

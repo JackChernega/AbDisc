@@ -20,11 +20,14 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.mbientlab.abdisc.filter.DebugMainActivity;
 import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.abdisc.model.DataGenerator;
 import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.Accelerometer;
@@ -81,6 +84,8 @@ public class SettingsFragment extends Fragment {
      * expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
+
+    private static final String PREF_USE_DEMO_DATA = "use_demo_data";
 
     /**
      * Helper component that ties the action bar to the navigation drawer.
@@ -208,6 +213,27 @@ public class SettingsFragment extends Fragment {
                         }
                     }).commit();
                 }
+            }
+        });
+
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        final Switch testDataSwitch = (Switch) view.findViewById(R.id.testData);
+        testDataSwitch.setChecked(sp.getBoolean(PREF_USE_DEMO_DATA, false));
+
+        testDataSwitch.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton b, boolean isChecked) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean(PREF_USE_DEMO_DATA, isChecked);
+                editor.commit();
+            }
+        });
+
+        view.findViewById(R.id.populateData).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DataGenerator.generateStepData();
             }
         });
     }

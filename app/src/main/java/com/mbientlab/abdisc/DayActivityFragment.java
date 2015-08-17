@@ -12,6 +12,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -21,8 +22,19 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.mbientlab.abdisc.model.StepReading;
+import com.mbientlab.abdisc.model.StepReading$Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneOffset;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -33,7 +45,9 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class DayActivityFragment extends Fragment {
+    private static final int ACTIVITY_PER_STEP = 6700;
     private LineChart mChart;
+    private LocalDate dayToView = LocalDate.now();
 
 
     /**
@@ -66,28 +80,56 @@ public class DayActivityFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final TextView currentDay = (TextView) view.findViewById(R.id.activityDay);
+        setDayInDisplay(dayToView, currentDay);
+        view.findViewById(R.id.graph_previous_day).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dayToView = dayToView.minusDays(1);
+                setDayInDisplay(dayToView, currentDay);
+                drawGraph();
+            }
+        });
+        view.findViewById(R.id.graph_next_day).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dayToView = dayToView.plusDays(1);
+                setDayInDisplay(dayToView, currentDay);
+                drawGraph();
+            }
+        });
         drawGraph();
     }
 
-    private int getComputedGraphHeight(){
+    private void setDayInDisplay(LocalDate day, TextView dayView){
+        dayView.setText(day.getDayOfWeek().toString() + ", " + day.getMonth().toString() +
+                " " + day.getDayOfMonth());
+    }
+
+    private int getComputedGraphHeight() {
         int elementIds[] = {R.id.graph_button_bar, R.id.graph_calories_burned};
 
         int totalHeight = 0;
 
-        for(int i = 0; i < elementIds.length; i++){
+        for (int i = 0; i < elementIds.length; i++) {
             View viewToMeasure = getView().findViewById(elementIds[i]);
             viewToMeasure.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             totalHeight += viewToMeasure.getMeasuredHeight();
         }
         getView().measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         int containerViewHeight = getView().getMeasuredHeight();
-        return((int) Math.round((containerViewHeight - totalHeight) * 0.8));
+        return ((int) Math.round((containerViewHeight - totalHeight) * 0.7));
     }
 
-    private void drawGraph(){
+    private void drawGraph() {
+        List<Integer> stepsByHour = getStepsByHourForDay(dayToView);
+
         mChart = (LineChart) getView().findViewById(R.id.active_minutes_day_chart);
+        int maxValue = (int) (getMaxValue() * 1.05);
+        int minValue = maxValue > 100 ? (int) (maxValue * -0.07) : -20;
+        mChart.invalidate();
 
         mChart.setDrawGridBackground(true);
         Legend legend = mChart.getLegend();
@@ -102,21 +144,20 @@ public class DayActivityFragment extends Fragment {
         x.setTextSize(13);
         x.setLabelsToSkip(5);
         x.setAvoidFirstLastClipping(false);
-        setData(24, 60);
+
         mChart.animateXY(2000, 2000);
         mChart.setHighlightEnabled(false);
         YAxis yLeft = mChart.getAxisLeft();
         yLeft.setEnabled(false);
-        yLeft.setAxisMinValue(-5);
-        yLeft.setAxisMaxValue(65);
+        yLeft.setAxisMinValue(minValue);
+        yLeft.setAxisMaxValue(maxValue);
         yLeft.setStartAtZero(false);
         YAxis yRight = mChart.getAxisRight();
         yRight.setEnabled(false);
-        yRight.setAxisMinValue(-7);
-        yRight.setAxisMaxValue(65);
+        yRight.setAxisMinValue(minValue);
+        yRight.setAxisMaxValue(maxValue);
         yRight.setStartAtZero(false);
         x.setDrawAxisLine(false);
-
 
         mChart.setDrawGridBackground(false);
         Paint paint = mChart.getRenderer().getPaintRender();
@@ -129,7 +170,7 @@ public class DayActivityFragment extends Fragment {
                 Shader.TileMode.REPEAT);
         paint.setShader(linGrad);
         mChart.fitScreen();
-
+        setData(stepsByHour);
         // dont forget to refresh the drawing
         mChart.invalidate();
     }
@@ -149,21 +190,62 @@ public class DayActivityFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
-    private void setData(int count, float range) {
+
+    private int getMaxValue(){
+        LocalDateTime startOfDay = dayToView.atStartOfDay();
+
+        int maxValue = 0;
+
+        for (int i = 0; i < 24; i++) {
+            List<StepReading> hourSteps = new Select().from(StepReading.class)
+                    .where(Condition.column(StepReading$Table.DATETIME)
+                            .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
+                            .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
+                    .queryList();
+            int steps = 0;
+            for (StepReading stepReading: hourSteps) {
+                steps += stepReading.getMilliG()/ACTIVITY_PER_STEP;
+            }
+            if(maxValue < steps){
+                maxValue = steps;
+            }
+        }
+
+        maxValue = maxValue > 100 ? maxValue : 100;
+        return maxValue;
+    }
+
+    private List<Integer> getStepsByHourForDay(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        List<Integer> stepsByHour = new ArrayList<Integer>();
+
+        for (int i = 0; i < 24; i++) {
+            List<StepReading> hourSteps = new Select().from(StepReading.class)
+                    .where(Condition.column(StepReading$Table.DATETIME)
+                            .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
+                            .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
+                    .queryList();
+            int steps = 0;
+            for (StepReading stepReading: hourSteps) {
+                steps += stepReading.getMilliG()/ACTIVITY_PER_STEP;
+            }
+            stepsByHour.add(steps);
+        }
+
+        return stepsByHour;
+    }
+
+    private void setData(List<Integer> stepsForDay) {
 
         ArrayList<String> xVals = new ArrayList<String>();
-        for (int i = 0; i < (count + 2); i++) {
+        for (int i = 0; i < (24 + 2); i++) {
             xVals.add((i) + "");
         }
 
         ArrayList<Entry> vals1 = new ArrayList<Entry>();
 
-        for (int i = 0; i < count; i++) {
-            float mult = (range + 1);
-            float val = (float) (Math.random() * mult);// + (float)
-            // ((mult *
-            // 0.1) / 10);
-            vals1.add(new Entry(val, i));
+        for (int i = 0; i < stepsForDay.size(); i++) {
+            vals1.add(new Entry(stepsForDay.get(i), i));
         }
         vals1.add(new Entry(0, 24));
         vals1.add(new Entry(0, 25));
