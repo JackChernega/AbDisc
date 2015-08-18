@@ -352,6 +352,7 @@ public class FilterConfigFragment extends Fragment implements ServiceConnection 
                 DataProcessor dpCtrllr= (DataProcessor) mwCtrllr.getModuleController(Module.DATA_PROCESSOR);
                 dpCtrllr.enableFilterNotify(state.getSedentaryId());
                 dpCtrllr.enableFilterNotify(state.getSessionStartId());
+                dpCtrllr.enableFilterNotify(state.getCrunchOffsetId());
             }
         });
     }

@@ -386,12 +386,12 @@ public class FilterSetup {
             private DataProcessor.FilterConfig buildEventCounter() {
                 AccumulatorBuilder builder= new AccumulatorBuilder();
                 final DataProcessor.FilterConfig original= builder.withInputSize(GPIO.ANALOG_DATA_SIZE).withOutputSize(GPIO.ANALOG_DATA_SIZE).build();
-                final DataProcessor.FilterConfig eventConfig= new DataProcessor.FilterConfig() {
+                return new DataProcessor.FilterConfig() {
                     @Override
                     public byte[] bytes() {
                         byte[] configBytes= original.bytes();
                         configBytes[0] |= 0x10;
-                        return new byte[0];
+                        return configBytes;
                     }
 
                     @Override
@@ -399,8 +399,6 @@ public class FilterSetup {
                         return original.type();
                     }
                 };
-
-                return eventConfig;
             }
 
             private byte sensorFilterPass, firstPassthrough, sessionStartId, crunchOffsetId, crunchOffsetCheckId,
@@ -436,7 +434,7 @@ public class FilterSetup {
 
                         mwCtrllr.removeModuleCallback(this);
                         mwCtrllr.addModuleCallback(offsetUpdateLteEndCallback);
-                        dpController.chainFilters(filterId, GPIO.ANALOG_DATA_SIZE, buildEventCounter());
+                        dpController.chainFilters(filterId, GPIO.ANALOG_DATA_SIZE, builder.build());
                     }
                 }, offsetUpdateLteCallback= new DataProcessor.Callbacks() {
                     @Override
@@ -457,7 +455,7 @@ public class FilterSetup {
                         eventController.stopRecord();
 
                         ComparatorBuilder builder= new ComparatorBuilder();
-                        builder.withReference(0).withOperation(ComparatorBuilder.Operation.LTE);
+                        builder.withReference(0).withOperation(ComparatorBuilder.Operation.LTE).withSignedCommparison();
 
                         mwCtrllr.removeModuleCallback(this);
                         mwCtrllr.addModuleCallback(offsetUpdateLteCallback);
@@ -477,7 +475,7 @@ public class FilterSetup {
 
                         mwCtrllr.removeModuleCallback(this);
                         mwCtrllr.addModuleCallback(offsetUpdateGtEndCallback);
-                        dpController.chainFilters(offsetUpdateGtCounterId, GPIO.ANALOG_DATA_SIZE, buildEventCounter());
+                        dpController.chainFilters(offsetUpdateGtCounterId, GPIO.ANALOG_DATA_SIZE, builder.build());
                     }
                 }, offsetUpdateGteCallback= new DataProcessor.Callbacks() {
                     @Override
@@ -494,7 +492,7 @@ public class FilterSetup {
                         crunchOffsetId= filterId;
 
                         ComparatorBuilder builder= new ComparatorBuilder();
-                        builder.withReference(0).withOperation(ComparatorBuilder.Operation.GT);
+                        builder.withReference(0).withOperation(ComparatorBuilder.Operation.GT).withSignedCommparison();
 
                         mwCtrllr.removeModuleCallback(this);
                         mwCtrllr.addModuleCallback(offsetUpdateGteCallback);
