@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/graph_horizontal_gradient"
+    android:id="@+id/graph_day"
+    android:layout_gravity="start|top"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="1">
+
+    <ImageButton
+        android:background="@null"
+        android:id="@+id/graph_previous_day"
+        android:layout_height="match_parent"
+        android:layout_weight=".2"
+        android:layout_width="0dp"
+        android:scaleType="centerInside"
+        android:src="@mipmap/icon_previousarrow" />
+
+    <TextView
+        style="@style/AppGraphBig"
+        android:gravity="center_vertical|center_horizontal"
+        android:id="@+id/activityDay"
+        android:layout_gravity="center"
+        android:layout_height="75dp"
+        android:layout_weight=".6"
+        android:layout_width="0dp"
+        android:text="Friday,  July 27" />
+
+    <ImageButton
+        android:background="@null"
+        android:id="@+id/graph_next_day"
+        android:layout_height="match_parent"
+        android:layout_weight=".2"
+        android:layout_width="0dp"
+        android:scaleType="centerInside"
+        android:src="@mipmap/icon_nextarrow" />
+</LinearLayout>
+
+
+

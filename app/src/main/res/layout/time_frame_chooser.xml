@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/graph_button_bar"
+    android:layout_gravity="center"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/button_spacer1"
+        android:layout_height="wrap_content"
+        android:layout_weight=".06"
+        android:layout_width="0dp" />
+
+    <LinearLayout
+        android:layout_gravity="center"
+        android:layout_height="54dp"
+        android:layout_weight=".88"
+        android:layout_width="0dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            style="@style/AppGraphMedium"
+            android:background="@drawable/time_button_rectangle_start_active"
+            android:id="@+id/day_button"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:layout_width="0dp"
+            android:text="@string/label_graph_day" />
+
+        <Button
+            style="@style/AppGraphMedium"
+            android:background="@drawable/time_button_rectangle_inactive"
+            android:id="@+id/week_button"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:layout_width="0dp"
+            android:text="@string/label_graph_week" />
+
+        <Button
+            style="@style/AppGraphMedium"
+            android:background="@drawable/time_button_rectangle_inactive"
+            android:id="@+id/month_button"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:layout_width="0dp"
+            android:text="@string/label_graph_month" />
+
+        <Button
+            style="@style/AppGraphMedium"
+            android:background="@drawable/time_button_rectangle_end_inactive"
+            android:id="@+id/year_button"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:layout_width="0dp"
+            android:text="@string/label_graph_year" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/button_spacer2"
+        android:layout_height="0dp"
+        android:layout_weight=".06"
+        android:layout_width="0dp" />
+</LinearLayout>
+

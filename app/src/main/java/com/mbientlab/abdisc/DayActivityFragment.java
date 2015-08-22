@@ -1,6 +1,7 @@
 package com.mbientlab.abdisc;
 
 import android.app.Activity;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
@@ -24,6 +25,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.abdisc.model.StepReading$Table;
+import com.mbientlab.abdisc.utils.LayoutUtils;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
@@ -108,21 +110,6 @@ public class DayActivityFragment extends Fragment {
                 " " + day.getDayOfMonth());
     }
 
-    private int getComputedGraphHeight() {
-        int elementIds[] = {R.id.graph_button_bar, R.id.graph_calories_burned};
-
-        int totalHeight = 0;
-
-        for (int i = 0; i < elementIds.length; i++) {
-            View viewToMeasure = getView().findViewById(elementIds[i]);
-            viewToMeasure.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            totalHeight += viewToMeasure.getMeasuredHeight();
-        }
-        getView().measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int containerViewHeight = getView().getMeasuredHeight();
-        return ((int) Math.round((containerViewHeight - totalHeight) * 0.7));
-    }
-
     private void drawGraph() {
         List<Integer> stepsByHour = getStepsByHourForDay(dayToView);
 
@@ -161,7 +148,9 @@ public class DayActivityFragment extends Fragment {
 
         mChart.setDrawGridBackground(false);
         Paint paint = mChart.getRenderer().getPaintRender();
-        int height = getComputedGraphHeight();
+        int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_calories_burned, R.id.graph_day};
+        int height =  LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
+                heightItemsToConsider);
         mChart.getLayoutParams().height = height;
 
         LinearGradient linGrad = new LinearGradient(0, 0, 0, height,

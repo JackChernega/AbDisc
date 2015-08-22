@@ -33,11 +33,19 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.hookedonplay.decoviewlib.DecoView;
+import com.hookedonplay.decoviewlib.charts.SeriesItem;
+import com.hookedonplay.decoviewlib.events.DecoEvent;
+import com.mbientlab.abdisc.utils.LayoutUtils;
 
 import java.util.Locale;
 
@@ -69,13 +77,54 @@ public class StepCountFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        stepCountValue = (TextView) view.findViewById(R.id.app_step_count_value);
-        stepCountValue.setText(String.format(Locale.US, "%d", appState.getStepCount()));
+        DecoView decoView = (DecoView) view.findViewById(R.id.stepsArc);
+        decoView.deleteAll();
+        int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_day};
+        decoView.getLayoutParams().height = LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
+                heightItemsToConsider);
+        decoView.configureAngles(330, 0);
+        float dimension = getDimension(50f);
+        decoView.addSeries(new SeriesItem.Builder(getResources().getColor(R.color.ColorButtonBarSeparator),
+                getResources().getColor(R.color.ColorButtonBarSeparator))
+                .setRange(0, 50f, 50f)
+                .setInitialVisibility(false)
+                .setLineWidth(getDimension(20f))
+                .build());
+
+        int seriesIndex = decoView.addSeries(new SeriesItem.Builder(getResources().getColor(R.color.ColorGraphLow),
+                getResources().getColor(R.color.ColorGraphHigh))
+                .setRange(0, 50f, 0)
+                .setInitialVisibility(false)
+                .setLineWidth(getDimension(18f))
+                .build());
+
+        decoView.executeReset();
+
+
+        decoView.addEvent(new DecoEvent.Builder(DecoEvent.EventType.EVENT_SHOW, true)
+                .setDelay(100)
+                .setDuration(100)
+                .build());
+
+        decoView.addEvent(new DecoEvent.Builder(50)
+                .setIndex(seriesIndex)
+                .setDelay(200)
+                .setDuration(1000)
+                .build());
+
+        decoView.invalidate();
+
+        //stepCountValue = (TextView) view.findViewById(R.id.app_step_count_value);
+        //stepCountValue.setText(String.format(Locale.US, "%d", appState.getStepCount()));
     }
 
     public void stepCountUpdated(int newStepCount) {
         if (isVisible()) {
             stepCountValue.setText(String.format(Locale.US, "%d", newStepCount));
         }
+    }
+
+    protected float getDimension(float base) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, base, getResources().getDisplayMetrics());
     }
 }
