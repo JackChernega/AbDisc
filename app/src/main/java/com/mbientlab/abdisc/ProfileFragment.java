@@ -19,7 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mbientlab.abdisc.utils.GoalUtils;
+import com.mbientlab.abdisc.utils.GoalDataUtils;
 
 import java.util.Hashtable;
 import java.util.Locale;
@@ -111,30 +111,6 @@ public class ProfileFragment extends Fragment {
         setupNoEditToast(view);
     }
 
-    private int getHeightInInches(SharedPreferences sharedPreferences) {
-        int heightInFeet = sharedPreferences.getInt(PROFILE_HEIGHT_FEET, 0);
-        int heightInInches = sharedPreferences.getInt(PROFILE_HEIGHT_INCHES, 0);
-        return ((heightInFeet * 12) + heightInInches);
-    }
-
-    private int calculateStride(SharedPreferences sharedPreferences) {
-        String gender = sharedPreferences.getString(PROFILE_GENDER, "");
-        int genderHeightOffset = 0;
-        int genderOffset = 0;
-        int heightInInches = getHeightInInches(sharedPreferences);
-
-        if (heightInInches > 0) {
-            if (gender.equals("male")) {
-                genderHeightOffset = 70;
-                genderOffset = 31;
-            } else if (gender.equals("female")) {
-                genderHeightOffset = 64;
-                genderOffset = 26;
-            }
-        }
-        return ((Double.valueOf(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
-    }
-
     private void setupNoEditToast(final View view) {
         view.findViewById(R.id.calories).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,11 +159,11 @@ public class ProfileFragment extends Fragment {
                 if (useAutomaticCheckbox.isChecked()) {
                     promptContent.setEnabled(false);
                     if (view.getId() == R.id.stride) {
-                        promptContent.setText(String.valueOf(calculateStride(sharedPreferences)));
+                        promptContent.setText(String.valueOf(GoalDataUtils.calculateStride(sharedPreferences)));
                     } else if (view.getId() == R.id.sessions) {
                         promptContent.setText(String.valueOf(12));
                     } else {
-                        promptContent.setText(String.valueOf(GoalUtils.calculateStepGoal(sharedPreferences)));
+                        promptContent.setText(String.valueOf(GoalDataUtils.calculateStepGoal(sharedPreferences)));
                     }
                 } else {
                     promptContent.setEnabled(true);
@@ -288,13 +264,9 @@ public class ProfileFragment extends Fragment {
             });
         }
 
-        if (sharedPreferences.getBoolean(PROFILE_STRIDE_AUTOMATIC, true)) {
-            stride = calculateStride(sharedPreferences);
-        } else {
-            stride = sharedPreferences.getInt(PROFILE_STRIDE, 0);
-        }
+        stride = GoalDataUtils.getStride(sharedPreferences);
 
-        steps = GoalUtils.getStepGoal(sharedPreferences);
+        steps = GoalDataUtils.getStepGoal(sharedPreferences);
 
         int sessionsLabelId = R.string.label_profile_crunch_sessions;
 

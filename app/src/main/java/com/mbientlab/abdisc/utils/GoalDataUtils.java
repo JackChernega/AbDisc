@@ -40,7 +40,7 @@ import com.mbientlab.abdisc.ProfileFragment;
  * https://github.com/lgleasain
  * Twitter: @lgleasain
  */
-public class GoalUtils {
+public class GoalDataUtils {
     public static int calculateStepGoal(SharedPreferences sharedPreferences) {
         int age = sharedPreferences.getInt(ProfileFragment.PROFILE_AGE, 0);
         return (11000 - (age * 75));
@@ -54,5 +54,39 @@ public class GoalUtils {
             steps = sharedPreferences.getInt(ProfileFragment.PROFILE_STEPS, 0);
         }
         return steps;
+    }
+
+    public static int getHeightInInches(SharedPreferences sharedPreferences) {
+        int heightInFeet = sharedPreferences.getInt(ProfileFragment.PROFILE_HEIGHT_FEET, 0);
+        int heightInInches = sharedPreferences.getInt(ProfileFragment.PROFILE_HEIGHT_INCHES, 0);
+        return ((heightInFeet * 12) + heightInInches);
+    }
+
+    public static int calculateStride(SharedPreferences sharedPreferences) {
+        String gender = sharedPreferences.getString(ProfileFragment.PROFILE_GENDER, "");
+        int genderHeightOffset = 0;
+        int genderOffset = 0;
+        int heightInInches = getHeightInInches(sharedPreferences);
+
+        if (heightInInches > 0) {
+            if (gender.equals("male")) {
+                genderHeightOffset = 70;
+                genderOffset = 31;
+            } else if (gender.equals("female")) {
+                genderHeightOffset = 64;
+                genderOffset = 26;
+            }
+        }
+        return ((Double.valueOf(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
+    }
+
+    public static int getStride(SharedPreferences sharedPreferences) {
+        int stride;
+        if (sharedPreferences.getBoolean(ProfileFragment.PROFILE_STRIDE_AUTOMATIC, true)) {
+            stride = calculateStride(sharedPreferences);
+        } else {
+            stride = sharedPreferences.getInt(ProfileFragment.PROFILE_STRIDE, 0);
+        }
+        return stride;
     }
 }

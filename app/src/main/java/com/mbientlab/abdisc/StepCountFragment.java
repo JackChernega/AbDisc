@@ -34,8 +34,6 @@ package com.mbientlab.abdisc;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -48,7 +46,7 @@ import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.abdisc.model.StepReading$Table;
-import com.mbientlab.abdisc.utils.GoalUtils;
+import com.mbientlab.abdisc.utils.GoalDataUtils;
 import com.mbientlab.abdisc.utils.LayoutUtils;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -56,8 +54,10 @@ import com.raizlabs.android.dbflow.sql.language.Select;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
+import org.w3c.dom.Text;
 
-import java.util.ArrayList;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -121,7 +121,7 @@ public class StepCountFragment extends Fragment {
 
     private void drawGraphAndSetText(View view){
         stepsForDay = getStepsForDay(dayToView);
-        int stepGoal = GoalUtils.getStepGoal(sharedPreferences);
+        int stepGoal = GoalDataUtils.getStepGoal(sharedPreferences);
         int stepsToGoal = stepGoal - stepsForDay;
         if(stepsToGoal < 0)
             stepsToGoal = 0;
@@ -130,9 +130,18 @@ public class StepCountFragment extends Fragment {
         stepsToGoalValue.setText(String.valueOf(stepsToGoal));
 
         TextView stepsToday = (TextView) view.findViewById(R.id.textStepsTodayValue);
-        stepsToday.setText(String.valueOf(stepsForDay));
+        stepsToday.setText(NumberFormat.getInstance().format(stepsForDay));
 
-         drawGraph(view);
+        int goalPercent = (int) (((float) stepsForDay/ (float)stepGoal) * 100.00f);
+        TextView percentOfGoal = (TextView) view.findViewById(R.id.textStepsPercentGoalValue);
+        percentOfGoal.setText(String.valueOf(goalPercent) + "%");
+
+        double distanceValue = (double) (stepsForDay * GoalDataUtils.getStride(sharedPreferences))/63360;
+        DecimalFormat distanceFormatter = new DecimalFormat("#.##");
+        TextView distance = (TextView) view.findViewById(R.id.textStepsDistanceValue);
+        distance.setText(distanceFormatter.format(distanceValue) + "mi");
+
+        drawGraph(view);
     }
 
     private void drawGraph(View view){
@@ -144,7 +153,7 @@ public class StepCountFragment extends Fragment {
         //decoView.getLayoutParams().height = LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
           //      heightItemsToConsider);
         decoView.configureAngles(330, 0);
-        int stepGoal = GoalUtils.getStepGoal(sharedPreferences);
+        int stepGoal = GoalDataUtils.getStepGoal(sharedPreferences);
         decoView.addSeries(new SeriesItem.Builder(getResources().getColor(R.color.ColorButtonBarSeparator),
                 getResources().getColor(R.color.ColorButtonBarSeparator))
                 .setRange(0, stepGoal, stepGoal)

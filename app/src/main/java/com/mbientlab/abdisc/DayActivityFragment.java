@@ -146,10 +146,6 @@ public class DayActivityFragment extends Fragment {
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_calories_burned, R.id.graph_day};
         int height =  LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
                 heightItemsToConsider);
-        //mChart.getLayoutParams().height = height;
-        //View chartContainer = getView().findViewById(R.id.active_minutes_day_chart);
-        //chartContainer.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        //int height = chartContainer.getMeasuredHeight();
 
         LinearGradient linGrad = new LinearGradient(0, 0, 0, height,
                 getResources().getColor(R.color.ColorGraphHigh),
