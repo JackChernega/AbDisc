@@ -19,12 +19,14 @@
         <item name="android:textColor">@color/ColorPreferencesHeader</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="AppPreferencePopupName">
         <item name="android:textSize">@dimen/text_size_profile_name</item>
         <item name="android:textColor">@color/ColorPreferencesEntry</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_margin">4dp</item>
     </style>
+
     <style name="AppPreferenceName">
         <item name="android:textSize">@dimen/text_size_profile_name</item>
         <item name="android:textColor">@color/ColorPreferencesEntry</item>
@@ -33,26 +35,51 @@
         <item name="android:layout_margin">4dp</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
     <style name="AppPreferenceEntry">
         <item name="android:textSize">@dimen/text_size_profile_name</item>
         <item name="android:textColor">@color/ColorPreferencesEntry</item>
         <item name="android:layout_weight">.60</item>
         <item name="android:layout_margin">4dp</item>
     </style>
+
     <style name="AppGraph">
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/ColorGraphText</item>
     </style>
+
     <style name="AppGraphBig" parent="AppGraph">
         <item name="android:textSize">@dimen/text_size_large_graph</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="AppGraphMediumLarge" parent="AppGraph">
         <item name="android:textSize">@dimen/text_size_medium_large_graph</item>
         <item name="android:textStyle">bold</item>
     </style>
-     <style name="AppGraphMedium" parent="AppGraph">
+
+    <style name="AppGraphMedium" parent="AppGraph">
         <item name="android:textSize">@dimen/text_size_medium_graph</item>
         <item name="android:textStyle">bold</item>
     </style>
-  </resources>
+
+    <style name="StepLabelLarge" parent="AppGraph">
+        <item name="android:textSize">@dimen/text_size_large_step</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="StepLabelSmall">
+        <item name="android:textColor">@color/ColorNavBackground</item>
+        <item name="android:textSize">@dimen/text_size_medium_graph</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="StepLabelBottom" parent="StepLabelSmall">
+        <item name="android:textSize">@dimen/text_size_medium_large_graph</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+    <style name="StepValueBottom">
+        <item name="android:textColor">@color/ColorGraphHigh</item>
+        <item name="android:textSize">@dimen/text_size_large_material</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

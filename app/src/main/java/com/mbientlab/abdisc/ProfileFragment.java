@@ -19,6 +19,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mbientlab.abdisc.utils.GoalUtils;
+
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -133,11 +135,6 @@ public class ProfileFragment extends Fragment {
         return ((Double.valueOf(genderOffset + ((heightInInches - genderHeightOffset) * 0.75)).intValue()));
     }
 
-    private int calculateSteps(SharedPreferences sharedPreferences) {
-        int age = sharedPreferences.getInt(PROFILE_AGE, 0);
-        return(11000 - (age * 75));
-    }
-
     private void setupNoEditToast(final View view) {
         view.findViewById(R.id.calories).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,7 +187,7 @@ public class ProfileFragment extends Fragment {
                     } else if (view.getId() == R.id.sessions) {
                         promptContent.setText(String.valueOf(12));
                     } else {
-                        promptContent.setText(String.valueOf(calculateSteps(sharedPreferences)));
+                        promptContent.setText(String.valueOf(GoalUtils.calculateStepGoal(sharedPreferences)));
                     }
                 } else {
                     promptContent.setEnabled(true);
@@ -297,11 +294,7 @@ public class ProfileFragment extends Fragment {
             stride = sharedPreferences.getInt(PROFILE_STRIDE, 0);
         }
 
-        if (sharedPreferences.getBoolean(PROFILE_STEPS_AUTOMATIC, true)) {
-            steps = calculateSteps(sharedPreferences);
-        } else {
-            steps = sharedPreferences.getInt(PROFILE_STEPS, 0);
-        }
+        steps = GoalUtils.getStepGoal(sharedPreferences);
 
         int sessionsLabelId = R.string.label_profile_crunch_sessions;
 

@@ -10,37 +10,163 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <include layout="@layout/day_chooser"/>
 
-    <include layout="@layout/time_frame_chooser"/>
+    <include layout="@layout/day_chooser" />
+
+    <include layout="@layout/time_frame_chooser" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
+
+        android:orientation="vertical"
         android:weightSum="1">
 
-        <TextView
-            android:id="@+id/chart_spacer1"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".03" />
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center"
+            android:layout_weight=".96"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
-        <com.hookedonplay.decoviewlib.DecoView
-            android:layout_width="0dp"
-            android:layout_height="300dp"
-            android:id="@+id/stepsArc"
-            android:layout_weight=".94"
-            android:layout_margin="8dp">
-        </com.hookedonplay.decoviewlib.DecoView>
+            <TextView
+                android:id="@+id/chart_spacer1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight=".03" />
 
-        <TextView
-            android:id="@+id/chart_spacer2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight=".03" />
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".94"
+                android:orientation="vertical">
 
+                <com.hookedonplay.decoviewlib.DecoView
+                    android:id="@+id/stepsArc"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"></com.hookedonplay.decoviewlib.DecoView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textStepsToGoalValue"
+                        style="@style/StepLabelLarge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="9999" />
+
+                    <TextView
+                        android:id="@+id/textStepsToGoal"
+                        style="@style/StepLabelSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|top"
+                        android:text="@string/label_graph_steps_to_goal" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/chart_spacer2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight=".03" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_weight=".04"
+            android:layout_marginBottom="5dp"
+            android:nestedScrollingEnabled="false"
+            android:orientation="horizontal"
+            android:weightSum="99">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_weight="33"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textStepsTodayValue"
+                    style="@style/StepValueBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|top"
+                    android:text="9999" />
+
+                <TextView
+                    android:id="@+id/textStepsTodayLabel"
+                    style="@style/StepLabelBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/label_graph_steps_today" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_weight="33"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textStepsPercentGoalValue"
+                    style="@style/StepValueBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="9999" />
+
+                <TextView
+                    android:id="@+id/textStepsPercentGoalLabel"
+                    style="@style/StepLabelBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/label_graph_of_goal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_weight="33"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textStepsDistanceValue"
+                    style="@style/StepValueBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="9999" />
+
+                <TextView
+                    android:id="@+id/textStepsDistanceLabel"
+                    style="@style/StepLabelBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/label_graph_distance" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>

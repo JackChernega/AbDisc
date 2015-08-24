@@ -1,15 +1,8 @@
 package com.mbientlab.abdisc.utils;
 
-import android.app.Activity;
-import android.content.res.TypedArray;
-import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.content.SharedPreferences;
 
-import com.mbientlab.abdisc.R;
-
-import org.threeten.bp.LocalDate;
+import com.mbientlab.abdisc.ProfileFragment;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -42,43 +35,24 @@ import org.threeten.bp.LocalDate;
  * contact MbientLab Inc, at www.mbientlab.com.
  * <p/>
  * <p/>
- * Created by Lance Gleason of Polyglot Programming LLC. on 8/21/15.
+ * Created by Lance Gleason of Polyglot Programming LLC. on 8/24/15.
  * http://www.polyglotprogramminginc.com
  * https://github.com/lgleasain
  * Twitter: @lgleasain
  */
-public class LayoutUtils {
-
-    public static int getComputedGraphHeight(View view, Activity activity, int elementIds[]) {
-
-        int totalHeight = 0;
-
-        for (int i = 0; i < elementIds.length; i++) {
-            View viewToMeasure = view.findViewById(elementIds[i]);
-            viewToMeasure.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            totalHeight += viewToMeasure.getMeasuredHeight();
-        }
-
-        View viewToMeasure = activity.findViewById(R.id.buttonMenu);
-        viewToMeasure.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-        view.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int containerViewHeight = view.getMeasuredHeightAndState() * 2;
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        if (containerViewHeight < 705 && metrics.heightPixels > 1500) {
-            containerViewHeight = containerViewHeight * 2;
-        } else if (containerViewHeight < 705) {
-            containerViewHeight = containerViewHeight - 150;
-        } else if (containerViewHeight < 1000) {
-            containerViewHeight = containerViewHeight - 200;
-        }
-        return (containerViewHeight);
+public class GoalUtils {
+    public static int calculateStepGoal(SharedPreferences sharedPreferences) {
+        int age = sharedPreferences.getInt(ProfileFragment.PROFILE_AGE, 0);
+        return (11000 - (age * 75));
     }
 
-    public static void setDayInDisplay(LocalDate day, TextView dayView) {
-        dayView.setText(day.getDayOfWeek().toString() + ", " + day.getMonth().toString() +
-                " " + day.getDayOfMonth());
+    public static int getStepGoal(SharedPreferences sharedPreferences) {
+        int steps;
+        if (sharedPreferences.getBoolean(ProfileFragment.PROFILE_STEPS_AUTOMATIC, true)) {
+            steps = calculateStepGoal(sharedPreferences);
+        } else {
+            steps = sharedPreferences.getInt(ProfileFragment.PROFILE_STEPS, 0);
+        }
+        return steps;
     }
-
 }

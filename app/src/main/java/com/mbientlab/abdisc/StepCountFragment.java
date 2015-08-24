@@ -33,6 +33,7 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -45,8 +46,19 @@ import android.widget.TextView;
 import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
+import com.mbientlab.abdisc.model.StepReading;
+import com.mbientlab.abdisc.model.StepReading$Table;
+import com.mbientlab.abdisc.utils.GoalUtils;
 import com.mbientlab.abdisc.utils.LayoutUtils;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneOffset;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -54,6 +66,10 @@ import java.util.Locale;
  */
 public class StepCountFragment extends Fragment {
     private AppState appState;
+    private LocalDate dayToView = LocalDate.now();
+    private DecoView decoView;
+    private SharedPreferences sharedPreferences;
+    private int stepsForDay;
 
     @Override
     public void onAttach(Activity activity) {
@@ -64,7 +80,8 @@ public class StepCountFragment extends Fragment {
                     activity.getString(R.string.error_app_state)));
         }
 
-        appState= (AppState) activity;
+        appState = (AppState) activity;
+        sharedPreferences = appState.getSharedPreferences();
     }
 
     @Override
@@ -76,46 +93,121 @@ public class StepCountFragment extends Fragment {
     private TextView stepCountValue;
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        DecoView decoView = (DecoView) view.findViewById(R.id.stepsArc);
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+
+        final TextView currentDay = (TextView) view.findViewById(R.id.activityDay);
+        LayoutUtils.setDayInDisplay(dayToView, currentDay);
+        view.findViewById(R.id.graph_previous_day).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dayToView = dayToView.minusDays(1);
+                LayoutUtils.setDayInDisplay(dayToView, currentDay);
+                drawGraphAndSetText(view);
+            }
+        });
+        view.findViewById(R.id.graph_next_day).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dayToView = dayToView.plusDays(1);
+                LayoutUtils.setDayInDisplay(dayToView, currentDay);
+                drawGraphAndSetText(view);
+            }
+        });
+        drawGraphAndSetText(view);
+
+        //stepCountValue = (TextView) view.findViewById(R.id.app_step_count_value);
+        //stepCountValue.setText(String.format(Locale.US, "%d", appState.getStepCount()));
+    }
+
+    private void drawGraphAndSetText(View view){
+        stepsForDay = getStepsForDay(dayToView);
+        int stepGoal = GoalUtils.getStepGoal(sharedPreferences);
+        int stepsToGoal = stepGoal - stepsForDay;
+        if(stepsToGoal < 0)
+            stepsToGoal = 0;
+
+        TextView stepsToGoalValue = (TextView) view.findViewById(R.id.textStepsToGoalValue);
+        stepsToGoalValue.setText(String.valueOf(stepsToGoal));
+
+        TextView stepsToday = (TextView) view.findViewById(R.id.textStepsTodayValue);
+        stepsToday.setText(String.valueOf(stepsForDay));
+
+         drawGraph(view);
+    }
+
+    private void drawGraph(View view){
+        if(decoView == null)
+            decoView = (DecoView) view.findViewById(R.id.stepsArc);
+
         decoView.deleteAll();
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_day};
-        decoView.getLayoutParams().height = LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
-                heightItemsToConsider);
+        //decoView.getLayoutParams().height = LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
+          //      heightItemsToConsider);
         decoView.configureAngles(330, 0);
-        float dimension = getDimension(50f);
+        int stepGoal = GoalUtils.getStepGoal(sharedPreferences);
         decoView.addSeries(new SeriesItem.Builder(getResources().getColor(R.color.ColorButtonBarSeparator),
                 getResources().getColor(R.color.ColorButtonBarSeparator))
-                .setRange(0, 50f, 50f)
+                .setRange(0, stepGoal, stepGoal)
                 .setInitialVisibility(false)
                 .setLineWidth(getDimension(20f))
                 .build());
 
         int seriesIndex = decoView.addSeries(new SeriesItem.Builder(getResources().getColor(R.color.ColorGraphLow),
                 getResources().getColor(R.color.ColorGraphHigh))
-                .setRange(0, 50f, 0)
+                .setRange(0, stepGoal, 0)
                 .setInitialVisibility(false)
                 .setLineWidth(getDimension(18f))
                 .build());
 
+        int seriesIndex2 = decoView.addSeries(new SeriesItem.Builder(getResources().getColor(R.color.ColorGraphLow),
+                getResources().getColor(R.color.ColorGraphHigh))
+                .setRange(0, stepGoal, 0)
+                .setInitialVisibility(false)
+                .setLineWidth(getDimension(12f))
+                .build());
+
         decoView.executeReset();
 
+
+        int graphSteps = stepsForDay;
+        if (graphSteps > stepGoal)
+            graphSteps = stepGoal;
 
         decoView.addEvent(new DecoEvent.Builder(DecoEvent.EventType.EVENT_SHOW, true)
                 .setDelay(100)
                 .setDuration(100)
                 .build());
 
-        decoView.addEvent(new DecoEvent.Builder(50)
+        decoView.addEvent(new DecoEvent.Builder(graphSteps)
                 .setIndex(seriesIndex)
                 .setDelay(200)
                 .setDuration(1000)
                 .build());
 
+        decoView.addEvent(new DecoEvent.Builder(graphSteps)
+                .setIndex(seriesIndex2)
+                .setDelay(800)
+                .setDuration(1000)
+                .build());
+
         decoView.invalidate();
 
-        //stepCountValue = (TextView) view.findViewById(R.id.app_step_count_value);
-        //stepCountValue.setText(String.format(Locale.US, "%d", appState.getStepCount()));
+    }
+
+    private int getStepsForDay(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+
+            List<StepReading> hourSteps = new Select().from(StepReading.class)
+                    .where(Condition.column(StepReading$Table.DATETIME)
+                            .between(startOfDay.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
+                            .and(startOfDay.plusHours(24).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
+                    .queryList();
+            int steps = 0;
+            for (StepReading stepReading: hourSteps) {
+                steps += stepReading.getMilliG()/DayActivityFragment.ACTIVITY_PER_STEP;
+            }
+
+        return steps;
     }
 
     public void stepCountUpdated(int newStepCount) {

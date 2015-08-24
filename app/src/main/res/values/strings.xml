@@ -74,4 +74,8 @@
     <string name="label_graph_year">Year</string>
     <string name="label_graph_total_active_minutes">Active Minutes So Far Today</string>
     <string name="label_graph_total_intense_active_minutes">Intense Active Minutes</string>
+    <string name="label_graph_steps_to_goal">Steps To Goal</string>
+    <string name="label_graph_steps_today">Steps Today</string>
+    <string name="label_graph_of_goal">Of Goal</string>
+    <string name="label_graph_distance">Distance</string>
 </resources>
