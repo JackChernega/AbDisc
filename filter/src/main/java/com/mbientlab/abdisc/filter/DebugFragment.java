@@ -65,7 +65,7 @@ import java.util.Locale;
  */
 public class DebugFragment extends Fragment implements ServiceConnection {
     private static DebugFragment INSTANCE= null;
-    private static final int ACTIVITY_PER_STEP= 6700;
+    private static final int ACTIVITY_PER_STEP= 6700, STEP_UPDATE_SEDENTARY_LIMIT= 180000;
 
     public static DebugFragment getInstance() {
         if (INSTANCE == null) {
@@ -88,7 +88,9 @@ public class DebugFragment extends Fragment implements ServiceConnection {
                     int milliG = buffer.getInt();
 
                     sedentaryValue.setText(String.format(Locale.US, "%d", milliG));
-                    steps += (milliG / ACTIVITY_PER_STEP);
+                    if (milliG > STEP_UPDATE_SEDENTARY_LIMIT) {
+                        steps += (milliG / ACTIVITY_PER_STEP);
+                    }
                     stepCountValue.setText(String.format(Locale.US, "%d", steps));
                 } else if (filterId == conn.getFilterState().getSensorId()) {
                     adcValue.setText(String.format(Locale.US, "%d", buffer.getShort()));

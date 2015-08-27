@@ -627,6 +627,7 @@ public class FilterSetup {
 
                                 eventController.recordMacro(Timer.Register.TIMER_NOTIFY, timerId);
                                 dpController.setFilterState(sensorFilterPass, sampleCount);
+                                dpController.setFilterState(feedbackId, new byte[] {0x1, 0x0});
                                 eventController.stopRecord();
 
                                 eventController.recordMacro(DataProcessor.Register.FILTER_NOTIFICATION, sessionStartId);
@@ -654,7 +655,7 @@ public class FilterSetup {
 
             private byte timer90Id, timer70Id, timer40Id;
             private void setupHapticFeedback(final MetaWearController mwCtrllr) {
-                final short NUM_HAPTIC_PULSES= 3;
+                final short NUM_HAPTIC_PULSES= 1;
                 final int HAPTIC_TIMER_PERIOD= CRUNCH_THRESHOLD_CHECK_PERIOD / NUM_HAPTIC_PULSES;
 
                 final Haptic hapticController= (Haptic) mwCtrllr.getModuleController(Module.HAPTIC);
