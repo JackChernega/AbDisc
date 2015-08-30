@@ -1,10 +1,15 @@
 package com.mbientlab.abdisc.model;
 
 
+import com.raizlabs.android.dbflow.runtime.TransactionManager;
+import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
+import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
+
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -48,6 +53,7 @@ public class DataGenerator {
         int minutesToGenerate = 60*24*3;
         long currentTimeInMilliSeconds;
         LocalDateTime currentDateTime = LocalDateTime.now();
+        ArrayList<StepReading> stepReadings = new ArrayList<>();
 
         for(int i = 0; i < minutesToGenerate; i++){
             long val = (long) (Math.random() * (60 * 6700));
@@ -57,9 +63,10 @@ public class DataGenerator {
             }
             currentTimeInMilliSeconds = nowInMilliseconds - (60000 * i);
             StepReading stepReading = new StepReading((new Date(currentTimeInMilliSeconds)), val, true);
-            stepReading.save();
+            stepReadings.add(stepReading);
         }
 
+        TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(stepReadings)));
 
     }
 }
