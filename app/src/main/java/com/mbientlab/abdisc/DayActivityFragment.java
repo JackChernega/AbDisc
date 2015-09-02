@@ -91,7 +91,7 @@ public class DayActivityFragment extends Fragment {
             public void onClick(View v) {
                 dayToView = dayToView.minusDays(1);
                 LayoutUtils.setDayInDisplay(dayToView, currentDay);
-                drawGraph();
+                drawStepsGraph();
             }
         });
         view.findViewById(R.id.graph_next_day).setOnClickListener(new View.OnClickListener() {
@@ -99,13 +99,17 @@ public class DayActivityFragment extends Fragment {
             public void onClick(View v) {
                 dayToView = dayToView.plusDays(1);
                 LayoutUtils.setDayInDisplay(dayToView, currentDay);
-                drawGraph();
+                drawStepsGraph();
             }
         });
-        drawGraph();
+        drawStepsGraph();
     }
 
-    private void drawGraph() {
+    private void drawCrunchPostureGraph(){
+
+    }
+
+    private void drawStepsGraph() {
         List<Integer> stepsByHour = getStepsByHourForDay(dayToView);
 
         mChart = (LineChart) getView().findViewById(R.id.active_minutes_day_chart);

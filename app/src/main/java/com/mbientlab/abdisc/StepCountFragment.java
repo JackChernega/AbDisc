@@ -145,8 +145,7 @@ public class StepCountFragment extends Fragment {
     }
 
     private void drawGraph(View view){
-        if(decoView == null)
-            decoView = (DecoView) view.findViewById(R.id.stepsArc);
+        decoView = (DecoView) view.findViewById(R.id.stepsArc);
 
         decoView.deleteAll();
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_day};
