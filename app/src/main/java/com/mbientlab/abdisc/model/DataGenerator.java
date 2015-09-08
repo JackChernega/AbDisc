@@ -54,6 +54,7 @@ public class DataGenerator {
         long currentTimeInMilliSeconds;
         LocalDateTime currentDateTime = LocalDateTime.now();
         ArrayList<StepReading> stepReadings = new ArrayList<>();
+        ArrayList<CrunchPosture> crunchPostures = new ArrayList<>();
 
         for(int i = 0; i < minutesToGenerate; i++){
             long val = (long) (Math.random() * (60 * 6700));
@@ -62,11 +63,22 @@ public class DataGenerator {
                 val = (long) (val * 0.5);
             }
             currentTimeInMilliSeconds = nowInMilliseconds - (60000 * i);
+            if((i % 30) == 0 && (Math.random() > 0.8)){
+                CrunchPosture crunchPostureStart = new CrunchPosture(new Date(currentTimeInMilliSeconds),
+                        CrunchPosture.MODE_CRUNCH,
+                        CrunchPosture.STATUS_START);
+                CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + (60000 * 30)),
+                        CrunchPosture.MODE_CRUNCH,
+                        CrunchPosture.STATUS_STOP);
+                crunchPostures.add(crunchPostureStart);
+                crunchPostures.add(crunchPostureStop);
+            }
             StepReading stepReading = new StepReading((new Date(currentTimeInMilliSeconds)), val, true);
             stepReadings.add(stepReading);
         }
 
         TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(stepReadings)));
+        TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(crunchPostures)));
 
     }
 }

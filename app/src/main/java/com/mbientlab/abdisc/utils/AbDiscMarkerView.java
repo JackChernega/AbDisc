@@ -1,11 +1,11 @@
-package com.mbientlab.abdisc.model;
+package com.mbientlab.abdisc.utils;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
+import android.content.Context;
+import android.widget.TextView;
 
-import java.sql.Date;
+import com.github.mikephil.charting.components.MarkerView;
+import com.github.mikephil.charting.data.Entry;
+import com.mbientlab.abdisc.R;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -38,58 +38,37 @@ import java.sql.Date;
  * contact MbientLab Inc, at www.mbientlab.com.
  * <p/>
  * <p/>
- * Created by Lance Gleason of Polyglot Programming LLC. on 8/4/15.
+ * Created by Lance Gleason of Polyglot Programming LLC. on 8/31/15.
  * http://www.polyglotprogramminginc.com
  * https://github.com/lgleasain
  * Twitter: @lgleasain
  */
-@Table(databaseName = AbDiscDatabase.NAME)
-public class CrunchPosture extends BaseModel {
+public class AbDiscMarkerView extends MarkerView {
 
-    public static final String MODE_CRUNCH = "crunch";
-    public static final String MODE_POSTURE = "posture";
-    public static final String STATUS_START = "start";
-    public static final String STATUS_STOP = "stop";
+    private TextView tvContent;
 
-    public CrunchPosture(){
+    public AbDiscMarkerView (Context context, int layoutResource) {
+        super(context, layoutResource);
+        // this markerview only displays a textview
+        //tvContent = (TextView) findViewById(R.id.tvContent);
     }
 
-    public CrunchPosture(Date startStopDateTime, String mode, String status) {
-        this.startStopDateTime = startStopDateTime;
-        this.mode = mode;
-        this.status = status;
+    // callbacks everytime the MarkerView is redrawn, can be used to update the
+    // content (user-interface)
+    @Override
+    public void refreshContent(Entry e, int dataSetIndex) {
+        //tvContent.setText("" + e.getVal()); // set the entry-value as the display text
     }
 
-    @Column
-    @PrimaryKey(autoincrement = true)
-    long id;
-
-    @Column
-    Date startStopDateTime;
-
-    @Column
-    String mode;
-
-    // is it starting or stopping?
-    @Column
-    String status;
-
-    @Column
-    boolean isTestData;
-
-    public Date getStartStopDateTime() {
-        return startStopDateTime;
+    @Override
+    public int getXOffset() {
+        // this will center the marker-view horizontally
+        return -(getWidth() / 2);
     }
 
-    public String getMode() {
-        return mode;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public boolean isTestData() {
-        return isTestData;
+    @Override
+    public int getYOffset() {
+        // this will cause the marker-view to be above the selected value
+        return -getHeight();
     }
 }
