@@ -67,11 +67,13 @@ public class LayoutUtils {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         if (containerViewHeight < 705 && metrics.heightPixels > 1500) {
-            containerViewHeight = containerViewHeight * 2;
+            containerViewHeight = (int) (containerViewHeight * 1.8);
         } else if (containerViewHeight < 705) {
-            containerViewHeight = containerViewHeight - 150;
+            containerViewHeight = containerViewHeight - 250;
         } else if (containerViewHeight < 1000) {
-            containerViewHeight = containerViewHeight - 200;
+            containerViewHeight = containerViewHeight - 300;
+        } else {
+            containerViewHeight = (int) (containerViewHeight * 0.7);
         }
         return (containerViewHeight);
     }

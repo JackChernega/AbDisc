@@ -57,7 +57,7 @@ public class AbDiscMarkerView extends MarkerView {
     // content (user-interface)
     @Override
     public void refreshContent(Entry e, int dataSetIndex) {
-        tvContent.setText("" + e.getVal()); // set the entry-value as the display text
+        //tvContent.setText("" + e.getVal()); // set the entry-value as the display text
     }
 
     @Override

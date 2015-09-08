@@ -45,6 +45,21 @@ import java.sql.Date;
  */
 @Table(databaseName = AbDiscDatabase.NAME)
 public class CrunchPosture extends BaseModel {
+
+    public static final String MODE_CRUNCH = "crunch";
+    public static final String MODE_POSTURE = "posture";
+    public static final String STATUS_START = "start";
+    public static final String STATUS_STOP = "stop";
+
+    public CrunchPosture(){
+    }
+
+    public CrunchPosture(Date startStopDateTime, String mode, String status) {
+        this.startStopDateTime = startStopDateTime;
+        this.mode = mode;
+        this.status = status;
+    }
+
     @Column
     @PrimaryKey(autoincrement = true)
     long id;
@@ -61,4 +76,20 @@ public class CrunchPosture extends BaseModel {
 
     @Column
     boolean isTestData;
+
+    public Date getStartStopDateTime() {
+        return startStopDateTime;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public boolean isTestData() {
+        return isTestData;
+    }
 }

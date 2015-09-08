@@ -14,19 +14,19 @@
     <include layout="@layout/time_frame_chooser" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical"
         android:layout_gravity="center"
+        android:orientation="vertical"
         android:weightSum="1">
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:layout_weight=".80">
+            android:layout_weight=".83"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/graph_calories_burned"
@@ -82,10 +82,24 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.ScatterChart
-            android:id="@+id/posture_crunch_chart"
+        <TextView
+            android:id="@+id/chart_spacer3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight=".02" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".2"/>
+            android:layout_gravity="center"
+            android:layout_weight=".12"
+            android:orientation="vertical">
+
+            <com.mbientlab.abdisc.utils.AbDiscScatterChart
+                android:id="@+id/posture_crunch_chart"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight=".2" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
