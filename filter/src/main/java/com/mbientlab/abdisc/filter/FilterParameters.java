@@ -76,14 +76,7 @@ public interface FilterParameters {
      * @return Calling object
      */
     public FilterParameters withCrunchSessionDuration(float duration);
-
-    /**
-     * Sets the minimum change in baseline sensor value to update the crunch threshold
-     * @param threshold Minimum change in sensor values required to update the crunch threshold
-     * @return Calling object
-     */
-    public FilterParameters withCrunchThresholdUpdateMinChangeThreshold(int threshold);
-    public FilterParameters withCrunchThresholdUpdateCheckPeriod(int period);
+    public FilterParameters withCrunchThresholdCheckDuration(int duration);
 
     /**
      * Enumeration of haptic feedback levels.  Depending on which range the relative ADC value lays in,
