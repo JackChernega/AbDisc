@@ -58,7 +58,8 @@ import java.util.List;
 public class DayActivityFragment extends Fragment {
     public static final int ACTIVITY_PER_STEP = 6700;
     private LineChart mChart;
-    private AbDiscScatterChart mPostureCrunchChart;
+    private AbDiscScatterChart mPostureChart;
+    private AbDiscScatterChart mCrunchChart;
     private LocalDate dayToView = LocalDate.now();
 
 
@@ -119,7 +120,14 @@ public class DayActivityFragment extends Fragment {
     }
 
     private void drawCrunchPostureGraph(){
-        mPostureCrunchChart = (AbDiscScatterChart) getView().findViewById(R.id.posture_crunch_chart);
+        drawCrunchPostureGraph(mCrunchChart, R.id.crunch_chart, CrunchPosture.MODE_CRUNCH);
+        drawCrunchPostureGraph(mPostureChart, R.id.posture_chart, CrunchPosture.MODE_POSTURE);
+    }
+
+    private void drawCrunchPostureGraph(AbDiscScatterChart mPostureCrunchChart, int chartId,
+                                        String chartType){
+
+        mPostureCrunchChart = (AbDiscScatterChart) getView().findViewById(chartId);
         mPostureCrunchChart.setDescription("");
 
         mPostureCrunchChart.setDrawGridBackground(false);
@@ -131,7 +139,6 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.setDragEnabled(false);
         mPostureCrunchChart.setScaleEnabled(false);
 
-        mPostureCrunchChart.setMaxVisibleValueCount(200);
         mPostureCrunchChart.setPinchZoom(false);
 
         mPostureCrunchChart.getLegend().setEnabled(false);
@@ -157,32 +164,17 @@ public class DayActivityFragment extends Fragment {
 
 
         // some test chart data
-        //tvX.setText("" + (mSeekBarX.getProgress() + 1));
-        //tvY.setText("" + (mSeekBarY.getProgress()));
-        mPostureCrunchChart.setVisibleYRangeMaximum(20, null);
-        int progressRange = 10;
+        //mPostureCrunchChart.setVisibleYRangeMaximum(20, null);
         int hoursInDay = 24;
 
         ArrayList<String> xVals = new ArrayList<String>();
         for (int i = 0; i < hoursInDay + 1; i++) {
-            xVals.add((i) + "");
+            //xVals.add((i) + "i");
+            xVals.add("");
         }
-
-        // get rid of this
-        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
-        ArrayList<Entry> yVals2 = new ArrayList<Entry>();
-        ArrayList<Entry> yVals3 = new ArrayList<Entry>();
-
-        for (int i = 0; i < progressRange; i++) {
-            //float val = (float) (Math.random() * progressRange) + 3;
-            float val = 5;
-            yVals1.add(new Entry(val, i));
-        }
-
 
         // create a dataset and give it a type
-        //ScatterDataSet set1 = new ScatterDataSet(yVals1, "DS 1");
-        ScatterDataSet set1 = new ScatterDataSet(getCrunchPostureByHourForDay(dayToView), "DS 1");
+        ScatterDataSet set1 = new ScatterDataSet(getCrunchPostureByHourForDay(dayToView, chartType), "DS 1");
         set1.setScatterShape(ScatterChart.ScatterShape.SQUARE);
         set1.setDrawHighlightIndicators(false);
 
@@ -193,11 +185,10 @@ public class DayActivityFragment extends Fragment {
 
         // create a data object with the datasets
         ScatterData data = new ScatterData(xVals, dataSets);
-        //data.setValueTypeface(tf);
 
         mPostureCrunchChart.setData(data);
         AbDiscMarkerView mv = new AbDiscMarkerView (getActivity().getApplication().getApplicationContext(),
-                R.layout.crunch_marker_view);
+                R.layout.crunch_marker_view, chartType);
 
 
         mPostureCrunchChart.setMarkerView(mv);
@@ -211,13 +202,19 @@ public class DayActivityFragment extends Fragment {
                 return true;
             }
         });
+        mPostureCrunchChart.setViewPortOffsets(0, 0, 0, -60);
         mPostureCrunchChart.invalidate();
     }
 
-    private List<Entry> getCrunchPostureByHourForDay(LocalDate date){
+    private List<Entry> getCrunchPostureByHourForDay(LocalDate date, String chartType){
         LocalDateTime startOfDay = date.atStartOfDay();
         List<Entry> crunchPostureByHour = new ArrayList<Entry>();
 
+        float sessionValue = 0;
+
+        if(chartType == CrunchPosture.MODE_POSTURE){
+            sessionValue = 10;
+        }
         // need to tighten this up
         for (int i = 0; i < 24; i++) {
             List<CrunchPosture> hourCrunchPostures = new Select().from(CrunchPosture.class)
@@ -231,7 +228,7 @@ public class DayActivityFragment extends Fragment {
                     crunchSessions++;
             }
             if(crunchSessions > 0)
-                crunchPostureByHour.add(new Entry(5, i));
+                crunchPostureByHour.add(new Entry(sessionValue, i));
         }
 
         return crunchPostureByHour;
@@ -276,7 +273,7 @@ public class DayActivityFragment extends Fragment {
         mChart.setDrawGridBackground(false);
         Paint paint = mChart.getRenderer().getPaintRender();
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_calories_burned, R.id.graph_day,
-                                        R.id.posture_crunch_chart};
+                                        R.id.crunch_chart, R.id.posture_chart};
         int height =  LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
                 heightItemsToConsider);
 

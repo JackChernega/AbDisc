@@ -6,6 +6,7 @@ import android.widget.TextView;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.model.CrunchPosture;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -45,12 +46,11 @@ import com.mbientlab.abdisc.R;
  */
 public class AbDiscMarkerView extends MarkerView {
 
-    private TextView tvContent;
+    private String chartType;
 
-    public AbDiscMarkerView (Context context, int layoutResource) {
+    public AbDiscMarkerView (Context context, int layoutResource, String chartType) {
         super(context, layoutResource);
-        // this markerview only displays a textview
-        //tvContent = (TextView) findViewById(R.id.tvContent);
+        this.chartType = chartType;
     }
 
     // callbacks everytime the MarkerView is redrawn, can be used to update the
@@ -69,6 +69,10 @@ public class AbDiscMarkerView extends MarkerView {
     @Override
     public int getYOffset() {
         // this will cause the marker-view to be above the selected value
-        return -getHeight();
+        if(chartType == CrunchPosture.MODE_CRUNCH){
+            return 0;
+        } else {
+            return -getHeight();
+        }
     }
 }
