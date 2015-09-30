@@ -34,6 +34,7 @@ import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.abdisc.model.StepReading$Table;
 import com.mbientlab.abdisc.utils.AbDiscMarkerView;
 import com.mbientlab.abdisc.utils.AbDiscScatterChart;
+import com.mbientlab.abdisc.utils.ChartBlankValueFormatter;
 import com.mbientlab.abdisc.utils.LayoutUtils;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -179,6 +180,8 @@ public class DayActivityFragment extends Fragment {
         set1.setDrawHighlightIndicators(false);
 
         set1.setScatterShapeSize(0f);
+        ChartBlankValueFormatter formater = new ChartBlankValueFormatter();
+        set1.setValueFormatter(formater);
 
         ArrayList<ScatterDataSet> dataSets = new ArrayList<ScatterDataSet>();
         dataSets.add(set1); // add the datasets
@@ -210,7 +213,7 @@ public class DayActivityFragment extends Fragment {
         LocalDateTime startOfDay = date.atStartOfDay();
         List<Entry> crunchPostureByHour = new ArrayList<Entry>();
 
-        float sessionValue = 0;
+        float sessionValue = 10;
 
         if(chartType == CrunchPosture.MODE_POSTURE){
             sessionValue = 10;
