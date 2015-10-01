@@ -88,24 +88,29 @@
             android:layout_height="0dp"
             android:layout_weight=".02" />
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_weight=".12"
             android:weightSum="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <com.mbientlab.abdisc.utils.AbDiscScatterChart
                 android:id="@+id/crunch_chart"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".5" />
-            <com.mbientlab.abdisc.utils.AbDiscScatterChart
-                android:id="@+id/posture_chart"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".5" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+            <TextView
+                android:id="@+id/crunch_sessions_today_text_field"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                style="@style/AppGraphMediumSmall"
+                android:text="c r u n c h  s e s s i o n s  t o d a y"
+                android:gravity="center_horizontal"
+                android:paddingTop="2.5dp"/>
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

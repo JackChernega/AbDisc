@@ -70,7 +70,7 @@ public class AbDiscMarkerView extends MarkerView {
     public int getYOffset() {
         // this will cause the marker-view to be above the selected value
         if(chartType == CrunchPosture.MODE_CRUNCH){
-            return getHeight();
+            return (int) (getHeight() * 1.25);
         } else {
             return -getHeight();
         }

@@ -122,7 +122,7 @@ public class DayActivityFragment extends Fragment {
 
     private void drawCrunchPostureGraph(){
         drawCrunchPostureGraph(mCrunchChart, R.id.crunch_chart, CrunchPosture.MODE_CRUNCH);
-        drawCrunchPostureGraph(mPostureChart, R.id.posture_chart, CrunchPosture.MODE_POSTURE);
+        //drawCrunchPostureGraph(mPostureChart, R.id.posture_chart, CrunchPosture.MODE_POSTURE);
     }
 
     private void drawCrunchPostureGraph(AbDiscScatterChart mPostureCrunchChart, int chartId,
@@ -132,6 +132,7 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.setDescription("");
 
         mPostureCrunchChart.setDrawGridBackground(false);
+        mPostureCrunchChart.setNoDataText("");
 
         mPostureCrunchChart.setTouchEnabled(true);
         mPostureCrunchChart.setHighlightEnabled(false);
@@ -205,7 +206,8 @@ public class DayActivityFragment extends Fragment {
                 return true;
             }
         });
-        mPostureCrunchChart.setViewPortOffsets(0, 0, 0, -60);
+        int xyOffset = getView().findViewById(R.id.chart_spacer1).getWidth();
+        mPostureCrunchChart.setViewPortOffsets(xyOffset, 0, xyOffset, -60);
         mPostureCrunchChart.invalidate();
     }
 
@@ -218,6 +220,8 @@ public class DayActivityFragment extends Fragment {
         if(chartType == CrunchPosture.MODE_POSTURE){
             sessionValue = 10;
         }
+        int totalCrunchSessions = 0;
+
         // need to tighten this up
         for (int i = 0; i < 24; i++) {
             List<CrunchPosture> hourCrunchPostures = new Select().from(CrunchPosture.class)
@@ -229,11 +233,19 @@ public class DayActivityFragment extends Fragment {
             for (CrunchPosture crunchPosture: hourCrunchPostures) {
                 if(crunchPosture.getMode().equals(CrunchPosture.MODE_CRUNCH) && crunchPosture.getStatus().equals(CrunchPosture.STATUS_START))
                     crunchSessions++;
+                    totalCrunchSessions++;
             }
             if(crunchSessions > 0)
                 crunchPostureByHour.add(new Entry(sessionValue, i));
         }
 
+        TextView totalCrunchSessionsTodayTextField = (TextView) getView().findViewById(R.id.crunch_sessions_today_text_field);
+        totalCrunchSessionsTodayTextField.setText(
+                String.valueOf(totalCrunchSessions) + "   " +
+                        getText(R.string.label_graph_crunch) + "   " +
+                        getText(R.string.label_graph_sessions) + "   " +
+                        getText(R.string.label_graph_today)
+        );
         return crunchPostureByHour;
     }
 
@@ -276,7 +288,7 @@ public class DayActivityFragment extends Fragment {
         mChart.setDrawGridBackground(false);
         Paint paint = mChart.getRenderer().getPaintRender();
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_calories_burned, R.id.graph_day,
-                                        R.id.crunch_chart, R.id.posture_chart};
+                                        R.id.crunch_chart};
         int height =  LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
                 heightItemsToConsider);
 
