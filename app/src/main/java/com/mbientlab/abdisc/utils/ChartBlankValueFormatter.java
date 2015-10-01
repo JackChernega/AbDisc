@@ -1,12 +1,7 @@
 package com.mbientlab.abdisc.utils;
 
-import android.content.Context;
-import android.widget.TextView;
-
-import com.github.mikephil.charting.components.MarkerView;
-import com.github.mikephil.charting.data.Entry;
-import com.mbientlab.abdisc.R;
-import com.mbientlab.abdisc.model.CrunchPosture;
+import com.github.mikephil.charting.utils.DefaultValueFormatter;
+import com.github.mikephil.charting.utils.ValueFormatter;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -39,40 +34,19 @@ import com.mbientlab.abdisc.model.CrunchPosture;
  * contact MbientLab Inc, at www.mbientlab.com.
  * <p/>
  * <p/>
- * Created by Lance Gleason of Polyglot Programming LLC. on 8/31/15.
+ * Created by Lance Gleason of Polyglot Programming LLC. on 9/29/15.
  * http://www.polyglotprogramminginc.com
  * https://github.com/lgleasain
  * Twitter: @lgleasain
  */
-public class AbDiscMarkerView extends MarkerView {
+public class ChartBlankValueFormatter implements ValueFormatter {
 
-    private String chartType;
-
-    public AbDiscMarkerView (Context context, int layoutResource, String chartType) {
-        super(context, layoutResource);
-        this.chartType = chartType;
-    }
-
-    // callbacks everytime the MarkerView is redrawn, can be used to update the
-    // content (user-interface)
-    @Override
-    public void refreshContent(Entry e, int dataSetIndex) {
-        //tvContent.setText("" + e.getVal()); // set the entry-value as the display text
+    public ChartBlankValueFormatter() {
     }
 
     @Override
-    public int getXOffset() {
-        // this will center the marker-view horizontally
-        return -(getWidth() / 2);
-    }
-
-    @Override
-    public int getYOffset() {
-        // this will cause the marker-view to be above the selected value
-        if(chartType == CrunchPosture.MODE_CRUNCH){
-            return (int) (getHeight() * 1.25);
-        } else {
-            return -getHeight();
-        }
+    public String getFormattedValue(float value) {
+        // avoid memory allocations here (for performance)
+        return "";
     }
 }

@@ -63,7 +63,8 @@ public class DataGenerator {
                 val = (long) (val * 0.5);
             }
             currentTimeInMilliSeconds = nowInMilliseconds - (60000 * i);
-            if((i % 30) == 0 && (Math.random() > 0.8)){
+            double crunchNumber = Math.random();
+            if((i % 30) == 0 && (crunchNumber > 0.8)){
                 CrunchPosture crunchPostureStart = new CrunchPosture(new Date(currentTimeInMilliSeconds),
                         CrunchPosture.MODE_CRUNCH,
                         CrunchPosture.STATUS_START);
