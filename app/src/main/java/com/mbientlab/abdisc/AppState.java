@@ -45,6 +45,7 @@ public interface AppState {
     public MetaWearController getMetaWearController();
     public FilterState getFilterState();
     public void setFilterState(FilterState filterState);
+    public void forgetSavedDevice();
     public int getStepCount();
     public int getCrunchSessionCount();
     public BluetoothDevice getBluetoothDevice();

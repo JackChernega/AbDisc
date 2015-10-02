@@ -79,6 +79,16 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private final static int REQUEST_ENABLE_BT = 0;
     private static final int ACTIVITY_PER_STEP = 20000;
     private static final String MAC_ADDRESS = "MAC_ADDRESS";
+    private static final String SESSION_START_ID = "SESSION_START_ID";
+    private static final String SENSOR_TIMER_ID = "SENSOR_TIMEER_ID";
+    private static final String SENSOR_LOG_ID = "SENSOR_LOG_ID";
+    private static final String SENSOR_OFFSET_LOGGING_ID = "SENSOR_OFFSET_LOGGING_ID";
+    private static final String CRUNCH_OFFSET_ID = "CRUNCH_OFFSET_ID";
+    private static final String SEDENTARY_LOG_ID = "SEDENTARY_LOG_ID";
+    private static final String SEDENTARY_ID = "SEDENTARY_ID";
+    private static final String SENSOR_ID = "SENSOR_ID";
+    private static final String OFFSET_UPDATED_ID = "OFFSET_UPDATED_ID";
+    private static final String TAP_THRESHOLD_ID = "TAP_THRESHOLD_ID";
 
     private short crunchSessionCount;
     private int steps = 0;
@@ -93,7 +103,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private SettingsFragment mSettingsFragment;
     private ProfileFragment profileFragment;
     private SharedPreferences sharedPreferences;
-    private Editor editor;
 
     private final DataProcessor.Callbacks dpModuleCallbacks = new DataProcessor.Callbacks() {
         @Override
@@ -207,6 +216,11 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mSettingsFragment.syncDrawerToggle();
+        String macAddress = sharedPreferences.getString(MAC_ADDRESS, "");
+        if(!macAddress.equals("")) {
+            TextView forgetMetaWearView = (TextView) findViewById(R.id.forget_metawear);
+            forgetMetaWearView.setText(getText(R.string.label_forget_metawear) + " " + macAddress);
+        }
     }
 
 
@@ -292,7 +306,36 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void setFilterState(FilterState filterState) {
+        Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putInt(SESSION_START_ID, filterState.getSessionStartId());
+        sharedPreferencesEditor.putInt(SENSOR_TIMER_ID, filterState.getSensorTimerId());
+        sharedPreferencesEditor.putInt(SEDENTARY_LOG_ID, filterState.getSedentaryLogId());
+        sharedPreferencesEditor.putInt(SENSOR_LOG_ID, filterState.getSensorLogId());
+        sharedPreferencesEditor.putInt(SENSOR_OFFSET_LOGGING_ID, filterState.getSensorOffsetLoggingId());
+        sharedPreferencesEditor.putInt(CRUNCH_OFFSET_ID, filterState.getCrunchOffsetId());
+        sharedPreferencesEditor.putInt(SEDENTARY_ID, filterState.getSedentaryId());
+        sharedPreferencesEditor.putInt(SENSOR_ID, filterState.getSensorId());
+        sharedPreferencesEditor.putInt(OFFSET_UPDATED_ID, filterState.getOffsetUpdateId());
+        sharedPreferencesEditor.putFloat(TAP_THRESHOLD_ID, filterState.getTapThreshold());
+        sharedPreferencesEditor.apply();
         this.filterState = filterState;
+    }
+
+    @Override
+    public void forgetSavedDevice(){
+        Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.remove(SESSION_START_ID);
+        sharedPreferencesEditor.remove(SENSOR_TIMER_ID);
+        sharedPreferencesEditor.remove(SEDENTARY_LOG_ID);
+        sharedPreferencesEditor.remove(SENSOR_LOG_ID);
+        sharedPreferencesEditor.remove(SENSOR_OFFSET_LOGGING_ID);
+        sharedPreferencesEditor.remove(CRUNCH_OFFSET_ID);
+        sharedPreferencesEditor.remove(SEDENTARY_ID);
+        sharedPreferencesEditor.remove(SENSOR_ID);
+        sharedPreferencesEditor.remove(OFFSET_UPDATED_ID);
+        sharedPreferencesEditor.remove(TAP_THRESHOLD_ID);
+        sharedPreferencesEditor.remove(MAC_ADDRESS);
+        sharedPreferencesEditor.apply();
     }
 
     @Override

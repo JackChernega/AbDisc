@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mbientlab.abdisc.filter.DebugMainActivity;
@@ -215,6 +216,16 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+
+        final TextView forgetDevice = (TextView) view.findViewById(R.id.forget_metawear);
+
+        forgetDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appState.forgetSavedDevice();
+                ((TextView)view).setText("");
+            }}
+        );
 
         final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
