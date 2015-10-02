@@ -11,11 +11,29 @@
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_menu_manage" />
 
-    <ImageButton
-        android:id="@+id/connect_metawear"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/stat_sys_data_bluetooth" />
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/connect_metawear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/stat_sys_data_bluetooth" />
+        <TextView
+            android:id="@+id/connect_metawear_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/forget_metawear"
+        style="@style/AppPreferencePopupName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""/>
 
     <ImageButton
         android:id="@+id/upload_filter_config"
@@ -28,19 +46,19 @@
         style="@style/AppPreferencePopupName"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:text="@string/label_profile_main_header"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:text="@string/label_profile_main_header" />
 
     <Switch
+        android:id="@+id/testData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Data"
-        android:id="@+id/testData" />
+        android:text="Test Data" />
 
     <Button
+        android:id="@+id/populateData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Generate Test Data"
-        android:id="@+id/populateData" />
+        android:text="Generate Test Data" />
 
 </LinearLayout>

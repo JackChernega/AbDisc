@@ -1,6 +1,7 @@
 package com.mbientlab.abdisc;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -46,6 +48,7 @@ import org.threeten.bp.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -62,7 +65,7 @@ public class DayActivityFragment extends Fragment {
     private AbDiscScatterChart mPostureChart;
     private AbDiscScatterChart mCrunchChart;
     private LocalDate dayToView = LocalDate.now();
-
+    private AppState appState;
 
     /**
      * Use this factory method to create a new instance of
@@ -120,13 +123,13 @@ public class DayActivityFragment extends Fragment {
         drawCrunchPostureGraph();
     }
 
-    private void drawCrunchPostureGraph(){
+    private void drawCrunchPostureGraph() {
         drawCrunchPostureGraph(mCrunchChart, R.id.crunch_chart, CrunchPosture.MODE_CRUNCH);
         //drawCrunchPostureGraph(mPostureChart, R.id.posture_chart, CrunchPosture.MODE_POSTURE);
     }
 
     private void drawCrunchPostureGraph(AbDiscScatterChart mPostureCrunchChart, int chartId,
-                                        String chartType){
+                                        String chartType) {
 
         mPostureCrunchChart = (AbDiscScatterChart) getView().findViewById(chartId);
         mPostureCrunchChart.setDescription("");
@@ -152,7 +155,7 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.getAxisRight().setEnabled(false);
         mPostureCrunchChart.getAxisLeft().setEnabled(false);
         mPostureCrunchChart.getXAxis().setEnabled(false);
-        int [] gradientColors = {getResources().getColor(R.color.ColorGraphLow),
+        int[] gradientColors = {getResources().getColor(R.color.ColorGraphLow),
                 getResources().getColor(R.color.ColorGraphHigh)};
 
         GradientDrawable backgroundGradient = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, gradientColors);
@@ -191,7 +194,7 @@ public class DayActivityFragment extends Fragment {
         ScatterData data = new ScatterData(xVals, dataSets);
 
         mPostureCrunchChart.setData(data);
-        AbDiscMarkerView mv = new AbDiscMarkerView (getActivity().getApplication().getApplicationContext(),
+        AbDiscMarkerView mv = new AbDiscMarkerView(getActivity().getApplication().getApplicationContext(),
                 R.layout.crunch_marker_view, chartType);
 
 
@@ -211,38 +214,49 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.invalidate();
     }
 
-    private List<Entry> getCrunchPostureByHourForDay(LocalDate date, String chartType){
+    private List<Entry> getCrunchPostureByHourForDay(LocalDate date, String chartType) {
         LocalDateTime startOfDay = date.atStartOfDay();
         List<Entry> crunchPostureByHour = new ArrayList<Entry>();
 
         float sessionValue = 10;
 
-        if(chartType == CrunchPosture.MODE_POSTURE){
-            sessionValue = 10;
-        }
+        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
+        boolean getTestData = testDataSwitch.isChecked();
+
         int totalCrunchSessions = 0;
+
+        SharedPreferences sharedPreferences = appState.getSharedPreferences();
+        String abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
+
+        String modeString = getString(R.string.label_graph_crunch);
+
+        if (abDiscMode == CrunchPosture.MODE_POSTURE) {
+            modeString = getString(R.string.label_graph_posture);
+        }
 
         // need to tighten this up
         for (int i = 0; i < 24; i++) {
             List<CrunchPosture> hourCrunchPostures = new Select().from(CrunchPosture.class)
                     .where(Condition.column(CrunchPosture$Table.STARTSTOPDATETIME)
-                            .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                            .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
+                                    .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
+                                    .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
+                            Condition.column(CrunchPosture$Table.ISTESTDATA).eq(getTestData),
+                            Condition.column(CrunchPosture$Table.STATUS).eq(CrunchPosture.STATUS_START),
+                            Condition.column(CrunchPosture$Table.MODE).eq(abDiscMode))
                     .queryList();
             int crunchSessions = 0;
-            for (CrunchPosture crunchPosture: hourCrunchPostures) {
-                if(crunchPosture.getMode().equals(CrunchPosture.MODE_CRUNCH) && crunchPosture.getStatus().equals(CrunchPosture.STATUS_START))
-                    crunchSessions++;
-                    totalCrunchSessions++;
+            for (CrunchPosture crunchPosture : hourCrunchPostures) {
+                crunchSessions++;
+                totalCrunchSessions++;
             }
-            if(crunchSessions > 0)
+            if (crunchSessions > 0)
                 crunchPostureByHour.add(new Entry(sessionValue, i));
         }
 
         TextView totalCrunchSessionsTodayTextField = (TextView) getView().findViewById(R.id.crunch_sessions_today_text_field);
         totalCrunchSessionsTodayTextField.setText(
                 String.valueOf(totalCrunchSessions) + "   " +
-                        getText(R.string.label_graph_crunch) + "   " +
+                        modeString + "   " +
                         getText(R.string.label_graph_sessions) + "   " +
                         getText(R.string.label_graph_today)
         );
@@ -250,11 +264,19 @@ public class DayActivityFragment extends Fragment {
     }
 
     private void drawStepsGraph() {
-        List<Integer> stepsByHour = getStepsByHourForDay(dayToView);
+        HashMap stepData = getStepsByHourForDay(dayToView);
+        List<Integer> stepsByHour = (List<Integer>) stepData.get("stepsByHour");
 
         mChart = (LineChart) getView().findViewById(R.id.active_minutes_day_chart);
-        int maxValue = (int) (getMaxValue() * 1.05);
+
+        int activeMinutes = (int) stepData.get("activeMinutes");
+        int rawMaxValue = (int) stepData.get("maxValue");
+        int maxValue = (int) (rawMaxValue * 1.05);
         int minValue = maxValue > 100 ? (int) (maxValue * -0.07) : -20;
+
+        TextView textView = (TextView) getView().findViewById(R.id.total_active_minutes);
+        textView.setText(String.valueOf(activeMinutes) + " ");
+
         mChart.invalidate();
 
         mChart.setDrawGridBackground(true);
@@ -288,8 +310,8 @@ public class DayActivityFragment extends Fragment {
         mChart.setDrawGridBackground(false);
         Paint paint = mChart.getRenderer().getPaintRender();
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_calories_burned, R.id.graph_day,
-                                        R.id.crunch_chart};
-        int height =  LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
+                R.id.crunch_chart};
+        int height = LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
                 heightItemsToConsider);
 
         LinearGradient linGrad = new LinearGradient(0, 0, 0, height,
@@ -313,6 +335,7 @@ public class DayActivityFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        appState = (AppState) activity;
     }
 
     @Override
@@ -320,48 +343,42 @@ public class DayActivityFragment extends Fragment {
         super.onDetach();
     }
 
-    private int getMaxValue(){
-        LocalDateTime startOfDay = dayToView.atStartOfDay();
-
-        int maxValue = 0;
-
-        for (int i = 0; i < 24; i++) {
-            List<StepReading> hourSteps = new Select().from(StepReading.class)
-                    .where(Condition.column(StepReading$Table.DATETIME)
-                            .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                            .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
-                    .queryList();
-            int steps = 0;
-            for (StepReading stepReading: hourSteps) {
-                steps += stepReading.getMilliG()/ACTIVITY_PER_STEP;
-            }
-            if(maxValue < steps){
-                maxValue = steps;
-            }
-        }
-
-        maxValue = maxValue > 100 ? maxValue : 100;
-        return maxValue;
-    }
-
-    private List<Integer> getStepsByHourForDay(LocalDate date) {
+    private HashMap getStepsByHourForDay(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
         List<Integer> stepsByHour = new ArrayList<Integer>();
+        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
+        boolean getTestData = testDataSwitch.isChecked();
+        int maxValue = 0;
+        int activeMinutes = 0;
 
         for (int i = 0; i < 24; i++) {
             List<StepReading> hourSteps = new Select().from(StepReading.class)
                     .where(Condition.column(StepReading$Table.DATETIME)
-                            .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                            .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
+                                    .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
+                                    .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
+                            Condition.column(StepReading$Table.ISTESTDATA).eq(getTestData))
                     .queryList();
             int steps = 0;
-            for (StepReading stepReading: hourSteps) {
-                steps += stepReading.getMilliG()/ACTIVITY_PER_STEP;
+            for (StepReading stepReading : hourSteps) {
+                long stepsThisMinute = stepReading.getMilliG() / ACTIVITY_PER_STEP;
+                steps += stepsThisMinute;
+                if(stepsThisMinute > 5){
+                    activeMinutes++;
+                }
+            }
+            if (maxValue < steps) {
+                maxValue = steps;
             }
             stepsByHour.add(steps);
         }
 
-        return stepsByHour;
+        maxValue = maxValue > 100 ? maxValue : 100;
+
+        HashMap returnValues = new HashMap();
+        returnValues.put("stepsByHour", stepsByHour);
+        returnValues.put("maxValue", maxValue);
+        returnValues.put("activeMinutes", activeMinutes);
+        return returnValues;
     }
 
     private void setData(List<Integer> stepsForDay) {

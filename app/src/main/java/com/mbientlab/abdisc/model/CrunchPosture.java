@@ -54,10 +54,15 @@ public class CrunchPosture extends BaseModel {
     public CrunchPosture(){
     }
 
-    public CrunchPosture(Date startStopDateTime, String mode, String status) {
+    public CrunchPosture(Date startStopDateTime, String mode, String status, boolean isTestData) {
         this.startStopDateTime = startStopDateTime;
         this.mode = mode;
         this.status = status;
+        this.isTestData = isTestData;
+    }
+
+    public CrunchPosture(Date startStopDateTime, String mode, String status){
+        this(startStopDateTime, mode, status, false);
     }
 
     @Column

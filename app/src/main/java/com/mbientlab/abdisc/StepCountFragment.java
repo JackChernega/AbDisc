@@ -39,6 +39,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.hookedonplay.decoviewlib.DecoView;
@@ -204,11 +205,15 @@ public class StepCountFragment extends Fragment {
 
     private int getStepsForDay(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
+        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
+        boolean getTestData = testDataSwitch.isChecked();
 
             List<StepReading> hourSteps = new Select().from(StepReading.class)
                     .where(Condition.column(StepReading$Table.DATETIME)
                             .between(startOfDay.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                            .and(startOfDay.plusHours(24).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()))
+                            .and(startOfDay.plusHours(24).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
+                            Condition.column(StepReading$Table.ISTESTDATA)
+                            .eq(getTestData))
                     .queryList();
             int steps = 0;
             for (StepReading stepReading: hourSteps) {

@@ -78,7 +78,11 @@
     <string name="label_graph_steps_today">Steps Today</string>
     <string name="label_graph_of_goal">Of Goal</string>
     <string name="label_graph_distance">Distance</string>
+    <string name="label_graph_posture">p o s t u r e</string>
     <string name="label_graph_crunch">c r u n c h</string>
     <string name="label_graph_sessions">s e s s i o n s</string>
     <string name="label_graph_today">t o d a y</string>
+    <string name="label_connect_metawear">Connect</string>
+    <string name="label_disconnect_metawear">Disconnect</string>
+    <string name="label_forget_metawear">Forget </string>
 </resources>

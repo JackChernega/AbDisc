@@ -58,6 +58,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
@@ -77,6 +78,7 @@ import java.nio.ByteOrder;
 public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState, BleScannerFragment.ScannerListener, SettingsFragment.OnFragmentSettingsListener {
     private final static int REQUEST_ENABLE_BT = 0;
     private static final int ACTIVITY_PER_STEP = 20000;
+    private static final String MAC_ADDRESS = "MAC_ADDRESS";
 
     private short crunchSessionCount;
     private int steps = 0;
@@ -309,6 +311,11 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         mwCtrllr = mwService.getMetaWearController(btDevice);
         mwCtrllr.addDeviceCallback(dCallbacks);
         mwCtrllr.connect();
+        Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putString(MAC_ADDRESS, btDevice.getAddress());
+        sharedPreferencesEditor.apply();
+        TextView forgetMetaWearView = (TextView) findViewById(R.id.forget_metawear);
+        forgetMetaWearView.setText(getText(R.string.label_forget_metawear) + " " + btDevice.getAddress());
     }
 
     @Override

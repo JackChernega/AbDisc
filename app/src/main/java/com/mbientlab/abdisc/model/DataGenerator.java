@@ -67,10 +67,23 @@ public class DataGenerator {
             if((i % 30) == 0 && (crunchNumber > 0.8)){
                 CrunchPosture crunchPostureStart = new CrunchPosture(new Date(currentTimeInMilliSeconds),
                         CrunchPosture.MODE_CRUNCH,
-                        CrunchPosture.STATUS_START);
+                        CrunchPosture.STATUS_START,
+                        true);
                 CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + (60000 * 30)),
                         CrunchPosture.MODE_CRUNCH,
-                        CrunchPosture.STATUS_STOP);
+                        CrunchPosture.STATUS_STOP,
+                        true);
+                crunchPostures.add(crunchPostureStart);
+                crunchPostures.add(crunchPostureStop);
+            } else if((i%30)== 0 && (crunchNumber > 0.7)){
+                CrunchPosture crunchPostureStart = new CrunchPosture(new Date(currentTimeInMilliSeconds),
+                        CrunchPosture.MODE_POSTURE,
+                        CrunchPosture.STATUS_START,
+                        true);
+                CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + (60000 * 30)),
+                        CrunchPosture.MODE_POSTURE,
+                        CrunchPosture.STATUS_STOP,
+                        true);
                 crunchPostures.add(crunchPostureStart);
                 crunchPostures.add(crunchPostureStop);
             }
