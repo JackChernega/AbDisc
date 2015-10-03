@@ -56,13 +56,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.mbientlab.abdisc.filter.FilterState;
+import com.mbientlab.abdisc.utils.DataDownloaderFragment;
 import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.MetaWearBleService;
 import com.mbientlab.metawear.api.MetaWearController;
@@ -78,17 +78,18 @@ import java.nio.ByteOrder;
 public class MainActivity extends ActionBarActivity implements ServiceConnection, AppState, BleScannerFragment.ScannerListener, SettingsFragment.OnFragmentSettingsListener {
     private final static int REQUEST_ENABLE_BT = 0;
     private static final int ACTIVITY_PER_STEP = 20000;
-    private static final String MAC_ADDRESS = "MAC_ADDRESS";
+    public static final String MAC_ADDRESS = "MAC_ADDRESS";
     private static final String SESSION_START_ID = "SESSION_START_ID";
     private static final String SENSOR_TIMER_ID = "SENSOR_TIMEER_ID";
-    private static final String SENSOR_LOG_ID = "SENSOR_LOG_ID";
-    private static final String SENSOR_OFFSET_LOGGING_ID = "SENSOR_OFFSET_LOGGING_ID";
+    public static final String SENSOR_LOG_ID = "SENSOR_LOG_ID";
+    public static final String SENSOR_OFFSET_LOGGING_ID = "SENSOR_OFFSET_LOGGING_ID";
     private static final String CRUNCH_OFFSET_ID = "CRUNCH_OFFSET_ID";
-    private static final String SEDENTARY_LOG_ID = "SEDENTARY_LOG_ID";
+    public static final String SEDENTARY_LOG_ID = "SEDENTARY_LOG_ID";
     private static final String SEDENTARY_ID = "SEDENTARY_ID";
     private static final String SENSOR_ID = "SENSOR_ID";
     private static final String OFFSET_UPDATED_ID = "OFFSET_UPDATED_ID";
     private static final String TAP_THRESHOLD_ID = "TAP_THRESHOLD_ID";
+    public static final String DATA_DOWNLOADER_FRAGMENT_KEY = "DATA_DOWNLOADER_FRAGMENT_KEY";
 
     private short crunchSessionCount;
     private int steps = 0;
@@ -102,6 +103,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private LocalBroadcastManager broadcastManager = null;
     private SettingsFragment mSettingsFragment;
     private ProfileFragment profileFragment;
+
     private SharedPreferences sharedPreferences;
 
     private final DataProcessor.Callbacks dpModuleCallbacks = new DataProcessor.Callbacks() {
@@ -184,7 +186,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         mSettingsFragment.setUp(
                 R.id.settings_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
 
         // eventually make this conditional.
         FragmentTransaction fragTransaction = fragManager.beginTransaction();
@@ -349,16 +350,30 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     }
 
     @Override
-    public void btDeviceSelected(BluetoothDevice device) {
+    public void connectToSavedMetawear(){
+        String macAddress = sharedPreferences.getString(MAC_ADDRESS, null);
+        if(macAddress != null) {
+            final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            BluetoothDevice bluetoothDevice = bluetoothManager.getAdapter().getRemoteDevice(macAddress);
+            commonBtConnect(bluetoothDevice);
+        }
+    }
+
+    private void commonBtConnect(BluetoothDevice device){
         btDevice = device;
         mwCtrllr = mwService.getMetaWearController(btDevice);
         mwCtrllr.addDeviceCallback(dCallbacks);
         mwCtrllr.connect();
+        TextView forgetMetaWearView = (TextView) findViewById(R.id.forget_metawear);
+        forgetMetaWearView.setText(getText(R.string.label_forget_metawear) + " " + btDevice.getAddress());
+    }
+
+    @Override
+    public void btDeviceSelected(BluetoothDevice device) {
+        commonBtConnect(device);
         Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.putString(MAC_ADDRESS, btDevice.getAddress());
         sharedPreferencesEditor.apply();
-        TextView forgetMetaWearView = (TextView) findViewById(R.id.forget_metawear);
-        forgetMetaWearView.setText(getText(R.string.label_forget_metawear) + " " + btDevice.getAddress());
     }
 
     @Override
@@ -368,6 +383,9 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public SharedPreferences getSharedPreferences() {
+        if(sharedPreferences == null){
+            sharedPreferences = getApplicationContext().getSharedPreferences("com.mbientlab.abdisk", 0);
+        }
         return sharedPreferences;
     }
 

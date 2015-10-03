@@ -46,6 +46,7 @@ public interface AppState {
     public FilterState getFilterState();
     public void setFilterState(FilterState filterState);
     public void forgetSavedDevice();
+    public void connectToSavedMetawear();
     public int getStepCount();
     public int getCrunchSessionCount();
     public BluetoothDevice getBluetoothDevice();

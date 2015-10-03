@@ -49,6 +49,12 @@
         android:gravity="center_vertical"
         android:text="@string/label_profile_main_header" />
 
+    <ImageButton
+        android:id="@+id/sync_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_popup_sync"/>
+
     <Switch
         android:id="@+id/testData"
         android:layout_width="wrap_content"

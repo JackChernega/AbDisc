@@ -2,14 +2,15 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -29,11 +30,13 @@ import com.mbientlab.abdisc.filter.DebugMainActivity;
 import com.mbientlab.abdisc.filter.FilterSetup;
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.abdisc.model.DataGenerator;
+import com.mbientlab.abdisc.utils.DataDownloaderFragment;
 import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.api.Module;
 import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 import com.mbientlab.metawear.api.controller.Timer;
+
 import java.util.Locale;
 import java.util.UUID;
 
@@ -102,19 +105,20 @@ public class SettingsFragment extends Fragment {
     private AppState appState;
     private Activity activity;
     private ProgressDialog setupProgress;
+    private DataDownloaderFragment dataDownloaderFragment;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (!(activity instanceof  AppState)) {
+        if (!(activity instanceof AppState)) {
             throw new ClassCastException(String.format(Locale.US, "%s %s", activity.toString(),
                     activity.getString(R.string.error_app_state)));
         }
 
         // yes this is pedantic
         this.activity = activity;
-        appState= (AppState) activity;
+        appState = (AppState) activity;
     }
 
     @Override
@@ -131,7 +135,15 @@ public class SettingsFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
-       // Select either the default item (0) or the last selected item.
+        FragmentManager fragManager = getFragmentManager();
+
+        if (savedInstanceState == null) {
+            dataDownloaderFragment = new DataDownloaderFragment();
+            fragManager.beginTransaction().add(R.id.drawer_layout, dataDownloaderFragment, MainActivity.DATA_DOWNLOADER_FRAGMENT_KEY).commit();
+        } else {
+            dataDownloaderFragment = (DataDownloaderFragment) fragManager.getFragment(savedInstanceState, MainActivity.DATA_DOWNLOADER_FRAGMENT_KEY);
+        }
+        // Select either the default item (0) or the last selected item.
         //selectItem(mCurrentSelectedPosition);
     }
 
@@ -142,20 +154,19 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.findViewById(R.id.profileOption).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final FragmentManager fragmentManager = activity.getFragmentManager();
+                final android.app.FragmentManager fragmentManager = activity.getFragmentManager();
                 final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(R.id.app_content, ((MainActivity) activity).getProfileFragment()).commit();
                 ((MainActivity) activity).onFragmentSettingsOptionSelected(v.getId());
                 closeDrawer(Gravity.START);
             }
         });
-
 
         view.findViewById(R.id.start_debug_activity).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +184,7 @@ public class SettingsFragment extends Fragment {
                         .show(getActivity().getFragmentManager(), "ble_scanner_fragment");
             }
         });
+
 
         view.findViewById(R.id.upload_filter_config).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,17 +229,36 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        final SharedPreferences sp = appState.getSharedPreferences();
         final TextView forgetDevice = (TextView) view.findViewById(R.id.forget_metawear);
 
         forgetDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                appState.forgetSavedDevice();
-                ((TextView)view).setText("");
-            }}
+                                            @Override
+                                            public void onClick(View view) {
+                                                appState.forgetSavedDevice();
+                                                ((TextView) view).setText("");
+                                            }
+                                        }
         );
 
-        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        final String macAddress = sp.getString(MainActivity.MAC_ADDRESS, null);
+
+        view.findViewById(R.id.sync_data).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ((appState.getMetaWearController() != null) && appState.getMetaWearController().isConnected()) {
+                    setupProgress = new ProgressDialog(activity);
+                    setupProgress.setIndeterminate(true);
+                    setupProgress.setMessage("Setting up filters...");
+                    setupProgress.show();
+                    dataDownloaderFragment.startLogDownload(appState.getMetaWearController(), setupProgress);
+                } else {
+                    if (macAddress != null) {
+                        appState.connectToSavedMetawear();
+                    }
+                }
+            }
+        });
 
         final Switch testDataSwitch = (Switch) view.findViewById(R.id.testData);
         testDataSwitch.setChecked(sp.getBoolean(PREF_USE_DEMO_DATA, false));
@@ -339,7 +370,7 @@ public class SettingsFragment extends Fragment {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void syncDrawerToggle(){
+    public void syncDrawerToggle() {
         mDrawerToggle.syncState();
     }
 
