@@ -207,18 +207,23 @@ public class StepCountFragment extends Fragment {
         LocalDateTime startOfDay = date.atStartOfDay();
         Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
         boolean getTestData = testDataSwitch.isChecked();
+        int steps = 0;
 
+        for (int i = 0; i < 24; i++) {
             List<StepReading> hourSteps = new Select().from(StepReading.class)
                     .where(Condition.column(StepReading$Table.DATETIME)
-                            .between(startOfDay.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                            .and(startOfDay.plusHours(24).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
-                            Condition.column(StepReading$Table.ISTESTDATA)
-                            .eq(getTestData))
+                                    .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
+                                    .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
+                            Condition.column(StepReading$Table.ISTESTDATA).eq(getTestData))
                     .queryList();
-            int steps = 0;
-            for (StepReading stepReading: hourSteps) {
-                steps += stepReading.getMilliG()/DayActivityFragment.ACTIVITY_PER_STEP;
+            for (StepReading stepReading : hourSteps) {
+                long stepsThisMinute = stepReading.getMilliG() / DayActivityFragment.ACTIVITY_PER_STEP;
+
+                if(stepsThisMinute > 5){
+                    steps += stepsThisMinute;
+                }
             }
+        }
 
         return steps;
     }

@@ -361,8 +361,9 @@ public class DayActivityFragment extends Fragment {
             int steps = 0;
             for (StepReading stepReading : hourSteps) {
                 long stepsThisMinute = stepReading.getMilliG() / ACTIVITY_PER_STEP;
-                steps += stepsThisMinute;
+
                 if(stepsThisMinute > 5){
+                    steps += stepsThisMinute;
                     activeMinutes++;
                 }
             }
