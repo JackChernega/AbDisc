@@ -2,13 +2,16 @@ package com.mbientlab.abdisc.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
 
 import com.mbientlab.abdisc.AppState;
 import com.mbientlab.abdisc.MainActivity;
+import com.mbientlab.abdisc.ProfileFragment;
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.model.CrunchPosture;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.metawear.api.MetaWearController;
 import com.mbientlab.metawear.api.Module;
@@ -71,9 +74,12 @@ public class DataDownloaderFragment extends Fragment {
 
     private final byte ACTIVITY_DATA_SIZE = 4;
     private final int TIME_DELAY_PERIOD = 60000;
+    public final int CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS = 120;
     private int totalEntryCount;
     private ArrayList<StepReading> stepReadings = new ArrayList<>();
+    private ArrayList<CrunchPosture> crunchPostures = new ArrayList<>();
     private AppState appState;
+    private String abDiscMode;
 
     @Override
     public void onAttach(Activity activity){
@@ -95,6 +101,7 @@ public class DataDownloaderFragment extends Fragment {
         private int sensorOffsetLoggingId = -1;
         private int sensorLogId = -1;
         private byte timeTriggerId = -1;
+        private long startCrunchPostureTime = 0;
 
         @Override
         public void receivedLogEntry(final Logging.LogEntry entry) {
@@ -104,7 +111,6 @@ public class DataDownloaderFragment extends Fragment {
 
             int activityMilliG = ByteBuffer.wrap(entry.data())
                     .order(ByteOrder.LITTLE_ENDIAN).getInt();
-
 
             if(sedentaryLogId == -1)
                 sedentaryLogId = appState.getSharedPreferences().getInt(MainActivity.SEDENTARY_LOG_ID, -1);
@@ -128,6 +134,25 @@ public class DataDownloaderFragment extends Fragment {
                 StepReading stepReading = new StepReading(new java.sql.Date(entryTimeInMilliseconds), (long) activityMilliG, false);
                 stepReadings.add(stepReading);
             } else if (tId == sensorOffsetLoggingId) {
+                Log.i("DataDownloaderFragment", "Sensor Offset Logging ID startCrunchPostureTime: " + String.valueOf(startCrunchPostureTime));
+                CrunchPosture crunchPostureRecord = null;
+                if(startCrunchPostureTime == 0){
+                    crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
+                            abDiscMode, CrunchPosture.STATUS_START, true);
+                    startCrunchPostureTime = entryTimeInMilliseconds;
+                }else if((entryTimeInMilliseconds - startCrunchPostureTime) > (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)) {
+                    crunchPostureRecord = new CrunchPosture(new java.sql.Date(startCrunchPostureTime + (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)),
+                            abDiscMode, CrunchPosture.STATUS_STOP, true);
+                    crunchPostures.add(crunchPostureRecord);
+                    crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
+                            abDiscMode, CrunchPosture.STATUS_START, true);
+                    startCrunchPostureTime = entryTimeInMilliseconds;
+                }else{
+                    crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
+                            abDiscMode, CrunchPosture.STATUS_STOP, true);
+                    startCrunchPostureTime = 0;
+                }
+                crunchPostures.add(crunchPostureRecord);
                 Log.i("DataDownloaderFragment", "Sensor Offset Logging ID Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));
                 Log.i("DataDownloaderFragment", String.format("Sensor Offset Logging ID, (%d, %s)",
                         tId, Arrays.toString(entry.data())));
@@ -176,7 +201,11 @@ public class DataDownloaderFragment extends Fragment {
                 //Got the entry count, lets now download the log
                 loggingCtrllr.downloadLog(totalEntries, (int) (totalEntries * notifyRatio));
             } else {
+                isDownloading = false;
                 Log.i("LoggingExample", "Total Entries count " + String.valueOf(totalEntries));
+                mwController.waitToClose(false);
+                setupProgress.dismiss();
+                setupProgress = null;
             }
         }
 
@@ -191,7 +220,15 @@ public class DataDownloaderFragment extends Fragment {
             Log.i("removing ", String.valueOf((short) totalEntryCount) + " entries");
             loggingCtrllr.removeLogEntries((short) totalEntryCount);
             Log.i("LoggingExample", "Download completed");
+
+            if(startCrunchPostureTime > 0) {
+                CrunchPosture crunchPostureRecord = new CrunchPosture(new java.sql.Date(startCrunchPostureTime + (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)),
+                        abDiscMode, CrunchPosture.STATUS_STOP, true);
+                crunchPostures.add(crunchPostureRecord);
+            }
+
             TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(stepReadings)));
+            TransactionManager.getInstance().addTransaction(new SaveModelTransaction<>(ProcessModelInfo.withModels(crunchPostures)));
             mwController.waitToClose(false);
             setupProgress.dismiss();
             setupProgress = null;
@@ -216,9 +253,13 @@ public class DataDownloaderFragment extends Fragment {
            This means we will call downloadLog in one of the logging callback functions, and
            will start the callback chain here
          */
+        stepReadings = new ArrayList<>();
+        crunchPostures = new ArrayList<>();
         this.setupProgress = setupProgress;
         this.mwController = mwController;
         setupLogginController(mwController);
+        SharedPreferences sharedPreferences = appState.getSharedPreferences();
+        abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
         Log.i("Logging", "Starting Log Download");
         loggingCtrllr.readReferenceTick();
     }
