@@ -1,11 +1,9 @@
 package com.mbientlab.abdisc.utils;
 
 import android.content.Context;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
-import com.mbientlab.abdisc.R;
 import com.mbientlab.abdisc.model.CrunchPosture;
 
 /**

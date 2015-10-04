@@ -5,7 +5,6 @@ import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.sql.Date;

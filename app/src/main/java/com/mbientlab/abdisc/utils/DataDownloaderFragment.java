@@ -68,7 +68,7 @@ public class DataDownloaderFragment extends Fragment {
     private Logging loggingCtrllr;
     private ProgressDialog setupProgress;
     private DataProcessor dataProcessorController;
-    private byte rmsFilterId = -1, accumFilterId = -1, timeFilterId = -1, timeTriggerId = -1;
+
     private final byte ACTIVITY_DATA_SIZE = 4;
     private final int TIME_DELAY_PERIOD = 60000;
     private int totalEntryCount;
@@ -94,6 +94,7 @@ public class DataDownloaderFragment extends Fragment {
         private int sedentaryLogId = -1;
         private int sensorOffsetLoggingId = -1;
         private int sensorLogId = -1;
+        private byte timeTriggerId = -1;
 
         @Override
         public void receivedLogEntry(final Logging.LogEntry entry) {
@@ -109,7 +110,7 @@ public class DataDownloaderFragment extends Fragment {
                 sedentaryLogId = appState.getSharedPreferences().getInt(MainActivity.SEDENTARY_LOG_ID, -1);
 
             if(sensorOffsetLoggingId == -1)
-                sensorOffsetLoggingId = appState.getSharedPreferences().getInt(MainActivity.SEDENTARY_LOG_ID, -1);
+                sensorOffsetLoggingId = appState.getSharedPreferences().getInt(MainActivity.SENSOR_OFFSET_LOGGING_ID, -1);
 
             if(sensorLogId == -1)
                 sensorLogId = appState.getSharedPreferences().getInt(MainActivity.SENSOR_LOG_ID, -1);
@@ -121,19 +122,22 @@ public class DataDownloaderFragment extends Fragment {
 
             long entryTimeInMilliseconds = entryTime.getTime() + (localCalendar.get(Calendar.ZONE_OFFSET) + localCalendar.get(Calendar.DST_OFFSET));
             if (tId == sedentaryLogId) {
-                Log.i("LoggingExample", "Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));//String.format(outputFormat, "Z-Axis", entryTime, Gs));
-                Log.i("ActivityTracker", String.format(Locale.US, "%.3f,%.3f",
+                Log.i("DataDownloaderFragment", "Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));//String.format(outputFormat, "Z-Axis", entryTime, Gs));
+                Log.i("DataDownloaderFragment", String.format(Locale.US, "%.3f,%.3f",
                         entry.offset(firstEntry) / 1000.0, activityMilliG / 1000.0));
                 StepReading stepReading = new StepReading(new java.sql.Date(entryTimeInMilliseconds), (long) activityMilliG, false);
                 stepReadings.add(stepReading);
             } else if (tId == sensorOffsetLoggingId) {
-                Log.i("LoggingExample", String.format("Sensor Offset Logging ID, (%d, %s)",
+                Log.i("DataDownloaderFragment", "Sensor Offset Logging ID Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));
+                Log.i("DataDownloaderFragment", String.format("Sensor Offset Logging ID, (%d, %s)",
                         tId, Arrays.toString(entry.data())));
             } else if (tId == sensorLogId){
-                Log.i("LoggingExample", String.format("Sensor Log ID, (%d, %s)",
+                Log.i("DataDownloaderFragment", "Sensor Log ID Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));
+                Log.i("DataDownloaderFragment", String.format("Sensor Log ID, (%d, %s)",
                         tId, Arrays.toString(entry.data())));
             } else {
-                Log.i("LoggingExample", String.format("Unkown Trigger ID, (%d, %s)",
+                Log.i("DataDownloaderFragment", "Unknown Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));
+                Log.i("DataDownloaderFragment", String.format("Unkown Trigger ID, (%d, %s)",
                         tId, Arrays.toString(entry.data())));
             }
         }
@@ -215,7 +219,7 @@ public class DataDownloaderFragment extends Fragment {
         this.setupProgress = setupProgress;
         this.mwController = mwController;
         setupLogginController(mwController);
-        Log.i("Logging", String.format("Starting Log Download"));
+        Log.i("Logging", "Starting Log Download");
         loggingCtrllr.readReferenceTick();
     }
 

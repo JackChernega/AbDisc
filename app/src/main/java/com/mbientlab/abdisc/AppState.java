@@ -33,7 +33,6 @@ package com.mbientlab.abdisc;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
-import android.view.View;
 
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearController;
@@ -42,13 +41,13 @@ import com.mbientlab.metawear.api.MetaWearController;
  * Created by etsai on 6/10/2015.
  */
 public interface AppState {
-    public MetaWearController getMetaWearController();
-    public FilterState getFilterState();
-    public void setFilterState(FilterState filterState);
-    public void forgetSavedDevice();
-    public void connectToSavedMetawear();
-    public int getStepCount();
-    public int getCrunchSessionCount();
-    public BluetoothDevice getBluetoothDevice();
-    public SharedPreferences getSharedPreferences();
+    MetaWearController getMetaWearController();
+    FilterState getFilterState();
+    void setFilterState(FilterState filterState);
+    void forgetSavedDevice();
+    void connectToSavedMetawear();
+    int getStepCount();
+    int getCrunchSessionCount();
+    BluetoothDevice getBluetoothDevice();
+    SharedPreferences getSharedPreferences();
 }

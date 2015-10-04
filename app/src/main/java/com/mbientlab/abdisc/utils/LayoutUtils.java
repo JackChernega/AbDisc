@@ -1,7 +1,6 @@
 package com.mbientlab.abdisc.utils;
 
 import android.app.Activity;
-import android.content.res.TypedArray;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +50,8 @@ public class LayoutUtils {
 
     public static int getComputedGraphHeight(View view, Activity activity, int elementIds[]) {
 
+        /*
+        todo: get rid of this once we are happier with the formatting.
         int totalHeight = 0;
 
         for (int i = 0; i < elementIds.length; i++) {
@@ -58,6 +59,7 @@ public class LayoutUtils {
             viewToMeasure.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             totalHeight += viewToMeasure.getMeasuredHeight();
         }
+        */
 
         View viewToMeasure = activity.findViewById(R.id.buttonMenu);
         viewToMeasure.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

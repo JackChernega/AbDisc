@@ -1,6 +1,5 @@
 package com.mbientlab.abdisc.utils;
 
-import com.github.mikephil.charting.utils.DefaultValueFormatter;
 import com.github.mikephil.charting.utils.ValueFormatter;
 
 /**

@@ -2,14 +2,11 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -29,7 +26,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mbientlab.abdisc.model.CrunchPosture;
 import com.mbientlab.abdisc.model.CrunchPosture$Table;
 import com.mbientlab.abdisc.model.StepReading;
@@ -46,8 +42,6 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -162,19 +156,16 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.setBackground(backgroundGradient);
 
         XAxis xl = mPostureCrunchChart.getXAxis();
-        //xl.setTypeface(tf);
         xl.setDrawGridLines(false);
         xl.setDrawAxisLine(false);
         xl.setDrawLimitLinesBehindData(false);
 
 
         // some test chart data
-        //mPostureCrunchChart.setVisibleYRangeMaximum(20, null);
         int hoursInDay = 24;
 
         ArrayList<String> xVals = new ArrayList<String>();
         for (int i = 0; i < hoursInDay + 1; i++) {
-            //xVals.add((i) + "i");
             xVals.add("");
         }
 
@@ -187,7 +178,7 @@ public class DayActivityFragment extends Fragment {
         ChartBlankValueFormatter formater = new ChartBlankValueFormatter();
         set1.setValueFormatter(formater);
 
-        ArrayList<ScatterDataSet> dataSets = new ArrayList<ScatterDataSet>();
+        ArrayList<ScatterDataSet> dataSets = new ArrayList<>();
         dataSets.add(set1); // add the datasets
 
         // create a data object with the datasets
@@ -216,7 +207,7 @@ public class DayActivityFragment extends Fragment {
 
     private List<Entry> getCrunchPostureByHourForDay(LocalDate date, String chartType) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        List<Entry> crunchPostureByHour = new ArrayList<Entry>();
+        List<Entry> crunchPostureByHour = new ArrayList<>();
 
         float sessionValue = 10;
 
@@ -330,22 +321,16 @@ public class DayActivityFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //mListener = (OnFragmentInteractionListener) activity;
+            appState = (AppState) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        appState = (AppState) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     private HashMap getStepsByHourForDay(LocalDate date) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        List<Integer> stepsByHour = new ArrayList<Integer>();
+        List<Integer> stepsByHour = new ArrayList<>();
         Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
         boolean getTestData = testDataSwitch.isChecked();
         int maxValue = 0;
@@ -383,13 +368,12 @@ public class DayActivityFragment extends Fragment {
     }
 
     private void setData(List<Integer> stepsForDay) {
-
-        ArrayList<String> xVals = new ArrayList<String>();
+        ArrayList<String> xVals = new ArrayList<>();
         for (int i = 0; i < (24 + 2); i++) {
             xVals.add((i) + "");
         }
 
-        ArrayList<Entry> vals1 = new ArrayList<Entry>();
+        ArrayList<Entry> vals1 = new ArrayList<>();
 
         for (int i = 0; i < stepsForDay.size(); i++) {
             vals1.add(new Entry(stepsForDay.get(i), i));
@@ -401,13 +385,9 @@ public class DayActivityFragment extends Fragment {
         LineDataSet set1 = new LineDataSet(vals1, "DataSet 1");
         set1.setDrawCubic(true);
         set1.setCubicIntensity(0.2f);
-        //set1.setDrawFilled(true);
         set1.setDrawCircles(false);
         set1.setLineWidth(6f);
         set1.setCircleSize(5f);
-        //set1.setHighLightColor(Color.rgb(244, 117, 117));
-        //set1.setColor(Color.rgb(104, 241, 175));
-        //set1.setFillColor(ColorTemplate.getHoloBlue());
         set1.setDrawHorizontalHighlightIndicator(false);
 
         // create a data object with the datasets

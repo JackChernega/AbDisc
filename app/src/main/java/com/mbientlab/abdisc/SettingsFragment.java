@@ -2,7 +2,6 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -97,7 +96,6 @@ public class SettingsFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -287,7 +285,7 @@ public class SettingsFragment extends Fragment {
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
-        mFragmentContainerView = getActivity().findViewById(fragmentId);
+        View mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the main content when the drawer opens
@@ -388,6 +386,6 @@ public class SettingsFragment extends Fragment {
 
     public interface OnFragmentSettingsListener {
         // TODO: Update argument type and name
-        public void onFragmentSettingsOptionSelected(int optionId);
+        void onFragmentSettingsOptionSelected(int optionId);
     }
 }

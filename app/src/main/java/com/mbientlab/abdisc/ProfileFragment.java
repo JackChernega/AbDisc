@@ -216,7 +216,7 @@ public class ProfileFragment extends Fragment {
 
     private void setupYesNoDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         final int profileFieldIds[] = {R.id.stride, R.id.steps, R.id.sessions};
-        final Hashtable<Integer, Integer> alertText = new Hashtable<Integer, Integer>();
+        final Hashtable<Integer, Integer> alertText = new Hashtable<>();
         alertText.put(R.id.stride, R.string.label_profile_yes_no_text_stride);
         alertText.put(R.id.steps, R.string.label_profile_yes_no_steps);
         alertText.put(R.id.sessions, R.string.label_profile_yes_no_text_sessions);
@@ -288,7 +288,7 @@ public class ProfileFragment extends Fragment {
 
     private void setupTextFieldDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         final int profileFieldIds[] = {R.id.name, R.id.email, R.id.facebook, R.id.twitter, R.id.password, R.id.weight, R.id.age};
-        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<Integer, Integer>();
+        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<>();
         profileFieldNames.put(R.id.name, R.string.label_profile_name);
         profileFieldNames.put(R.id.email, R.string.label_profile_email);
         profileFieldNames.put(R.id.facebook, R.string.label_profile_facebook);
@@ -397,7 +397,7 @@ public class ProfileFragment extends Fragment {
     private void setupRadioDialogs(View view, final SharedPreferences sharedPreferences, final AlertDialog.Builder alertDialogBuilder) {
         // radio button code
         final int profileFieldIds[] = {R.id.abDiskMode, R.id.gender};
-        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<Integer, Integer>();
+        final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<>();
         profileFieldNames.put(R.id.abDiskMode, R.string.label_profile_ab_disk_mode);
         profileFieldNames.put(R.id.gender, R.string.label_profile_gender);
         final Hashtable<Integer, String> sharedPreferenceKeys = new Hashtable<>();
