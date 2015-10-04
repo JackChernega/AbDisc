@@ -2,8 +2,6 @@ package com.mbientlab.abdisc.utils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
@@ -14,24 +12,19 @@ import com.mbientlab.abdisc.R;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.metawear.api.MetaWearController;
 import com.mbientlab.metawear.api.Module;
-import com.mbientlab.metawear.api.controller.Accelerometer;
 import com.mbientlab.metawear.api.controller.DataProcessor;
 import com.mbientlab.metawear.api.controller.Logging;
-import com.mbientlab.metawear.api.util.FilterConfigBuilder;
-import com.mbientlab.metawear.api.util.LoggingTrigger;
-import com.mbientlab.metawear.api.util.TriggerBuilder;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -124,12 +117,14 @@ public class DataDownloaderFragment extends Fragment {
             byte tId = entry.triggerId();
             Date entryTime = entry.timestamp(refTick).getTime();
 
+            Calendar localCalendar = Calendar.getInstance();
+
+            long entryTimeInMilliseconds = entryTime.getTime() + (localCalendar.get(Calendar.ZONE_OFFSET) + localCalendar.get(Calendar.DST_OFFSET));
             if (tId == sedentaryLogId) {
                 Log.i("LoggingExample", "Time Trigger Id " + entryTime.toString() + String.valueOf(activityMilliG));//String.format(outputFormat, "Z-Axis", entryTime, Gs));
                 Log.i("ActivityTracker", String.format(Locale.US, "%.3f,%.3f",
                         entry.offset(firstEntry) / 1000.0, activityMilliG / 1000.0));
-                ContentValues contentValues = new ContentValues();
-                StepReading stepReading = new StepReading(new java.sql.Date(entryTime.getTime()), (long) activityMilliG, false);
+                StepReading stepReading = new StepReading(new java.sql.Date(entryTimeInMilliseconds), (long) activityMilliG, false);
                 stepReadings.add(stepReading);
             } else if (tId == sensorOffsetLoggingId) {
                 Log.i("LoggingExample", String.format("Sensor Offset Logging ID, (%d, %s)",
@@ -200,6 +195,7 @@ public class DataDownloaderFragment extends Fragment {
     };
 
     private void setupLogginController(MetaWearController mwController) {
+        Log.i("DataDownloader", "setting up logging controller");
         if (loggingCtrllr == null) {
             loggingCtrllr = (Logging) mwController.getModuleController(Module.LOGGING);
             mwController.addModuleCallback(logCallbacks);

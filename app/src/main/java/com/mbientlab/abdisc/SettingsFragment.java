@@ -249,7 +249,7 @@ public class SettingsFragment extends Fragment {
                 if ((appState.getMetaWearController() != null) && appState.getMetaWearController().isConnected()) {
                     setupProgress = new ProgressDialog(activity);
                     setupProgress.setIndeterminate(true);
-                    setupProgress.setMessage("Setting up filters...");
+                    setupProgress.setMessage("Downloading data from MetaWear...");
                     setupProgress.show();
                     dataDownloaderFragment.startLogDownload(appState.getMetaWearController(), setupProgress);
                 } else {
