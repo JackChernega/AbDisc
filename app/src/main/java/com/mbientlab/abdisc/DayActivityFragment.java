@@ -2,6 +2,7 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
@@ -41,6 +42,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,8 +151,10 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.getAxisRight().setEnabled(false);
         mPostureCrunchChart.getAxisLeft().setEnabled(false);
         mPostureCrunchChart.getXAxis().setEnabled(false);
-        int[] gradientColors = {getResources().getColor(R.color.ColorGraphLow),
-                getResources().getColor(R.color.ColorGraphHigh)};
+
+        HashMap sessionsData = getCrunchPostureByHourForDay(dayToView, chartType);
+
+        int[] gradientColors = getColorGradient((int[]) sessionsData.get("sessionsByHour"));
 
         GradientDrawable backgroundGradient = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, gradientColors);
         mPostureCrunchChart.setBackground(backgroundGradient);
@@ -170,7 +174,7 @@ public class DayActivityFragment extends Fragment {
         }
 
         // create a dataset and give it a type
-        ScatterDataSet set1 = new ScatterDataSet(getCrunchPostureByHourForDay(dayToView, chartType), "DS 1");
+        ScatterDataSet set1 = new ScatterDataSet((List<Entry>)sessionsData.get("sessionEntries"), "DS 1");
         set1.setScatterShape(ScatterChart.ScatterShape.SQUARE);
         set1.setDrawHighlightIndicators(false);
 
@@ -205,7 +209,7 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.invalidate();
     }
 
-    private List<Entry> getCrunchPostureByHourForDay(LocalDate date, String chartType) {
+    private HashMap getCrunchPostureByHourForDay(LocalDate date, String chartType) {
         LocalDateTime startOfDay = date.atStartOfDay();
         List<Entry> crunchPostureByHour = new ArrayList<>();
 
@@ -225,6 +229,8 @@ public class DayActivityFragment extends Fragment {
             modeString = getString(R.string.label_graph_posture);
         }
 
+        int[] sessionsByHour = new int[25];
+
         // need to tighten this up
         for (int i = 0; i < 24; i++) {
             List<CrunchPosture> hourCrunchPostures = new Select().from(CrunchPosture.class)
@@ -240,6 +246,7 @@ public class DayActivityFragment extends Fragment {
                 crunchSessions++;
                 totalCrunchSessions++;
             }
+            sessionsByHour[i] = crunchSessions;
             if (crunchSessions > 0)
                 crunchPostureByHour.add(new Entry(sessionValue, i));
         }
@@ -251,7 +258,52 @@ public class DayActivityFragment extends Fragment {
                         getText(R.string.label_graph_sessions) + "   " +
                         getText(R.string.label_graph_today)
         );
-        return crunchPostureByHour;
+
+        HashMap returnHash = new HashMap();
+        returnHash.put("sessionEntries", crunchPostureByHour);
+        returnHash.put("sessionsByHour", sessionsByHour);
+
+        return returnHash;
+    }
+
+    private int[] getColorGradient(int[] sessionsByHour){
+        int graphLow = getResources().getColor(R.color.ColorGraphLow);
+        int lowRed = Color.red(graphLow);
+        int lowGreen = Color.green(graphLow);
+        int lowBlue = Color.blue(graphLow);
+        int graphHigh = getResources().getColor(R.color.ColorGraphHigh);
+        int highRed = Color.red(graphHigh);
+        int highGreen = Color.green(graphHigh);
+        int highBlue = Color.blue(graphHigh);
+
+        int sessionGoal = appState.getSharedPreferences().getInt(ProfileFragment.PROFILE_SESSIONS,
+                ProfileFragment.DEFAULT_SESSIONS_GOAL);
+
+        int[] colors = new int[24];
+        int currentColor = graphLow;
+        int currentStepTotal = 0;
+
+        for (int i = 0 ; i < sessionsByHour.length - 1; i++) {
+            currentStepTotal += sessionsByHour[i+1];
+            if(sessionsByHour[i+1] == 0){
+                colors[i] = currentColor;
+            } else {
+                int red = interpolate(lowRed, highRed, currentStepTotal, sessionGoal);
+                int green = interpolate(lowGreen, highGreen, currentStepTotal, sessionGoal);
+                int blue = interpolate(lowBlue, highBlue, currentStepTotal, sessionGoal);
+                currentColor = Color.rgb(red, green, blue);
+                colors[i] = currentColor;
+            }
+        }
+        return colors;
+    }
+
+    private int interpolate(float begin, float end, float step, float max){
+        if (begin < end) {
+            return (int) (((end - begin) * (step / max)) + begin);
+        } else {
+            return (int) (((begin - end) * (1 - (step / max))) + end);
+        }
     }
 
     private void drawStepsGraph() {

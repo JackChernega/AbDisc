@@ -78,6 +78,7 @@ public class ProfileFragment extends Fragment {
     public static final String PROFILE_TWITTER = "profile_twitter";
     public static final String PROFILE_PASSWORD = "profile_password";
     public static final String PROFILE_WEIGHT = "profile_weight";
+    public static final int DEFAULT_SESSIONS_GOAL = 12;
 
     private AppState appState;
 
@@ -161,7 +162,7 @@ public class ProfileFragment extends Fragment {
                     if (view.getId() == R.id.stride) {
                         promptContent.setText(String.valueOf(GoalDataUtils.calculateStride(sharedPreferences)));
                     } else if (view.getId() == R.id.sessions) {
-                        promptContent.setText(String.valueOf(12));
+                        promptContent.setText(String.valueOf(DEFAULT_SESSIONS_GOAL));
                     } else {
                         promptContent.setText(String.valueOf(GoalDataUtils.calculateStepGoal(sharedPreferences)));
                     }
@@ -275,9 +276,9 @@ public class ProfileFragment extends Fragment {
         }
 
         if (sharedPreferences.getBoolean(PROFILE_SESSIONS_AUTOMATIC, true)) {
-            sessions = 12;
+            sessions = DEFAULT_SESSIONS_GOAL;
         } else {
-            sessions = sharedPreferences.getInt(PROFILE_SESSIONS, 0);
+            sessions = sharedPreferences.getInt(PROFILE_SESSIONS, DEFAULT_SESSIONS_GOAL);
         }
 
         sessionsLabel.setText(sessionsLabelId);

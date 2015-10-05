@@ -138,18 +138,18 @@ public class DataDownloaderFragment extends Fragment {
                 CrunchPosture crunchPostureRecord = null;
                 if(startCrunchPostureTime == 0){
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
-                            abDiscMode, CrunchPosture.STATUS_START, true);
+                            abDiscMode, CrunchPosture.STATUS_START, false);
                     startCrunchPostureTime = entryTimeInMilliseconds;
                 }else if((entryTimeInMilliseconds - startCrunchPostureTime) > (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)) {
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(startCrunchPostureTime + (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)),
-                            abDiscMode, CrunchPosture.STATUS_STOP, true);
+                            abDiscMode, CrunchPosture.STATUS_STOP, false);
                     crunchPostures.add(crunchPostureRecord);
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
-                            abDiscMode, CrunchPosture.STATUS_START, true);
+                            abDiscMode, CrunchPosture.STATUS_START, false);
                     startCrunchPostureTime = entryTimeInMilliseconds;
                 }else{
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
-                            abDiscMode, CrunchPosture.STATUS_STOP, true);
+                            abDiscMode, CrunchPosture.STATUS_STOP, false);
                     startCrunchPostureTime = 0;
                 }
                 crunchPostures.add(crunchPostureRecord);
