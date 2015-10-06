@@ -54,15 +54,24 @@ public class CrunchPosture extends BaseModel {
     public CrunchPosture(){
     }
 
-    public CrunchPosture(Date startStopDateTime, String mode, String status, boolean isTestData) {
+    public CrunchPosture(Date startStopDateTime, String mode, String status, long duration, boolean isTestData) {
         this.startStopDateTime = startStopDateTime;
         this.mode = mode;
         this.status = status;
+        this.duration = duration;
         this.isTestData = isTestData;
     }
 
+    public CrunchPosture(Date startStopDateTime, String mode, String status, boolean isTestData) {
+        this(startStopDateTime, mode, status, 0, isTestData);
+    }
+
+    public CrunchPosture(Date startStopDateTime, String mode, String status, long duration){
+        this(startStopDateTime, mode, status, duration, false);
+    }
+
     public CrunchPosture(Date startStopDateTime, String mode, String status){
-        this(startStopDateTime, mode, status, false);
+        this(startStopDateTime, mode, status, 0);
     }
 
     @Column
@@ -82,6 +91,9 @@ public class CrunchPosture extends BaseModel {
     @Column
     boolean isTestData;
 
+    @Column
+    long duration;
+
     public Date getStartStopDateTime() {
         return startStopDateTime;
     }
@@ -96,5 +108,9 @@ public class CrunchPosture extends BaseModel {
 
     public boolean isTestData() {
         return isTestData;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 }

@@ -311,6 +311,8 @@ public class SettingsFragment extends Fragment {
                     return;
                 }
 
+                MainActivity activity = (MainActivity) getActivity();
+                activity.getCurrentFragment().onStart();
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 

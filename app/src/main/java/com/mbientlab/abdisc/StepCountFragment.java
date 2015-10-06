@@ -101,6 +101,8 @@ import java.util.Locale;
 public class StepCountFragment extends Fragment {
     private LocalDate dayToView = LocalDate.now();
     private SharedPreferences sharedPreferences;
+    private AppState appState;
+    private View createdView;
     private int stepsForDay;
 
     @Override
@@ -112,7 +114,7 @@ public class StepCountFragment extends Fragment {
                     activity.getString(R.string.error_app_state)));
         }
 
-        AppState appState = (AppState) activity;
+        appState = (AppState) activity;
         sharedPreferences = appState.getSharedPreferences();
     }
 
@@ -126,26 +128,32 @@ public class StepCountFragment extends Fragment {
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
+        createdView = view;
+    }
 
-        final TextView currentDay = (TextView) view.findViewById(R.id.activityDay);
+    @Override
+    public void onStart(){
+        super.onStart();
+        appState.setCurrentFragment(this);
+        final TextView currentDay = (TextView) createdView.findViewById(R.id.activityDay);
         LayoutUtils.setDayInDisplay(dayToView, currentDay);
-        view.findViewById(R.id.graph_previous_day).setOnClickListener(new View.OnClickListener() {
+        createdView.findViewById(R.id.graph_previous_day).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dayToView = dayToView.minusDays(1);
                 LayoutUtils.setDayInDisplay(dayToView, currentDay);
-                drawGraphAndSetText(view);
+                drawGraphAndSetText(createdView);
             }
         });
-        view.findViewById(R.id.graph_next_day).setOnClickListener(new View.OnClickListener() {
+        createdView.findViewById(R.id.graph_next_day).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dayToView = dayToView.plusDays(1);
                 LayoutUtils.setDayInDisplay(dayToView, currentDay);
-                drawGraphAndSetText(view);
+                drawGraphAndSetText(createdView);
             }
         });
-        drawGraphAndSetText(view);
+        drawGraphAndSetText(createdView);
     }
 
     private void drawGraphAndSetText(View view){

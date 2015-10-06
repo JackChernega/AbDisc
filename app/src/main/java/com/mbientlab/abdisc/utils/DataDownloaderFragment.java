@@ -74,7 +74,7 @@ public class DataDownloaderFragment extends Fragment {
 
     private final byte ACTIVITY_DATA_SIZE = 4;
     private final int TIME_DELAY_PERIOD = 60000;
-    public final int CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS = 120;
+    public final static int CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS = 120;
     private int totalEntryCount;
     private ArrayList<StepReading> stepReadings = new ArrayList<>();
     private ArrayList<CrunchPosture> crunchPostures = new ArrayList<>();
@@ -142,14 +142,16 @@ public class DataDownloaderFragment extends Fragment {
                     startCrunchPostureTime = entryTimeInMilliseconds;
                 }else if((entryTimeInMilliseconds - startCrunchPostureTime) > (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)) {
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(startCrunchPostureTime + (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000)),
-                            abDiscMode, CrunchPosture.STATUS_STOP, false);
+                            abDiscMode, CrunchPosture.STATUS_STOP, (CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000), false);
                     crunchPostures.add(crunchPostureRecord);
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
                             abDiscMode, CrunchPosture.STATUS_START, false);
                     startCrunchPostureTime = entryTimeInMilliseconds;
                 }else{
                     crunchPostureRecord = new CrunchPosture(new java.sql.Date(entryTimeInMilliseconds),
-                            abDiscMode, CrunchPosture.STATUS_STOP, false);
+                            abDiscMode, CrunchPosture.STATUS_STOP,
+                            entryTimeInMilliseconds - startCrunchPostureTime,
+                            false);
                     startCrunchPostureTime = 0;
                 }
                 crunchPostures.add(crunchPostureRecord);

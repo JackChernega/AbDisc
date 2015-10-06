@@ -31,6 +31,7 @@
 
 package com.mbientlab.abdisc;
 
+import android.app.Fragment;
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
 
@@ -48,6 +49,8 @@ public interface AppState {
     void connectToSavedMetawear();
     int getStepCount();
     int getCrunchSessionCount();
+    Fragment getCurrentFragment();
+    void setCurrentFragment(Fragment currentFragment);
     BluetoothDevice getBluetoothDevice();
     SharedPreferences getSharedPreferences();
 }

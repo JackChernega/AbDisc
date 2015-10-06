@@ -112,6 +112,12 @@ public class ProfileFragment extends Fragment {
         setupNoEditToast(view);
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        appState.setCurrentFragment(this);
+    }
+
     private void setupNoEditToast(final View view) {
         view.findViewById(R.id.calories).setOnClickListener(new View.OnClickListener() {
             @Override

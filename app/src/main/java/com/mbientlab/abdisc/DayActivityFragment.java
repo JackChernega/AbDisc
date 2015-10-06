@@ -28,12 +28,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.mbientlab.abdisc.model.CrunchPosture;
-import com.mbientlab.abdisc.model.CrunchPosture$Table;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.abdisc.model.StepReading$Table;
 import com.mbientlab.abdisc.utils.AbDiscMarkerView;
 import com.mbientlab.abdisc.utils.AbDiscScatterChart;
 import com.mbientlab.abdisc.utils.ChartBlankValueFormatter;
+import com.mbientlab.abdisc.utils.CrunchPostureDataUtils;
 import com.mbientlab.abdisc.utils.LayoutUtils;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -42,7 +42,6 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,17 +114,47 @@ public class DayActivityFragment extends Fragment {
                 drawCrunchPostureGraph();
             }
         });
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
         drawStepsGraph();
+        appState.setCurrentFragment(this);
         drawCrunchPostureGraph();
     }
 
     private void drawCrunchPostureGraph() {
-        drawCrunchPostureGraph(mCrunchChart, R.id.crunch_chart, CrunchPosture.MODE_CRUNCH);
+        SharedPreferences sharedPreferences = appState.getSharedPreferences();
+        String abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
+
+        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
+        boolean getTestData = testDataSwitch.isChecked();
+
+        HashMap sessionsData = CrunchPostureDataUtils.getCrunchPostureByHourForDay(dayToView, abDiscMode, getTestData);
+
+        int totalSessions = (int) sessionsData.get("totalSessions");
+
+        String modeString = getString(R.string.label_graph_crunch);
+
+        if (abDiscMode.equals(CrunchPosture.MODE_POSTURE)) {
+            modeString = getString(R.string.label_graph_posture);
+        }
+
+        TextView totalCrunchSessionsTodayTextField = (TextView) getView().findViewById(R.id.crunch_sessions_today_text_field);
+        totalCrunchSessionsTodayTextField.setText(
+                String.valueOf(totalSessions) + "   " +
+                        modeString + "   " +
+                        getText(R.string.label_graph_sessions) + "   " +
+                        getText(R.string.label_graph_today)
+        );
+
+        drawCrunchPostureGraph(mCrunchChart, R.id.crunch_chart, abDiscMode, sessionsData);
         //drawCrunchPostureGraph(mPostureChart, R.id.posture_chart, CrunchPosture.MODE_POSTURE);
     }
 
     private void drawCrunchPostureGraph(AbDiscScatterChart mPostureCrunchChart, int chartId,
-                                        String chartType) {
+                                        String chartType, HashMap sessionsData) {
 
         mPostureCrunchChart = (AbDiscScatterChart) getView().findViewById(chartId);
         mPostureCrunchChart.setDescription("");
@@ -152,7 +181,7 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.getAxisLeft().setEnabled(false);
         mPostureCrunchChart.getXAxis().setEnabled(false);
 
-        HashMap sessionsData = getCrunchPostureByHourForDay(dayToView, chartType);
+
 
         int[] gradientColors = getColorGradient((int[]) sessionsData.get("sessionsByHour"));
 
@@ -207,63 +236,6 @@ public class DayActivityFragment extends Fragment {
         int xyOffset = getView().findViewById(R.id.chart_spacer1).getWidth();
         mPostureCrunchChart.setViewPortOffsets(xyOffset, 0, xyOffset, -60);
         mPostureCrunchChart.invalidate();
-    }
-
-    private HashMap getCrunchPostureByHourForDay(LocalDate date, String chartType) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        List<Entry> crunchPostureByHour = new ArrayList<>();
-
-        float sessionValue = 10;
-
-        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
-        boolean getTestData = testDataSwitch.isChecked();
-
-        int totalCrunchSessions = 0;
-
-        SharedPreferences sharedPreferences = appState.getSharedPreferences();
-        String abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
-
-        String modeString = getString(R.string.label_graph_crunch);
-
-        if (abDiscMode == CrunchPosture.MODE_POSTURE) {
-            modeString = getString(R.string.label_graph_posture);
-        }
-
-        int[] sessionsByHour = new int[25];
-
-        // need to tighten this up
-        for (int i = 0; i < 24; i++) {
-            List<CrunchPosture> hourCrunchPostures = new Select().from(CrunchPosture.class)
-                    .where(Condition.column(CrunchPosture$Table.STARTSTOPDATETIME)
-                                    .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                                    .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
-                            Condition.column(CrunchPosture$Table.ISTESTDATA).eq(getTestData),
-                            Condition.column(CrunchPosture$Table.STATUS).eq(CrunchPosture.STATUS_START),
-                            Condition.column(CrunchPosture$Table.MODE).eq(abDiscMode))
-                    .queryList();
-            int crunchSessions = 0;
-            for (CrunchPosture crunchPosture : hourCrunchPostures) {
-                crunchSessions++;
-                totalCrunchSessions++;
-            }
-            sessionsByHour[i] = crunchSessions;
-            if (crunchSessions > 0)
-                crunchPostureByHour.add(new Entry(sessionValue, i));
-        }
-
-        TextView totalCrunchSessionsTodayTextField = (TextView) getView().findViewById(R.id.crunch_sessions_today_text_field);
-        totalCrunchSessionsTodayTextField.setText(
-                String.valueOf(totalCrunchSessions) + "   " +
-                        modeString + "   " +
-                        getText(R.string.label_graph_sessions) + "   " +
-                        getText(R.string.label_graph_today)
-        );
-
-        HashMap returnHash = new HashMap();
-        returnHash.put("sessionEntries", crunchPostureByHour);
-        returnHash.put("sessionsByHour", sessionsByHour);
-
-        return returnHash;
     }
 
     private int[] getColorGradient(int[] sessionsByHour){
@@ -450,6 +422,5 @@ public class DayActivityFragment extends Fragment {
         // set data
         mChart.setData(data);
     }
-
 
 }

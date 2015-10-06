@@ -136,6 +136,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private LocalBroadcastManager broadcastManager = null;
     private SettingsFragment mSettingsFragment;
     private ProfileFragment profileFragment;
+    private Fragment currentFragment;
 
     private SharedPreferences sharedPreferences;
 
@@ -380,6 +381,16 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public int getCrunchSessionCount() {
         return crunchSessionCount;
+    }
+
+    @Override
+    public Fragment getCurrentFragment() {
+        return currentFragment;
+    }
+
+    @Override
+    public void setCurrentFragment(Fragment currentFragment) {
+        this.currentFragment = currentFragment;
     }
 
     @Override

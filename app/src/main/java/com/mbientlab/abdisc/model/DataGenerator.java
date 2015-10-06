@@ -1,6 +1,7 @@
 package com.mbientlab.abdisc.model;
 
 
+import com.mbientlab.abdisc.utils.DataDownloaderFragment;
 import com.raizlabs.android.dbflow.runtime.TransactionManager;
 import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
 import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
@@ -63,14 +64,16 @@ public class DataGenerator {
             }
             currentTimeInMilliSeconds = nowInMilliseconds - (60000 * i);
             double crunchNumber = Math.random();
+            int sessionLength = DataDownloaderFragment.CRUNCH_POSTURE_SESSION_TIMEOUT_IN_SECONDS * 1000;
             if((i % 30) == 0 && (crunchNumber > 0.8)){
                 CrunchPosture crunchPostureStart = new CrunchPosture(new Date(currentTimeInMilliSeconds),
                         CrunchPosture.MODE_CRUNCH,
                         CrunchPosture.STATUS_START,
                         true);
-                CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + (60000 * 30)),
+                CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + sessionLength),
                         CrunchPosture.MODE_CRUNCH,
                         CrunchPosture.STATUS_STOP,
+                        sessionLength,
                         true);
                 crunchPostures.add(crunchPostureStart);
                 crunchPostures.add(crunchPostureStop);
@@ -79,9 +82,10 @@ public class DataGenerator {
                         CrunchPosture.MODE_POSTURE,
                         CrunchPosture.STATUS_START,
                         true);
-                CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + (60000 * 30)),
+                CrunchPosture crunchPostureStop = new CrunchPosture(new Date(currentTimeInMilliSeconds + sessionLength),
                         CrunchPosture.MODE_POSTURE,
                         CrunchPosture.STATUS_STOP,
+                        sessionLength,
                         true);
                 crunchPostures.add(crunchPostureStart);
                 crunchPostures.add(crunchPostureStop);
