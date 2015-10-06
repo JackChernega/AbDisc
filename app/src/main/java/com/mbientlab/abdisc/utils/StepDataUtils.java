@@ -2,10 +2,10 @@ package com.mbientlab.abdisc.utils;
 
 import android.widget.Switch;
 
-import com.github.mikephil.charting.data.Entry;
+import com.mbientlab.abdisc.DayActivityFragment;
 import com.mbientlab.abdisc.R;
-import com.mbientlab.abdisc.model.CrunchPosture;
-import com.mbientlab.abdisc.model.CrunchPosture$Table;
+import com.mbientlab.abdisc.model.StepReading;
+import com.mbientlab.abdisc.model.StepReading$Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
@@ -53,46 +53,41 @@ import java.util.List;
  * https://github.com/lgleasain
  * Twitter: @lgleasain
  */
-public class CrunchPostureDataUtils {
-    public static HashMap getCrunchPostureByHourForDay(LocalDate date, String chartType, boolean getTestData) {
+public class StepDataUtils {
+    public static HashMap getStepsByHourForDay(LocalDate date, boolean getTestData) {
         LocalDateTime startOfDay = date.atStartOfDay();
-        List<Entry> crunchPostureByHour = new ArrayList<>();
+        List<Integer> stepsByHour = new ArrayList<>();
+        int maxValue = 0;
+        int activeMinutes = 0;
 
-        float sessionValue = 10;
-
-
-        int totalCrunchSessions = 0;
-
-        int[] sessionsByHour = new int[25];
-        long totalSessionsLength = 0;
-
-        // need to tighten this up
         for (int i = 0; i < 24; i++) {
-            List<CrunchPosture> hourCrunchPostures = new Select().from(CrunchPosture.class)
-                    .where(Condition.column(CrunchPosture$Table.STARTSTOPDATETIME)
+            List<StepReading> hourSteps = new Select().from(StepReading.class)
+                    .where(Condition.column(StepReading$Table.DATETIME)
                                     .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
                                     .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
-                            Condition.column(CrunchPosture$Table.ISTESTDATA).eq(getTestData),
-                            Condition.column(CrunchPosture$Table.STATUS).eq(CrunchPosture.STATUS_STOP),
-                            Condition.column(CrunchPosture$Table.MODE).eq(chartType))
+                            Condition.column(StepReading$Table.ISTESTDATA).eq(getTestData))
                     .queryList();
-            int crunchSessions = 0;
-            for (CrunchPosture crunchPosture : hourCrunchPostures) {
-                crunchSessions++;
-                totalCrunchSessions++;
-                totalSessionsLength += crunchPosture.getDuration();
+            int steps = 0;
+            for (StepReading stepReading : hourSteps) {
+                long stepsThisMinute = stepReading.getMilliG() / DayActivityFragment.ACTIVITY_PER_STEP;
+
+                if (stepsThisMinute > 5) {
+                    steps += stepsThisMinute;
+                    activeMinutes++;
+                }
             }
-            sessionsByHour[i] = crunchSessions;
-            if (crunchSessions > 0)
-                crunchPostureByHour.add(new Entry(sessionValue, i));
+            if (maxValue < steps) {
+                maxValue = steps;
+            }
+            stepsByHour.add(steps);
         }
 
-        HashMap returnHash = new HashMap();
-        returnHash.put("sessionEntries", crunchPostureByHour);
-        returnHash.put("totalSessions", totalCrunchSessions);
-        returnHash.put("totalSessionsLength", totalSessionsLength/60000);
-        returnHash.put("sessionsByHour", sessionsByHour);
+        maxValue = maxValue > 100 ? maxValue : 100;
 
-        return returnHash;
+        HashMap returnValues = new HashMap();
+        returnValues.put("stepsByHour", stepsByHour);
+        returnValues.put("maxValue", maxValue);
+        returnValues.put("activeMinutes", activeMinutes);
+        return returnValues;
     }
 }

@@ -28,19 +28,14 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.mbientlab.abdisc.model.CrunchPosture;
-import com.mbientlab.abdisc.model.StepReading;
-import com.mbientlab.abdisc.model.StepReading$Table;
 import com.mbientlab.abdisc.utils.AbDiscMarkerView;
 import com.mbientlab.abdisc.utils.AbDiscScatterChart;
 import com.mbientlab.abdisc.utils.ChartBlankValueFormatter;
 import com.mbientlab.abdisc.utils.CrunchPostureDataUtils;
 import com.mbientlab.abdisc.utils.LayoutUtils;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Select;
+import com.mbientlab.abdisc.utils.StepDataUtils;
 
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.ZoneOffset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,8 +96,7 @@ public class DayActivityFragment extends Fragment {
             public void onClick(View v) {
                 dayToView = dayToView.minusDays(1);
                 LayoutUtils.setDayInDisplay(dayToView, currentDay);
-                drawStepsGraph();
-                drawCrunchPostureGraph();
+                onStart();
             }
         });
         view.findViewById(R.id.graph_next_day).setOnClickListener(new View.OnClickListener() {
@@ -110,8 +104,7 @@ public class DayActivityFragment extends Fragment {
             public void onClick(View v) {
                 dayToView = dayToView.plusDays(1);
                 LayoutUtils.setDayInDisplay(dayToView, currentDay);
-                drawStepsGraph();
-                drawCrunchPostureGraph();
+                onStart();
             }
         });
     }
@@ -119,19 +112,23 @@ public class DayActivityFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        drawStepsGraph();
-        appState.setCurrentFragment(this);
-        drawCrunchPostureGraph();
-    }
-
-    private void drawCrunchPostureGraph() {
+        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
+        boolean getTestData = testDataSwitch.isChecked();
+        HashMap stepData = StepDataUtils.getStepsByHourForDay(dayToView, getTestData);
         SharedPreferences sharedPreferences = appState.getSharedPreferences();
         String abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
 
-        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
-        boolean getTestData = testDataSwitch.isChecked();
-
         HashMap sessionsData = CrunchPostureDataUtils.getCrunchPostureByHourForDay(dayToView, abDiscMode, getTestData);
+        drawStepsGraph(stepData);
+        drawCrunchPostureGraph(sessionsData, abDiscMode);
+        long activeMinutes = (int) stepData.get("activeMinutes");
+        activeMinutes += (long) sessionsData.get("totalSessionsLength");
+        TextView textView = (TextView) getView().findViewById(R.id.total_active_minutes);
+        textView.setText(String.valueOf(activeMinutes) + " ");
+        appState.setCurrentFragment(this);
+    }
+
+    private void drawCrunchPostureGraph(HashMap sessionsData, String abDiscMode) {
 
         int totalSessions = (int) sessionsData.get("totalSessions");
 
@@ -278,19 +275,16 @@ public class DayActivityFragment extends Fragment {
         }
     }
 
-    private void drawStepsGraph() {
-        HashMap stepData = getStepsByHourForDay(dayToView);
+    private void drawStepsGraph(HashMap stepData) {
         List<Integer> stepsByHour = (List<Integer>) stepData.get("stepsByHour");
 
         mChart = (LineChart) getView().findViewById(R.id.active_minutes_day_chart);
 
-        int activeMinutes = (int) stepData.get("activeMinutes");
+
         int rawMaxValue = (int) stepData.get("maxValue");
         int maxValue = (int) (rawMaxValue * 1.05);
         int minValue = maxValue > 100 ? (int) (maxValue * -0.07) : -20;
 
-        TextView textView = (TextView) getView().findViewById(R.id.total_active_minutes);
-        textView.setText(String.valueOf(activeMinutes) + " ");
 
         mChart.invalidate();
 
@@ -352,44 +346,7 @@ public class DayActivityFragment extends Fragment {
         }
     }
 
-    private HashMap getStepsByHourForDay(LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay();
-        List<Integer> stepsByHour = new ArrayList<>();
-        Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
-        boolean getTestData = testDataSwitch.isChecked();
-        int maxValue = 0;
-        int activeMinutes = 0;
 
-        for (int i = 0; i < 24; i++) {
-            List<StepReading> hourSteps = new Select().from(StepReading.class)
-                    .where(Condition.column(StepReading$Table.DATETIME)
-                                    .between(startOfDay.plusHours(i).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli())
-                                    .and(startOfDay.plusHours(i + 1).toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli()),
-                            Condition.column(StepReading$Table.ISTESTDATA).eq(getTestData))
-                    .queryList();
-            int steps = 0;
-            for (StepReading stepReading : hourSteps) {
-                long stepsThisMinute = stepReading.getMilliG() / ACTIVITY_PER_STEP;
-
-                if(stepsThisMinute > 5){
-                    steps += stepsThisMinute;
-                    activeMinutes++;
-                }
-            }
-            if (maxValue < steps) {
-                maxValue = steps;
-            }
-            stepsByHour.add(steps);
-        }
-
-        maxValue = maxValue > 100 ? maxValue : 100;
-
-        HashMap returnValues = new HashMap();
-        returnValues.put("stepsByHour", stepsByHour);
-        returnValues.put("maxValue", maxValue);
-        returnValues.put("activeMinutes", activeMinutes);
-        return returnValues;
-    }
 
     private void setData(List<Integer> stepsForDay) {
         ArrayList<String> xVals = new ArrayList<>();
