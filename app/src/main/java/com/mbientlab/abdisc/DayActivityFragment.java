@@ -215,8 +215,14 @@ public class DayActivityFragment extends Fragment {
         ScatterData data = new ScatterData(xVals, dataSets);
 
         mPostureCrunchChart.setData(data);
+
+        int layoutResource = R.layout.crunch_marker_view;
+        if(chartType.equals("posture")){
+            layoutResource = R.layout.posture_marker_view;
+        }
+
         AbDiscMarkerView mv = new AbDiscMarkerView(getActivity().getApplication().getApplicationContext(),
-                R.layout.crunch_marker_view, chartType);
+                layoutResource, chartType);
 
 
         mPostureCrunchChart.setMarkerView(mv);
