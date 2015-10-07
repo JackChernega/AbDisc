@@ -318,12 +318,14 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         public void connected() {
             Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
             Log.i("AbDisc", "Device connected");
+            mSettingsFragment.boardConnected();
         }
 
         @Override
         public void disconnected() {
             Toast.makeText(MainActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
             Log.i("AbDisc", "Connection lost");
+            mSettingsFragment.boardDisconnected();
         }
 
         @Override
@@ -331,8 +333,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
             mwCtrllr.close(true);
             Log.i("AbDisc", "Gatt Error: " + gattOp.toString() + " (status= " + status + ")");
         }
-
-
     };
 
     @Override

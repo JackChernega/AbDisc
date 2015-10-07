@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -104,6 +105,7 @@ public class SettingsFragment extends Fragment {
     private Activity activity;
     private ProgressDialog setupProgress;
     private DataDownloaderFragment dataDownloaderFragment;
+    private TextView connectedStatus;
 
     @Override
     public void onAttach(Activity activity) {
@@ -183,11 +185,20 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.disconnect_metawear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (appState.getMetaWearController() != null) {
+                    appState.getMetaWearController().close(true);
+                }
+            }
+        });
+
 
         view.findViewById(R.id.upload_filter_config).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (appState.getMetaWearController().isConnected()) {
+                if (appState.getMetaWearController() != null && appState.getMetaWearController().isConnected()) {
                     setupProgress = new ProgressDialog(activity);
                     setupProgress.setIndeterminate(true);
                     setupProgress.setMessage("Setting up filters...");
@@ -231,13 +242,12 @@ public class SettingsFragment extends Fragment {
         final TextView forgetDevice = (TextView) view.findViewById(R.id.forget_metawear);
 
         forgetDevice.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                appState.forgetSavedDevice();
-                                                ((TextView) view).setText("");
-                                            }
-                                        }
-        );
+            @Override
+            public void onClick(View view) {
+                appState.forgetSavedDevice();
+                ((TextView) view).setText("");
+            }
+        });
 
         final String macAddress = sp.getString(MainActivity.MAC_ADDRESS, null);
 
@@ -276,6 +286,8 @@ public class SettingsFragment extends Fragment {
                 DataGenerator.generateStepData();
             }
         });
+
+        connectedStatus= (TextView) view.findViewById(R.id.connected_status);
     }
 
     /**
@@ -389,5 +401,15 @@ public class SettingsFragment extends Fragment {
     public interface OnFragmentSettingsListener {
         // TODO: Update argument type and name
         void onFragmentSettingsOptionSelected(int optionId);
+    }
+
+    public void boardConnected() {
+        connectedStatus.setTextColor(Color.GREEN);
+        connectedStatus.setText(R.string.label_connected_metawear);
+    }
+
+    public void boardDisconnected() {
+        connectedStatus.setTextColor(Color.RED);
+        connectedStatus.setText(R.string.label_disconnected_metawear);
     }
 }

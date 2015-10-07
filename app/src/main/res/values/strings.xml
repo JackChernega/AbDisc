@@ -83,7 +83,9 @@
     <string name="label_graph_crunch">c r u n c h</string>
     <string name="label_graph_sessions">s e s s i o n s</string>
     <string name="label_graph_today">t o d a y</string>
-    <string name="label_connect_metawear">Connect</string>
-    <string name="label_disconnect_metawear">Disconnect</string>
+    <string name="label_connect_description">Select MetaWear from device list</string>
+    <string name="label_connected_metawear">Connected</string>
+    <string name="label_disconnected_metawear">Disconnected</string>
+    <string name="label_disconnect_description">Close Bluetooth connection</string>
     <string name="label_forget_metawear">Forget </string>
 </resources>

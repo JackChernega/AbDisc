@@ -25,7 +25,27 @@
             android:id="@+id/connect_metawear_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            android:text="@string/label_connect_description"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/disconnect_metawear"
+            android:src="@android:drawable/ic_delete" />
+
+        <TextView
+            android:id="@+id/disconnect_metawear_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_disconnect_description"
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
     <TextView
@@ -66,5 +86,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Generate Test Data" />
+
+    <TextView
+        android:id="@+id/connected_status"
+        style="@style/AppPreferencePopupName"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:textColor="@android:color/holo_red_dark"
+        android:text="@string/label_disconnected_metawear" />
 
 </LinearLayout>
