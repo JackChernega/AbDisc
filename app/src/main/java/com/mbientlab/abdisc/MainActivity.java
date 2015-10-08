@@ -137,6 +137,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private SettingsFragment mSettingsFragment;
     private ProfileFragment profileFragment;
     private Fragment currentFragment;
+    private CropPhotoFragment cropPhotoFragment;
 
     private SharedPreferences sharedPreferences;
 
@@ -233,6 +234,25 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public void onFragmentSettingsOptionSelected(int optionId){
         mainTabButtonPressed(0);
+    }
+
+    public void openProfileFragment(){
+                FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
+                if (profileFragment == null) {
+                    profileFragment = new ProfileFragment();
+                }
+                fragTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.app_content, profileFragment).commit();
+    }
+
+    public void openCropPhotoFragment(){
+                FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
+                if (cropPhotoFragment == null) {
+                    cropPhotoFragment = new CropPhotoFragment();
+                }
+                mainTabButtonPressed(R.id.tab_activity);
+                fragTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.app_content, cropPhotoFragment).commit();
     }
 
     public void mainTabButtonPressed(int buttonId) {
@@ -374,6 +394,11 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     }
 
     @Override
+    public ProfileFragment getProfileFragment(){
+        return profileFragment;
+    }
+
+    @Override
     public int getStepCount() {
         return steps;
     }
@@ -431,10 +456,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
             sharedPreferences = getApplicationContext().getSharedPreferences("com.mbientlab.abdisk", 0);
         }
         return sharedPreferences;
-    }
-
-    public ProfileFragment getProfileFragment() {
-        return profileFragment;
     }
 
     @Override

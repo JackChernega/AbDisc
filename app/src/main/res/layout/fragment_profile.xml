@@ -5,21 +5,52 @@
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffcecece"
         android:orientation="vertical">
 
+       <LinearLayout
+            android:id="@+id/heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:padding="6dp"
+            android:background="@android:color/white">
+
+            <ImageView
+                android:id="@+id/head_photo"
+                android:layout_width="0dp"
+                android:layout_gravity="right"
+                android:layout_height="wrap_content"
+                android:layout_weight=".30"
+                android:paddingLeft="14dp" />
+            <TextView
+                android:id="@+id/persons_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Stephen Colbert"
+                style="@style/AppPreferencePerson"
+                android:paddingLeft="5dp"
+                android:layout_weight=".7"
+                />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="20dp"
             android:background="@android:color/white"
             android:orientation="vertical"
-            android:padding="15dp">
+            android:padding="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp">
 
             <TextView
                 android:id="@+id/profileHeader"
@@ -183,10 +214,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="20dp"
             android:background="@android:color/white"
             android:orientation="vertical"
-            android:padding="15dp">
+            android:padding="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp">
 
             <TextView
                 android:id="@+id/dataHeader"

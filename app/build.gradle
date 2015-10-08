@@ -33,4 +33,5 @@ dependencies {
     compile "com.raizlabs.android:DBFlow:2.2.1"
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.2'
     compile 'com.github.bmarrdev:android-DecoView-charting:v0.9.2'
+    compile 'com.isseiaoki:simplecropview:1.0.8'
 }

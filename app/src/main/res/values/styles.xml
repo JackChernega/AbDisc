@@ -14,6 +14,12 @@
         <item name="background">@drawable/ab_gradient</item>
     </style>
 
+    <style name="AppPreferencePerson">
+        <item name="android:textSize">@dimen/text_size_large_person</item>
+        <item name="android:textColor">@color/ColorGraphBackgroundDark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="AppPreferenceTitle">
         <item name="android:textSize">@dimen/text_size_large_material</item>
         <item name="android:textColor">@color/ColorPreferencesHeader</item>

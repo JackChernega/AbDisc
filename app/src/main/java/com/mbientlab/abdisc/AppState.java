@@ -34,6 +34,7 @@ package com.mbientlab.abdisc;
 import android.app.Fragment;
 import android.bluetooth.BluetoothDevice;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import com.mbientlab.abdisc.filter.FilterState;
 import com.mbientlab.metawear.api.MetaWearController;
@@ -53,4 +54,5 @@ public interface AppState {
     void setCurrentFragment(Fragment currentFragment);
     BluetoothDevice getBluetoothDevice();
     SharedPreferences getSharedPreferences();
+    ProfileFragment getProfileFragment();
 }

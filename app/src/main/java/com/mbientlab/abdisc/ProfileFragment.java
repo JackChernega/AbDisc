@@ -3,16 +3,26 @@ package com.mbientlab.abdisc;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -21,6 +31,10 @@ import android.widget.Toast;
 
 import com.mbientlab.abdisc.utils.GoalDataUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -80,7 +94,18 @@ public class ProfileFragment extends Fragment {
     public static final String PROFILE_WEIGHT = "profile_weight";
     public static final int DEFAULT_SESSIONS_GOAL = 12;
 
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_GALLERY_IMAGE = 2;
     private AppState appState;
+    private MainActivity mainActivity;
+    private Intent takePictureIntent;
+    private Uri profilePhotoUri;
+    private static final int RESULT_OK = -1;
+    private static final String CAPTURE_IMAGE_FILE_PROVIDER = "com.mbientlab.abdisc.fileprovider";
+    private static final String PROFILE_PHOTO_FILE_NAME = "profile_photo.png";
+    private File profilePhotoFile;
+    private Bitmap profilePhotoBitmap;
 
     @Override
     public void onAttach(Activity activity) {
@@ -91,6 +116,7 @@ public class ProfileFragment extends Fragment {
                     activity.getString(R.string.error_app_state)));
         }
 
+        mainActivity = (MainActivity) activity;
         appState = (AppState) activity;
     }
 
@@ -110,12 +136,144 @@ public class ProfileFragment extends Fragment {
         setupSpinnerDialogs(view, sharedPreferences, alertDialogBuilder);
         setupYesNoDialogs(view, sharedPreferences, alertDialogBuilder);
         setupNoEditToast(view);
+        setupHeader(view, sharedPreferences);
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         appState.setCurrentFragment(this);
+    }
+
+    public Bitmap getProfilePhotoBitmap() {
+        return profilePhotoBitmap;
+    }
+
+    public void setProfilePhotoBitmap(Bitmap profilePhotoBitmap) {
+        this.profilePhotoBitmap = profilePhotoBitmap;
+        try {
+            FileOutputStream profilePhotoOutputStream = new FileOutputStream(profilePhotoFile);
+            profilePhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, profilePhotoOutputStream);
+            profilePhotoOutputStream.close();
+        } catch (FileNotFoundException e){
+            Log.e("Profile Fragment Error ", e.toString());
+        } catch (IOException e){
+            Log.e("Profile Fragmetn Error", e.toString());
+        }
+    }
+
+
+    private void setupHeader(View view, SharedPreferences sharedPreferences) {
+        File path = new File(mainActivity.getFilesDir(), "images");
+        if (!path.exists()) path.mkdirs();
+        profilePhotoFile = new File(path, PROFILE_PHOTO_FILE_NAME);
+
+        profilePhotoUri = FileProvider.getUriForFile(mainActivity, CAPTURE_IMAGE_FILE_PROVIDER,
+                profilePhotoFile);
+        takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, profilePhotoUri);
+        ImageView mImageView = (ImageView) getView().findViewById(R.id.head_photo);
+
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+
+
+                final CharSequence[] items = {"Take Photo", "Choose from Library",
+                        "Cancel"};
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle("Add Photo!");
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        if (items[item].equals("Take Photo")) {
+                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                        } else if (items[item].equals("Choose from Library")) {
+                            Intent intent = new Intent(
+                                    Intent.ACTION_PICK,
+                                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            intent.setType("image/*");
+                            startActivityForResult(
+                                    Intent.createChooser(intent, "Select File"),
+                                    REQUEST_GALLERY_IMAGE);
+                        } else if (items[item].equals("Cancel")) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                builder.show();
+            }
+        });
+
+        profilePhotoBitmap = BitmapFactory.decodeFile(profilePhotoFile.getAbsolutePath());
+
+        if (profilePhotoBitmap != null) {
+            mImageView.setImageBitmap(profilePhotoBitmap);
+        } else {
+            mImageView.setImageResource(R.drawable.colbert);
+        }
+
+        TextView profileNameTextView = (TextView) view.findViewById(R.id.persons_name);
+        profileNameTextView.setText(sharedPreferences.getString(PROFILE_NAME, ""));
+
+        getView().post(new Runnable() {
+            @Override
+            public void run() {
+                LinearLayout header = (LinearLayout) getView().findViewById(R.id.heading);
+                LinearLayout.LayoutParams headerParams = (LinearLayout.LayoutParams) header.getLayoutParams();
+                ImageView imageView = (ImageView) getView().findViewById(R.id.head_photo);
+                headerParams.height = imageView.getWidth() - 60;
+                header.setLayoutParams(headerParams);
+            }
+        });
+    }
+
+    private String getPath(Uri uri, Activity activity) {
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        Cursor cursor = activity
+                .managedQuery(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        String imagePath = null;
+
+        if (requestCode == REQUEST_GALLERY_IMAGE) {
+            if (data != null) {
+                imagePath = getPath(data.getData(), mainActivity);
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            imagePath = profilePhotoFile.getAbsolutePath();
+        }
+
+        if ((requestCode == REQUEST_IMAGE_CAPTURE || requestCode == REQUEST_GALLERY_IMAGE) && resultCode == RESULT_OK && imagePath != null) {
+            //Crop.of(profilePhotoUri, profilePhotoUri).asSquare().start(mainActivity);
+            //}else if(requestCode == Crop.REQUEST_CROP && resultCode == RESULT_OK){
+            int targetHeight = getView().getHeight();
+            int targetWidth = getView().getWidth();
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(imagePath, bmOptions);
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetWidth, photoH / targetHeight);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            profilePhotoBitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+            mainActivity.openCropPhotoFragment();
+        }
     }
 
     private void setupNoEditToast(final View view) {
@@ -379,6 +537,10 @@ public class ProfileFragment extends Fragment {
                                     } else {
                                         if (view.getId() == R.id.age) {
                                             editor.putInt(sharedPreferenceKeys.get(view.getId()), Integer.valueOf(promptValue));
+                                        } else if (view.getId() == R.id.name) {
+                                            TextView profileNameTextView = (TextView) getView().findViewById(R.id.persons_name);
+                                            editor.putString(sharedPreferenceKeys.get(view.getId()), promptValue);
+                                            profileNameTextView.setText(promptValue);
                                         } else {
                                             editor.putString(sharedPreferenceKeys.get(view.getId()), promptValue);
                                         }
