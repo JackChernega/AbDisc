@@ -31,6 +31,7 @@
     <string name="label_profile_in_pounds"> In Pounds</string>
     <string name="label_profile_ok">OK</string>
     <string name="label_profile_cancel">Cancel</string>
+    <string name="label_profile_crop">Crop</string>
     <string name="label_profile_yes">Yes</string>
     <string name="label_profile_no">No</string>
     <string name="label_profile_pounds">lbs</string>

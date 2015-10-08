@@ -85,6 +85,14 @@ public class CropPhotoFragment extends Fragment {
                 mainActivity.openProfileFragment();
             }
         });
+
+        Button cancelButton = (Button) view.findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainActivity.openProfileFragment();
+            }
+        });
     }
 
     @Override

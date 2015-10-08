@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -246,6 +247,7 @@ public class ProfileFragment extends Fragment {
         if (requestCode == REQUEST_GALLERY_IMAGE) {
             if (data != null) {
                 imagePath = getPath(data.getData(), mainActivity);
+                if(imagePath == null){imagePath = data.getDataString();}
             }
         } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
             imagePath = profilePhotoFile.getAbsolutePath();
@@ -259,7 +261,18 @@ public class ProfileFragment extends Fragment {
             // Get the dimensions of the bitmap
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             bmOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(imagePath, bmOptions);
+            if(imagePath.startsWith("content://com.google.android.apps.photos.content"))
+            {
+                try {
+                    InputStream is = getView().getContext().getContentResolver().openInputStream(data.getData());
+                    BitmapFactory.decodeStream(is, null, bmOptions);
+                }catch (IOException e){
+                    Log.e("Profile Fragment Error ", e.toString());
+                }
+            } else {
+                BitmapFactory.decodeFile(imagePath, bmOptions);
+            }
+
             int photoW = bmOptions.outWidth;
             int photoH = bmOptions.outHeight;
 
@@ -271,7 +284,17 @@ public class ProfileFragment extends Fragment {
             bmOptions.inSampleSize = scaleFactor;
             bmOptions.inPurgeable = true;
 
-            profilePhotoBitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+            if(imagePath.startsWith("content://com.google.android.apps.photos.content"))
+            {
+                try {
+                    InputStream is = getView().getContext().getContentResolver().openInputStream(data.getData());
+                    profilePhotoBitmap = BitmapFactory.decodeStream(is, null, bmOptions);
+                }catch (IOException e){
+                    Log.e("Profile Fragment Error ", e.toString());
+                }
+            } else {
+                profilePhotoBitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+            }
             mainActivity.openCropPhotoFragment();
         }
     }
