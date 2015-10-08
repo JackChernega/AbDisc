@@ -110,21 +110,28 @@ public class DayActivityFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         Switch testDataSwitch = (Switch) getView().getRootView().findViewById(R.id.testData);
         boolean getTestData = testDataSwitch.isChecked();
-        HashMap stepData = StepDataUtils.getStepsByHourForDay(dayToView, getTestData);
+        final HashMap stepData = StepDataUtils.getStepsByHourForDay(dayToView, getTestData);
         SharedPreferences sharedPreferences = appState.getSharedPreferences();
-        String abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
+        final String abDiscMode = sharedPreferences.getString(ProfileFragment.PROFILE_AB_DISK_MODE, CrunchPosture.MODE_CRUNCH);
 
-        HashMap sessionsData = CrunchPostureDataUtils.getCrunchPostureByHourForDay(dayToView, abDiscMode, getTestData);
-        drawStepsGraph(stepData);
-        drawCrunchPostureGraph(sessionsData, abDiscMode);
-        long activeMinutes = (int) stepData.get("activeMinutes");
-        activeMinutes += (long) sessionsData.get("totalSessionsLength");
-        TextView textView = (TextView) getView().findViewById(R.id.total_active_minutes);
-        textView.setText(String.valueOf(activeMinutes) + " ");
+        final HashMap sessionsData = CrunchPostureDataUtils.getCrunchPostureByHourForDay(dayToView, abDiscMode, getTestData);
+
+        getView().post(new Runnable() {
+            @Override
+            public void run() {
+                drawStepsGraph(stepData);
+                drawCrunchPostureGraph(sessionsData, abDiscMode);
+                long activeMinutes = (int) stepData.get("activeMinutes");
+                activeMinutes += (long) sessionsData.get("totalSessionsLength");
+                TextView textView = (TextView) getView().findViewById(R.id.total_active_minutes);
+                textView.setText(String.valueOf(activeMinutes) + " ");
+            }
+        });
+
         appState.setCurrentFragment(this);
     }
 
@@ -179,7 +186,6 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.getXAxis().setEnabled(false);
 
 
-
         int[] gradientColors = getColorGradient((int[]) sessionsData.get("sessionsByHour"));
 
         GradientDrawable backgroundGradient = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, gradientColors);
@@ -200,7 +206,7 @@ public class DayActivityFragment extends Fragment {
         }
 
         // create a dataset and give it a type
-        ScatterDataSet set1 = new ScatterDataSet((List<Entry>)sessionsData.get("sessionEntries"), "DS 1");
+        ScatterDataSet set1 = new ScatterDataSet((List<Entry>) sessionsData.get("sessionEntries"), "DS 1");
         set1.setScatterShape(ScatterChart.ScatterShape.SQUARE);
         set1.setDrawHighlightIndicators(false);
 
@@ -217,7 +223,7 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.setData(data);
 
         int layoutResource = R.layout.crunch_marker_view;
-        if(chartType.equals("posture")){
+        if (chartType.equals("posture")) {
             layoutResource = R.layout.posture_marker_view;
         }
 
@@ -241,7 +247,7 @@ public class DayActivityFragment extends Fragment {
         mPostureCrunchChart.invalidate();
     }
 
-    private int[] getColorGradient(int[] sessionsByHour){
+    private int[] getColorGradient(int[] sessionsByHour) {
         int graphLow = getResources().getColor(R.color.ColorGraphLow);
         int lowRed = Color.red(graphLow);
         int lowGreen = Color.green(graphLow);
@@ -258,9 +264,9 @@ public class DayActivityFragment extends Fragment {
         int currentColor = graphLow;
         int currentStepTotal = 0;
 
-        for (int i = 0 ; i < sessionsByHour.length - 1; i++) {
-            currentStepTotal += sessionsByHour[i+1];
-            if(sessionsByHour[i+1] == 0){
+        for (int i = 0; i < sessionsByHour.length - 1; i++) {
+            currentStepTotal += sessionsByHour[i + 1];
+            if (sessionsByHour[i + 1] == 0) {
                 colors[i] = currentColor;
             } else {
                 int red = interpolate(lowRed, highRed, currentStepTotal, sessionGoal);
@@ -273,7 +279,7 @@ public class DayActivityFragment extends Fragment {
         return colors;
     }
 
-    private int interpolate(float begin, float end, float step, float max){
+    private int interpolate(float begin, float end, float step, float max) {
         if (begin < end) {
             return (int) (((end - begin) * (step / max)) + begin);
         } else {
@@ -326,8 +332,8 @@ public class DayActivityFragment extends Fragment {
         Paint paint = mChart.getRenderer().getPaintRender();
         int heightItemsToConsider[] = {R.id.graph_button_bar, R.id.graph_calories_burned, R.id.graph_day,
                 R.id.crunch_chart};
-        int height = LayoutUtils.getComputedGraphHeight(getView(), getActivity(),
-                heightItemsToConsider);
+
+        int height = mChart.getHeight();
 
         LinearGradient linGrad = new LinearGradient(0, 0, 0, height,
                 getResources().getColor(R.color.ColorGraphHigh),
@@ -351,7 +357,6 @@ public class DayActivityFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
 
 
     private void setData(List<Integer> stepsForDay) {

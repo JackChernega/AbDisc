@@ -48,38 +48,6 @@ import org.threeten.bp.LocalDate;
  */
 public class LayoutUtils {
 
-    public static int getComputedGraphHeight(View view, Activity activity, int elementIds[]) {
-
-        /*
-        todo: get rid of this once we are happier with the formatting.
-        int totalHeight = 0;
-
-        for (int i = 0; i < elementIds.length; i++) {
-            View viewToMeasure = view.findViewById(elementIds[i]);
-            viewToMeasure.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            totalHeight += viewToMeasure.getMeasuredHeight();
-        }
-        */
-
-        View viewToMeasure = activity.findViewById(R.id.buttonMenu);
-        viewToMeasure.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-        view.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int containerViewHeight = view.getMeasuredHeightAndState() * 2;
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        if (containerViewHeight < 705 && metrics.heightPixels > 1500) {
-            containerViewHeight = (int) (containerViewHeight * 1.8);
-        } else if (containerViewHeight < 705) {
-            containerViewHeight = containerViewHeight - 250;
-        } else if (containerViewHeight < 1000) {
-            containerViewHeight = containerViewHeight - 300;
-        } else {
-            containerViewHeight = (int) (containerViewHeight * 0.7);
-        }
-        return (containerViewHeight);
-    }
-
     public static void setDayInDisplay(LocalDate day, TextView dayView) {
         dayView.setText(day.getDayOfWeek().toString() + ", " + day.getMonth().toString() +
                 " " + day.getDayOfMonth());
