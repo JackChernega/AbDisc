@@ -32,12 +32,46 @@
 package com.mbientlab.abdisc.filter;
 
 /**
- * Created by etsai on 6/5/2015.
+ * Default parameters used by the filter chain.  These are the values used by the filter upload button from the settings panel
  */
 public class DefaultParameters {
-    public static final byte SENSOR_DATA_PIN= 0, SENSOR_GROUND_PIN= 1, SEDENTARY_TIME= 16, ADC_SAMPLE_SIZE= 4;
-    public static final float CRUNCH_SESSION_DURATION= 120.f, L1_HAPTIC_STRENGTH= 40.f, L2_HAPTIC_STRENGTH= 70.f, L3_HAPTIC_STRENGTH= 90.f, TAP_THRESHOLD= 4.f;
-    public static final int SEDENTARY_RESET_THRESHOLD= 2048, SEDENTARY_MIN_ACTIVITY_THRESHOLD= 2048, CRUNCH_SESSION_THRESHOLD_UPDATE= 20,
-            L1_HAPTIC_LOWER= 16, L1_HAPTIC_UPPER= 384, L2_HAPTIC_LOWER= 384, L2_HAPTIC_UPPER= 768, L3_HAPTIC_LOWER= 768, L3_HAPTIC_UPPER= 1023,
-            CRUNCH_THRESHOLD_UPDATE_PERIOD= 15000;
+    /** GPIO pin that reads the ADC data */
+    public static final byte SENSOR_DATA_PIN= 0;
+    /** GPIO pin used to ground the circuit */
+    public static final byte SENSOR_GROUND_PIN= 1;
+    /** units of sedentary step period */
+    public static final byte SEDENTARY_TIME= 16;
+    /** Number of ADC samples to average */
+    public static final byte ADC_SAMPLE_SIZE= 4;
+
+    /** long a crunch session will last, in seconds*/
+    public static final float CRUNCH_SESSION_DURATION= 120.f;
+    /** Motor strength for level 1 feedback, between [0, 100] percent */
+    public static final float L1_HAPTIC_STRENGTH= 40.f;
+    /** Motor strength for level 2 feedback, between [0, 100] percent */
+    public static final float L2_HAPTIC_STRENGTH= 70.f;
+    /** Motor strength for level 3 feedback, between [0, 100] percent */
+    public static final float L3_HAPTIC_STRENGTH= 90.f;
+    /** Threshold for a tap to register, max 8G */
+    public static final float TAP_THRESHOLD= 4.f;
+
+    /** Minimum activity level that indicates the device is worn */
+    public static final int SEDENTARY_RESET_THRESHOLD= 2048;
+    /** Minimum activity signifying an active user */
+    public static final int SEDENTARY_MIN_ACTIVITY_THRESHOLD= 2048;
+
+    /** Lower ADC value of haptic range for Level 1 feedback */
+    public static final int L1_HAPTIC_LOWER= 16;
+    /** Upper ADC value of haptic range for Level 1 feedback */
+    public static final int L1_HAPTIC_UPPER= 384;
+    /** Lower ADC value of haptic range for Level 2 feedback */
+    public static final int L2_HAPTIC_LOWER= 384;
+    /** Upper ADC value of haptic range for Level 2 feedback */
+    public static final int L2_HAPTIC_UPPER= 768;
+    /** Lower ADC value of haptic range for Level 3 feedback */
+    public static final int L3_HAPTIC_LOWER= 768;
+    /** Upper ADC value of haptic range for Level 3 feedback */
+    public static final int L3_HAPTIC_UPPER= 1023;
+    /** How long (milliseconds) crunch ADC values must remain above or below the threshold to trigger a threshold update */
+    public static final int CRUNCH_THRESHOLD_UPDATE_PERIOD= 15000;
 }
