@@ -288,6 +288,11 @@ public class SettingsFragment extends Fragment {
         });
 
         connectedStatus= (TextView) view.findViewById(R.id.connected_status);
+        if (appState.getMetaWearController() == null || !appState.getMetaWearController().isConnected()) {
+            boardDisconnected();
+        } else {
+            boardConnected();
+        }
     }
 
     /**
