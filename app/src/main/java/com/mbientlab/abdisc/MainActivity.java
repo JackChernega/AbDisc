@@ -439,6 +439,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void btDeviceSelected(BluetoothDevice device) {
+        profileFragment.selectedBluetoothDevice(device);
         commonBtConnect(device);
         Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.putString(MAC_ADDRESS, btDevice.getAddress());

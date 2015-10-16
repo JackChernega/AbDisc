@@ -10,12 +10,13 @@
     <string name="error_no_bluetooth">Bluetooth device not detected</string>
     <string name="error_app_state">must implement AppState interface</string>
     <string name="label_profile_main_header">YOUR PROFILE</string>
-    <string name="label_profile_name">Name</string>
+    <string name="label_profile_name">Ab-Disc Name</string>
     <string name="label_profile_email">EMAIL</string>
     <string name="label_profile_facebook">Facebook</string>
     <string name="label_profile_twitter">Twitter</string>
     <string name="label_profile_password">Password</string>
-    <string name="label_profile_ab_disk_mode">AB-DISK MODE</string>
+    <string name="label_profile_ab_disc_mode">AB-DISC MODE</string>
+    <string name="label_profile_ab_disc_device">AB-DISC Device</string>
     <string name="label_profile_data_header">YOUR DATA</string>
     <string name="label_profile_height">Height</string>
     <string name="label_profile_weight">Weight</string>

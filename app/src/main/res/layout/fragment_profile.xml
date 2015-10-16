@@ -196,7 +196,7 @@
                     style="@style/AppPreferenceName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_profile_ab_disk_mode" />
+                    android:text="@string/label_profile_ab_disc_mode" />
 
                 <TextView
                     android:id="@+id/abDiskModeEntry"
@@ -204,9 +204,32 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:inputType="textCapWords"
-                    android:text="@string/label_profile_ab_disk_mode" />
+                    android:text="@string/label_profile_ab_disc_mode" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/abDiscDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/abDiscDeviceLabel"
+                    style="@style/AppPreferenceName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_ab_disc_device" />
+
+                <TextView
+                    android:id="@+id/abDiscDeviceEntry"
+                    style="@style/AppPreferenceEntry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_profile_ab_disc_device" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

@@ -2,6 +2,7 @@ package com.mbientlab.abdisc;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mbientlab.abdisc.utils.GoalDataUtils;
+import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Copyright 2014 MbientLab Inc. All rights reserved.
@@ -138,6 +141,15 @@ public class ProfileFragment extends Fragment {
         setupYesNoDialogs(view, sharedPreferences, alertDialogBuilder);
         setupNoEditToast(view);
         setupHeader(view, sharedPreferences);
+
+        view.findViewById(R.id.abDiscDevice).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BleScannerFragment.newInstance(new UUID[]{UUID.fromString("326a9000-85cb-9195-d9dd-464cfbbae75a")})
+                        .show(getActivity().getFragmentManager(), "ble_scanner_fragment");
+            }
+        });
+        ((TextView) view.findViewById(R.id.abDiscDeviceEntry)).setText(sharedPreferences.getString(MainActivity.MAC_ADDRESS, ""));
     }
 
     @Override
@@ -163,6 +175,13 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    public void selectedBluetoothDevice(BluetoothDevice btDevice) {
+        View v= getView();
+
+        if (v != null) {
+            ((TextView) v.findViewById(R.id.abDiscDeviceEntry)).setText(btDevice.getAddress());
+        }
+    }
 
     private void setupHeader(View view, SharedPreferences sharedPreferences) {
         File path = new File(mainActivity.getFilesDir(), "images");
@@ -590,7 +609,7 @@ public class ProfileFragment extends Fragment {
         // radio button code
         final int profileFieldIds[] = {R.id.abDiskMode, R.id.gender};
         final Hashtable<Integer, Integer> profileFieldNames = new Hashtable<>();
-        profileFieldNames.put(R.id.abDiskMode, R.string.label_profile_ab_disk_mode);
+        profileFieldNames.put(R.id.abDiskMode, R.string.label_profile_ab_disc_mode);
         profileFieldNames.put(R.id.gender, R.string.label_profile_gender);
         final Hashtable<Integer, String> sharedPreferenceKeys = new Hashtable<>();
         sharedPreferenceKeys.put(R.id.abDiskMode, PROFILE_AB_DISK_MODE);
