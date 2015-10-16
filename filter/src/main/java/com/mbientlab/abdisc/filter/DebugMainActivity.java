@@ -38,11 +38,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mbientlab.metawear.api.MetaWearBleService;
@@ -53,10 +59,44 @@ import com.mbientlab.metawear.api.MetaWearBleService;
  * https://github.com/codepath/android_guides/wiki/ViewPager-with-FragmentPagerAdapter
  */
 public class DebugMainActivity extends FragmentActivity implements ServiceConnection, DataConnection {
-    public final static String EXTRA_BT_DEVICE=
-            "com.mbientlab.abdisc.filter.DebugMainActivity.EXTRA_BT_DEVICE";
+    private static final String PASSWORD_FRAG_KEY= "com.mbientlab.abdisc.filter.DebugMainActivity.PASSWORD_FRAG_KEY";
+    public final static String EXTRA_BT_DEVICE= "com.mbientlab.abdisc.filter.DebugMainActivity.EXTRA_BT_DEVICE";
 
     private BluetoothDevice btDevice;
+
+    public static class PasswordDialogFragment extends DialogFragment {
+        public PasswordDialogFragment() {
+
+        }
+
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                    Bundle savedInstanceState) {
+            View v= inflater.inflate(R.layout.debug_password, container, false);
+
+            final TextView passwordError= (TextView) v.findViewById(R.id.password_invalid_text);
+            final EditText password= (EditText) v.findViewById(R.id.debug_password);
+            v.findViewById(R.id.button_ok).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (password.getEditableText().toString().equals(DefaultParameters.DEBUG_PANEL_PASSWORD)) {
+                        PasswordDialogFragment.this.dismiss();
+                    } else {
+                        passwordError.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+            v.findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getActivity().finish();
+                }
+            });
+
+            return v;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +136,10 @@ public class DebugMainActivity extends FragmentActivity implements ServiceConnec
 
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
+
+        PasswordDialogFragment dialog= new PasswordDialogFragment();
+        dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), PASSWORD_FRAG_KEY);
     }
 
     @Override

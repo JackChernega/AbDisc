@@ -50,7 +50,9 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class DayActivityFragment extends Fragment {
+    /** How much activity corresponds to 1 step */
     public static final int ACTIVITY_PER_STEP = 6700;
+    
     private LineChart mChart;
     private AbDiscScatterChart mPostureChart;
     private AbDiscScatterChart mCrunchChart;

@@ -38,6 +38,7 @@
     <string name="text_select_device">No MetaWear device selected</string>
 
     <string name="title_edit_setting">Edit Setting</string>
+    <string name="title_debug_menu">Debug Menu</string>
 
     <string name="label_ok">OK</string>
     <string name="label_cancel">Cancel</string>
@@ -56,6 +57,8 @@
     <string name="label_debug_stop">Stop</string>
     <string name="label_debug_reconnect">Reconnect</string>
     <string name="label_reset">Reset</string>
+    <string name="label_invalid_pwd">Invalid password</string>
+    <string name="label_enter_pwd">Enter password to access the debug menu</string>
 
     <string name="description_filter_entry_revert">Reverts configuration setting to default value</string>
     <string name="description_filter_entry_info">Displays information about the setting</string>
