@@ -45,6 +45,7 @@ import android.widget.TextView;
 import com.hookedonplay.decoviewlib.DecoView;
 import com.hookedonplay.decoviewlib.charts.SeriesItem;
 import com.hookedonplay.decoviewlib.events.DecoEvent;
+import com.mbientlab.abdisc.filter.DefaultParameters;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.abdisc.model.StepReading$Table;
 import com.mbientlab.abdisc.utils.GoalDataUtils;
@@ -250,10 +251,8 @@ public class StepCountFragment extends Fragment {
                             Condition.column(StepReading$Table.ISTESTDATA).eq(getTestData))
                     .queryList();
             for (StepReading stepReading : hourSteps) {
-                long stepsThisMinute = stepReading.getMilliG() / DayActivityFragment.ACTIVITY_PER_STEP;
-
-                if(stepsThisMinute > 5){
-                    steps += stepsThisMinute;
+                if (stepReading.getMilliG() > DefaultParameters.SEDENTARY_RESET_THRESHOLD) {
+                    steps += (stepReading.getMilliG() / DefaultParameters.ACTIVITY_PER_STEP);
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.widget.Switch;
 
 import com.github.mikephil.charting.data.Entry;
 import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.filter.DefaultParameters;
 import com.mbientlab.abdisc.model.CrunchPosture;
 import com.mbientlab.abdisc.model.CrunchPosture$Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -90,7 +91,7 @@ public class CrunchPostureDataUtils {
         HashMap returnHash = new HashMap();
         returnHash.put("sessionEntries", crunchPostureByHour);
         returnHash.put("totalSessions", totalCrunchSessions);
-        returnHash.put("totalSessionsLength", totalSessionsLength/60000);
+        returnHash.put("totalSessionsLength", totalSessionsLength/ (DefaultParameters.CRUNCH_SESSION_DURATION * 1000));
         returnHash.put("sessionsByHour", sessionsByHour);
 
         return returnHash;

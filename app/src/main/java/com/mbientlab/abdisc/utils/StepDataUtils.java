@@ -1,9 +1,7 @@
 package com.mbientlab.abdisc.utils;
 
-import android.widget.Switch;
-
 import com.mbientlab.abdisc.DayActivityFragment;
-import com.mbientlab.abdisc.R;
+import com.mbientlab.abdisc.filter.DefaultParameters;
 import com.mbientlab.abdisc.model.StepReading;
 import com.mbientlab.abdisc.model.StepReading$Table;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
@@ -69,11 +67,16 @@ public class StepDataUtils {
                     .queryList();
             int steps = 0;
             for (StepReading stepReading : hourSteps) {
-                long stepsThisMinute = stepReading.getMilliG() / DayActivityFragment.ACTIVITY_PER_STEP;
-
-                if (stepsThisMinute > 5) {
-                    steps += stepsThisMinute;
+                if (stepReading.getMilliG() > DefaultParameters.SEDENTARY_RESET_THRESHOLD) {
+                    steps += (stepReading.getMilliG() / DefaultParameters.ACTIVITY_PER_STEP);
                     activeMinutes++;
+                    
+                    /*
+                    if (stepsThisMinute > 5) {
+                        steps += stepsThisMinute;
+                        activeMinutes++;
+                    }
+                    */
                 }
             }
             if (maxValue < steps) {

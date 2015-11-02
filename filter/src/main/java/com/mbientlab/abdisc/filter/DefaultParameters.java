@@ -52,9 +52,11 @@ public class DefaultParameters {
     /** Threshold for a tap to register, max 8G */
     public static final float TAP_THRESHOLD= 2.f;
 
+    /** How much activity that results from taking one step */
+    public static final int ACTIVITY_PER_STEP= 6700;
     /** units of sedentary step period */
     public static final byte SEDENTARY_TIME= 20;
-    /** Minimum activity level that indicates the device is worn */
+    /** Minimum activity level that indicates the device is worn.  If activity is less than this value, the step counter will not be updated */
     public static final int SEDENTARY_RESET_THRESHOLD= 180000;
     /** Minimum activity signifying an active user */
     public static final int SEDENTARY_MIN_ACTIVITY_THRESHOLD= 26000;
