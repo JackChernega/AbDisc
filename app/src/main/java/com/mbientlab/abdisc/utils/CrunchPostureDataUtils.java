@@ -91,7 +91,7 @@ public class CrunchPostureDataUtils {
         HashMap returnHash = new HashMap();
         returnHash.put("sessionEntries", crunchPostureByHour);
         returnHash.put("totalSessions", totalCrunchSessions);
-        returnHash.put("totalSessionsLength", totalSessionsLength/ (DefaultParameters.CRUNCH_SESSION_DURATION * 1000));
+        returnHash.put("totalSessionsLength", (long) (totalSessionsLength / (DefaultParameters.CRUNCH_SESSION_DURATION * 1000)));
         returnHash.put("sessionsByHour", sessionsByHour);
 
         return returnHash;
